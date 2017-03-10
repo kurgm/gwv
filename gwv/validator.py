@@ -29,7 +29,8 @@ def validate(dump, validator_names=None, timestamp=None):
 
     for glyphname in sorted(dump.keys()):
         related, data = dump[glyphname]
-        vals = filtered_validators[tuple(f(glyphname) for f in filter_funcs)]
+        vals = filtered_validators[
+            tuple(f(glyphname, related, data) for f in filter_funcs)]
         for val in vals:
             val.validate(glyphname, related, data)
 
