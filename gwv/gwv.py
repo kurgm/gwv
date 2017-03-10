@@ -22,8 +22,8 @@ def open_dump(filename):
             line = f.readline()  # header
             line = f.readline()  # ------
             while line:
-                l = [x.strip() for x in line.split("|")]
-                if len(l) != 3:
+                row = [x.strip() for x in line.split("|")]
+                if len(row) != 3:
                     line = f.readline()
                     continue
                 dump[row[0]] = (row[1], row[2])
