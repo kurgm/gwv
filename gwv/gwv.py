@@ -17,6 +17,8 @@ def open_dump(filename):
     dump = {}
     with open(filename) as f:
         if filename[-4:] == ".csv":
+            # first line contains the last modified time
+            timestamp = int(f.readline()[:-1])
             for l in f:
                 row = l.rstrip("\n").split(",")
                 if len(row) != 3:
@@ -24,6 +26,7 @@ def open_dump(filename):
                 dump[row[0]] = (row[1], row[2])
         else:
             # dump_newest_only.txt
+            timestamp = os.path.getmtime(filename)
             line = f.readline()  # header
             line = f.readline()  # ------
             while line:
@@ -33,7 +36,7 @@ def open_dump(filename):
                     continue
                 dump[row[0]] = (row[1], row[2])
                 line = f.readline()
-    return dump
+    return dump, timestamp
 
 
 def main(args=None):
@@ -55,9 +58,9 @@ def main(args=None):
 
     outpath = opts.out or os.path.join(
         os.path.dirname(opts.dumpfile), "gwv_result.json")
-    dump = open_dump(opts.dumpfile)
+    dump, timestamp = open_dump(opts.dumpfile)
 
-    result = validate(dump, opts.names or None)
+    result = validate(dump, opts.names or None, timestamp)
 
     with open(outpath, "w") as outfile:
         outfile.write(result)
