@@ -17,8 +17,8 @@ all_validator_names = []
 filters = {
     "alias": {True, False},
     "category": {"user-owned", "ids", "togo", "togo-var", "gokan", "gokan-var",
-                 "ucs", "ucs-var", "cdp", "koseki-kanji", "koseki-hikanji",
-                 "toki", "ext", "other"}
+                 "ucs-hikanji", "ucs-hikanji-var", "cdp", "koseki-kanji",
+                 "koseki-hikanji", "toki", "ext", "other"}
 }
 
 _re_ids = re.compile(r"u2ff[\dab]-")
@@ -40,7 +40,7 @@ def _categorize(glyphname):
             return "togo" if len(splitname) == 1 else "togo-var"
         if isGokanKanji(header):
             return "gokan" if len(splitname) == 1 else "gokan-var"
-        return "ucs" if len(splitname) == 1 else "ucs-var"
+        return "ucs-hikanji" if len(splitname) == 1 else "ucs-hikanji-var"
     if _re_cdp.match(glyphname):
         return "cdp"
     if _re_koseki.match(glyphname):
