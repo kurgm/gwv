@@ -6,6 +6,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
 import os
 import sys
 
@@ -63,7 +64,7 @@ def main(args=None):
     result = validate(dump, opts.names or None, timestamp)
 
     with open(outpath, "w") as outfile:
-        outfile.write(result)
+        json.dump(result, outfile)
 
 
 if __name__ == '__main__':
