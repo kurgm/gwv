@@ -54,6 +54,6 @@ def _categorize(glyphname):
 
 
 filter_funcs = {
-    "alias": lambda glyphname, related, data: isAlias(data),
-    "category": lambda glyphname, related, data: _categorize(glyphname)
+    "alias": lambda glyphname, related, kage, data: isAlias(data),
+    "category": lambda glyphname, related, kage, data: _categorize(glyphname)
 }

@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 import itertools
 
+from gwv.kagedata import KageData
 from gwv import validators
 
 
@@ -29,10 +30,11 @@ def validate(dump, validator_names=None, timestamp=None):
 
     for glyphname in sorted(dump.keys()):
         related, data = dump[glyphname]
+        kage = KageData(data)
         vals = filtered_validators[
-            tuple(f(glyphname, related, data) for f in filter_funcs)]
+            tuple(f(glyphname, related, kage, data) for f in filter_funcs)]
         for val in vals:
-            val.validate(glyphname, related, data)
+            val.validate(glyphname, related, kage, data)
 
     return {val.name: {
         "timestamp": timestamp,
