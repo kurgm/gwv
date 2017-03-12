@@ -5,13 +5,9 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import math
-
 from gwv.helper import isKanji
 from gwv.validators import filters as default_filters
 from gwv.validators import ValidatorClass
-
-_d45 = math.pi / 4
 
 filters = {
     "alias": {True, False},
