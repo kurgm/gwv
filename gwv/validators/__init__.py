@@ -16,7 +16,8 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 
 all_validator_names = [
-    "corner"
+    "corner",
+    "illegal",
 ]
 
 filters = {

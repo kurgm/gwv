@@ -6,7 +6,7 @@ GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
 - クソコードを（とりあえず）移植する
   - [x] `corner`
   - [ ] `related`
-  - [ ] `illegal`
+  - [x] `illegal`
   - [ ] `skew`
   - [ ] `donotuse`
   - [ ] `kosekitoki`
