@@ -11,7 +11,7 @@ GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
   - [x] `donotuse`
   - [ ] `kosekitoki`
   - [ ] `mj`
-  - [ ] `ucsalias`
+  - [x] `ucsalias`
   - [ ] `dup`
   - [ ] `naming`
   - [ ] `ids`
