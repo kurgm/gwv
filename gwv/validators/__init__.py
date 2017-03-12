@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 all_validator_names = [
     "corner",
     "illegal",
+    "skew",
 ]
 
 filters = {
