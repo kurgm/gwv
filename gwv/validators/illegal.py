@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from gwv.helper import isKanji
+from gwv.helper import isYoko
 from gwv.validators import filters as default_filters
 from gwv.validators import ValidatorClass
 
@@ -45,14 +46,6 @@ datalens = {
     7: 11,
     9: 7
 }
-
-
-def isYoko(x0, y0, x1, y1):
-    if y0 == y1 and x0 != x1:
-        return True
-    dx = x1 - x0
-    dy = y1 - y0
-    return -dx < dy < dx
 
 
 class Validator(ValidatorClass):

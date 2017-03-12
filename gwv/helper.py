@@ -60,3 +60,11 @@ _re_ucs = re.compile(r"^u[\da-f]{4,6}$")
 
 def isUcs(name):
     return _re_ucs.match(name)
+
+
+def isYoko(x0, y0, x1, y1):
+    if y0 == y1 and x0 != x1:
+        return True
+    dx = x1 - x0
+    dy = y1 - y0
+    return -dx < dy < dx
