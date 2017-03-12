@@ -64,7 +64,7 @@ def main(args=None):
     result = validate(dump, opts.names or None, timestamp)
 
     with open(outpath, "w") as outfile:
-        json.dump(result, outfile)
+        json.dump(result, outfile, separators=(",", ":"), sort_keys=True)
 
 
 if __name__ == '__main__':
