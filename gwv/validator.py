@@ -25,7 +25,7 @@ def validate(dump, validator_names=None, timestamp=None):
     }
     for mod in validator_modules:
         for k in itertools.product(*[mod.filters[filtername] for filtername in filternames]):
-            filtered_validators[k].append(mod)
+            filtered_validators[k].append(mod.Validator())
 
     filter_funcs = [validators.filter_funcs[filtername]
                     for filtername in filternames]
