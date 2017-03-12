@@ -82,7 +82,7 @@ class ValidatorClass(object):
             self.record(glyphname, is_invalid)
 
     def record(self, glyphname, error):
-        key = error[0]
+        key = str(error[0])
         if key not in self.results:
             self.results[key] = []
         self.results[key].append([glyphname] + error[1:])
