@@ -15,7 +15,7 @@ from gwv.helper import isUcs
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-all_validator_names = []
+all_validator_names = ["corner"]
 
 filters = {
     "alias": {True, False},
