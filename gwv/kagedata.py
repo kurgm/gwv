@@ -46,11 +46,15 @@ class KageData(object):
                             for i, l in enumerate(data.split("$"))])
         self.len = len(self.lines)
 
+    def isAlias(self):
+        return self.len == 1 and self.lines[0].strdata[:19] == "99:0:0:0:0:200:200:"
+
 
 class KageLine(object):
 
     def __init__(self, line_number, data):
         self.line_number = line_number
+        self.strdata = data
         sdata = data.split(":")
         if kageIntSuppressError(sdata[0]) != 99:
             self.data = tuple([kageIntSuppressError(x) for x in sdata])

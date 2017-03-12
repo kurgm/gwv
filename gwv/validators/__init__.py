@@ -15,7 +15,9 @@ from gwv.helper import isUcs
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-all_validator_names = ["corner"]
+all_validator_names = [
+    "corner"
+]
 
 filters = {
     "alias": {True, False},
@@ -57,7 +59,7 @@ def _categorize(glyphname):
 
 
 filter_funcs = {
-    "alias": lambda glyphname, related, kage, data: kage.len == 1 and data[:19] == "99:0:0:0:0:200:200:",
+    "alias": lambda glyphname, related, kage, data: kage.isAlias(),
     "category": lambda glyphname, related, kage, data: _categorize(glyphname)
 }
 
