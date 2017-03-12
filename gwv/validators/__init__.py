@@ -8,7 +8,6 @@ from __future__ import unicode_literals
 import logging
 import re
 
-from gwv.helper import isAlias
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
 from gwv.helper import isUcs
@@ -58,12 +57,13 @@ def _categorize(glyphname):
 
 
 filter_funcs = {
-    "alias": lambda glyphname, related, kage, data: isAlias(data),
+    "alias": lambda glyphname, related, kage, data: kage.len == 1 and data[:19] == "99:0:0:0:0:200:200:",
     "category": lambda glyphname, related, kage, data: _categorize(glyphname)
 }
 
 
 class ValidatorClass(object):
+
     def __init__(self):
         self.results = {}
 
@@ -71,14 +71,15 @@ class ValidatorClass(object):
         try:
             is_invalid = self.is_invalid(glyphname, related, kage, gdata)
         except Exception:
-            log.exception("Exception while {} is validating {}".format(self.name, glyphname))
+            log.exception("Exception while {} is validating {}".format(
+                self.name, glyphname))
             return
 
         if is_invalid:
             key = is_invalid[0]
             if key not in self.results:
                 self.results[key] = []
-            self.results[key].append(is_invalid[1:])
+            self.results[key].append([glyphname] + is_invalid[1:])
 
     def get_result(self):
         return self.results

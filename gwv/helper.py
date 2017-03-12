@@ -8,10 +8,6 @@ from __future__ import unicode_literals
 import re
 
 
-def isAlias(data):
-    return len(data) == 1 and data[0][:19] == "99:0:0:0:0:200:200:"
-
-
 _re_ids = re.compile(r"u2ff[\dab]-")
 _re_koseki = re.compile(r"^koseki-\d{6}$")
 

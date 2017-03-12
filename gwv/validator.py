@@ -17,15 +17,16 @@ def validate(dump, validator_names=None, timestamp=None):
     for name in validator_names:
         __import__("gwv.validators." + name)
     validator_modules = [getattr(validators, name) for name in validator_names]
+    validator_instances = [mod.Validator() for mod in validator_modules]
 
     filternames = validators.filters.keys()
 
     filtered_validators = {
         k: [] for k in itertools.product(*[validators.filters[filtername] for filtername in filternames])
     }
-    for mod in validator_modules:
+    for mod, val in zip(validator_modules, validator_instances):
         for k in itertools.product(*[mod.filters[filtername] for filtername in filternames]):
-            filtered_validators[k].append(mod.Validator())
+            filtered_validators[k].append(val)
 
     filter_funcs = [validators.filter_funcs[filtername]
                     for filtername in filternames]
@@ -41,4 +42,4 @@ def validate(dump, validator_names=None, timestamp=None):
     return {val.name: {
         "timestamp": timestamp,
         "result": val.get_result()
-    } for val in validator_modules}
+    } for val in validator_instances}
