@@ -12,7 +12,7 @@ from gwv.validators import filters as default_filters
 from gwv.validators import ValidatorClass
 
 filters = {
-    "alias": {True, False},
+    "alias": {False},
     "category": default_filters["category"] - {"user-owned"}
 }
 
