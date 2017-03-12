@@ -14,6 +14,8 @@ from gwv import validators
 def validate(dump, validator_names=None, timestamp=None):
     if validator_names is None:
         validator_names = validators.all_validator_names
+    for name in validator_names:
+        __import__("gwv.validators." + name)
     validator_modules = [getattr(validators, name) for name in validator_names]
 
     filternames = validators.filters.keys()
