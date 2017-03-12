@@ -19,6 +19,7 @@ all_validator_names = [
     "corner",
     "illegal",
     "skew",
+    "donotuse",
 ]
 
 filters = {

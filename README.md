@@ -8,7 +8,7 @@ GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
   - [ ] `related`
   - [x] `illegal`
   - [x] `skew`
-  - [ ] `donotuse`
+  - [x] `donotuse`
   - [ ] `kosekitoki`
   - [ ] `mj`
   - [ ] `ucsalias`
