@@ -78,10 +78,13 @@ class ValidatorClass(object):
             return
 
         if is_invalid:
-            key = is_invalid[0]
-            if key not in self.results:
-                self.results[key] = []
-            self.results[key].append([glyphname] + is_invalid[1:])
+            self.record(glyphname, is_invalid)
+
+    def record(self, glyphname, error):
+        key = error[0]
+        if key not in self.results:
+            self.results[key] = []
+        self.results[key].append([glyphname] + error[1:])
 
     def get_result(self):
         return self.results
