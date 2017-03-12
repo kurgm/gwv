@@ -31,6 +31,14 @@ def kageInt(s):
             return int(math.floor(float(s)))
 
 
+def kageIntSuppressError(s):
+    """The same as kageInt except that it returns None when s is invalid"""
+    try:
+        return kageInt(s)
+    except (ValueError, OverflowError):
+        return None
+
+
 class KageData(object):
 
     def __init__(self, data):
@@ -44,8 +52,8 @@ class KageLine(object):
     def __init__(self, line_number, data):
         self.line_number = line_number
         sdata = data.split(":")
-        if kageInt(sdata[0]) != 99:
-            self.data = tuple([kageInt(x) for x in sdata])
+        if kageIntSuppressError(sdata[0]) != 99:
+            self.data = tuple([kageIntSuppressError(x) for x in sdata])
         else:
             self.data = tuple(
-                [kageInt(x) if i != 7 else x for i, x in enumerate(sdata)])
+                [kageIntSuppressError(x) if i != 7 else x for i, x in enumerate(sdata)])
