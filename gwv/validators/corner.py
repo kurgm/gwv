@@ -310,7 +310,7 @@ class Validator(ValidatorClass):
 
     name = "corner"
 
-    def is_invalid(self, name, related, kage, gdata):
+    def is_invalid(self, name, related, kage, gdata, dump):
         strokes = []
         tate = []
         yoko = []

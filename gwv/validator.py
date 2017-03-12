@@ -35,7 +35,7 @@ def validate(dump, validator_names=None, timestamp=None):
         related, data = dump[glyphname]
         kage = KageData(data)
         vals = filtered_validators[
-            tuple(f(glyphname, related, kage, data) for f in filter_funcs)]
+            tuple(f(glyphname, related, kage, data, dump) for f in filter_funcs)]
         for val in vals:
             val.validate(glyphname, related, kage, data)
 

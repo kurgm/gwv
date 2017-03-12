@@ -69,9 +69,9 @@ class ValidatorClass(object):
     def __init__(self):
         self.results = {}
 
-    def validate(self, glyphname, related, kage, gdata):
+    def validate(self, glyphname, related, kage, gdata, dump):
         try:
-            is_invalid = self.is_invalid(glyphname, related, kage, gdata)
+            is_invalid = self.is_invalid(glyphname, related, kage, gdata, dump)
         except Exception:
             log.exception("Exception while {} is validating {}".format(
                 self.name, glyphname))
