@@ -21,5 +21,5 @@ GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
   - [x] `numexp`
   - [x] `mustrenew`
   - [ ] `j`
-  - [ ] `width`
+  - [x] `width`
 - [ ] クソ性を低くする

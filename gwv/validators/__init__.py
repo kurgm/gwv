@@ -28,6 +28,7 @@ all_validator_names = [
     "delvar",
     "numexp",
     "mustrenew",
+    "width",
 ]
 
 filters = {
