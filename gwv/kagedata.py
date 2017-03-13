@@ -39,6 +39,12 @@ def kageIntSuppressError(s):
         return None
 
 
+_cachelambdas = {
+    True: lambda: True,
+    False: lambda: False
+}
+
+
 class KageData(object):
 
     def __init__(self, data):
@@ -48,7 +54,7 @@ class KageData(object):
 
     def isAlias(self):
         res = self.len == 1 and self.lines[0].strdata[:19] == "99:0:0:0:0:200:200:"
-        self.isAlias = lambda: res
+        self.isAlias = _cachelambdas[res]
         return res
 
 
