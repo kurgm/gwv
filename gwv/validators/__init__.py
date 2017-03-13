@@ -24,6 +24,7 @@ all_validator_names = [
     "dup",
     "ids",
     "order",
+    "delquote",
 ]
 
 filters = {
