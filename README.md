@@ -19,7 +19,7 @@ GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
   - [x] `delquote`
   - [x] `delvar`
   - [x] `numexp`
-  - [ ] `mustrenew`
+  - [x] `mustrenew`
   - [ ] `j`
   - [ ] `width`
 - [ ] クソ性を低くする
