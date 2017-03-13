@@ -25,6 +25,7 @@ all_validator_names = [
     "ids",
     "order",
     "delquote",
+    "delvar",
 ]
 
 filters = {
