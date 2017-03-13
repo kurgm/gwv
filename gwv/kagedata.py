@@ -47,7 +47,9 @@ class KageData(object):
         self.len = len(self.lines)
 
     def isAlias(self):
-        return self.len == 1 and self.lines[0].strdata[:19] == "99:0:0:0:0:200:200:"
+        res = self.len == 1 and self.lines[0].strdata[:19] == "99:0:0:0:0:200:200:"
+        self.isAlias = lambda: res
+        return res
 
 
 class KageLine(object):
