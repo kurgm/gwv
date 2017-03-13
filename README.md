@@ -1,7 +1,7 @@
 # gwv
 GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
 
-# TODO
+## TODO
 
 - クソコードを（とりあえず）移植する
   - [x] `corner`
