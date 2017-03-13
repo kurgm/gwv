@@ -22,6 +22,7 @@ all_validator_names = [
     "donotuse",
     "ucsalias",
     "dup",
+    "ids",
 ]
 
 filters = {
