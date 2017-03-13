@@ -18,7 +18,7 @@ GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
   - [x] `order`
   - [x] `delquote`
   - [x] `delvar`
-  - [ ] `numexp`
+  - [x] `numexp`
   - [ ] `mustrenew`
   - [ ] `j`
   - [ ] `width`

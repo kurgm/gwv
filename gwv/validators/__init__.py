@@ -26,6 +26,7 @@ all_validator_names = [
     "order",
     "delquote",
     "delvar",
+    "numexp",
 ]
 
 filters = {
