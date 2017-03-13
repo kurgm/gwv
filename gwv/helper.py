@@ -23,8 +23,10 @@ def isKanji(name):
     return True
 
 
-_re_togo_f = re.compile(r"^u(4db[6-9a-f]|4d[c-f][0-9a-f]|9fe[a-f]|9ff[0-9a-f]|2a6d[7-9a-f]|2a6[ef][0-9a-f]|2b73[5-9a-f]|2b81[ef]|2cea[2-9a-f]|2ce[b-f][0-9a-f])$")
-_re_togo_t1 = re.compile(r"^u(3[4-9a-f]|[4-9][0-9a-f]|2[0-9ab][0-9a-f]|2c[0-9a-e])[\da-f]{2}$")
+_re_togo_f = re.compile(
+    r"^u(4db[6-9a-f]|4d[c-f][0-9a-f]|9fe[a-f]|9ff[0-9a-f]|2a6d[7-9a-f]|2a6[ef][0-9a-f]|2b73[5-9a-f]|2b81[ef]|2cea[2-9a-f]|2ce[b-f][0-9a-f])$")
+_re_togo_t1 = re.compile(
+    r"^u(3[4-9a-f]|[4-9][0-9a-f]|2[0-9ab][0-9a-f]|2c[0-9a-e])[\da-f]{2}$")
 _re_togo_t2 = re.compile(r"^ufa(0[ef]|1[134f]|2[134789])$")
 
 
@@ -68,3 +70,37 @@ def isYoko(x0, y0, x1, y1):
     dx = x1 - x0
     dy = y1 - y0
     return -dx < dy < dx
+
+
+_re_textarea = re.compile(r"</?textarea(?: [^>]*)?>")
+_re_gwlink = re.compile(r"\[\[(?:[^]]+\s)?([0-9a-z_-]+(?:@\d+)?)\]\]")
+
+
+def getGlyphsInGroup(groupname):
+    import urllib2
+    url = "http://glyphwiki.org/wiki/Group:{}?action=edit".format(groupname)
+    f = urllib2.urlopen(url, timeout=60)
+    data = f.read()
+    f.close()
+    s = _re_textarea.split(data)[1]
+    return [m.group(1) for m in _re_gwlink.finditer(s)]
+
+
+class GWGroupLazyLoader(object):
+
+    def __init__(self, groupname, isset=False):
+        self.groupname = groupname
+        self.isset = isset
+        self.data = None
+
+    def load(self):
+        glyphs = getGlyphsInGroup(self.groupname)
+        if self.isset:
+            self.data = set(glyphs)
+        else:
+            self.data = glyphs
+
+    def get_data(self):
+        if self.data is None:
+            self.load()
+        return self.data
