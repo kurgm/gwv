@@ -77,8 +77,10 @@ _re_gwlink = re.compile(r"\[\[(?:[^]]+\s)?([0-9a-z_-]+(?:@\d+)?)\]\]")
 
 
 def getGlyphsInGroup(groupname):
+    import urllib
     import urllib2
-    url = "http://glyphwiki.org/wiki/Group:{}?action=edit".format(groupname)
+    url = "http://glyphwiki.org/wiki/Group:{}?action=edit".format(
+        urllib.quote(groupname.encode("utf-8")))
     f = urllib2.urlopen(url, timeout=60)
     data = f.read()
     f.close()
