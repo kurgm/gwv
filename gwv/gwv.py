@@ -49,13 +49,8 @@ def main(args=None):
     parser.add_argument("dumpfile")
     parser.add_argument("-o", "--out", help="File to write the output JSON to")
     parser.add_argument("-n", "--names", nargs="*", help="Names of validators")
-    parser.add_argument("-v", "--version", action="store_true",
-                        help="Names of validators")
+    parser.add_argument("-v", "--version", action="version", version=version)
     opts = parser.parse_args(args)
-
-    if opts.version:
-        print(version)
-        return
 
     outpath = opts.out or os.path.join(
         os.path.dirname(opts.dumpfile), "gwv_result.json")
