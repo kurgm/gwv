@@ -13,7 +13,7 @@ GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
   - [ ] `mj`
   - [x] `ucsalias`
   - [x] `dup`
-  - [ ] `naming`
+  - [x] `naming`
   - [x] `ids`
   - [x] `order`
   - [x] `delquote`

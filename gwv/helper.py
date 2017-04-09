@@ -5,6 +5,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import json
+import pkg_resources
 import re
 
 
@@ -106,3 +108,10 @@ class GWGroupLazyLoader(object):
         if self.data is None:
             self.load()
         return self.data
+
+
+def load_package_data(name):
+    filename = pkg_resources.resource_filename("gwv", name)
+    with open(filename) as f:
+        dat = json.load(f)
+    return dat
