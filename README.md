@@ -1,7 +1,26 @@
 # gwv
 GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
 
-## TODO
+## Installation
+
+```sh
+python2 setup.py install
+```
+
+
+## Usage
+
+```sh
+python2 -m gwv.gwv /path/to/dump_newest_only.txt
+```
+
+
+## License
+
+MIT
+
+
+## Roadmap
 
 - クソコードを（とりあえず）移植する
   - [x] `corner`
@@ -23,3 +42,4 @@ GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
   - [ ] `j`
   - [x] `width`
 - [ ] クソ性を低くする
+- [ ] テストを書く
