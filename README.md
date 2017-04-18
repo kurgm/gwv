@@ -29,7 +29,7 @@ MIT
   - [x] `skew`
   - [x] `donotuse`
   - [ ] `kosekitoki`
-  - [ ] `mj`
+  - [x] `mj`
   - [x] `ucsalias`
   - [x] `dup`
   - [x] `naming`

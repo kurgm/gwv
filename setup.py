@@ -12,7 +12,8 @@ from setuptools import setup
 class my_install(install):
 
     def _pre_install(self):
-        pass
+        import bdat.build_mj
+        bdat.build_mj.main()
 
     def run(self):
         self._pre_install()
@@ -22,7 +23,10 @@ class my_install(install):
 setup(
     name="gwv",
     version="1.0",
-    packages=find_packages(),
+    packages=find_packages(exclude=[
+        "*.tests", "*.tests.*", "tests.*", "tests",
+        "*.bdat", "*.bdat.*", "bdat.*", "bdat"
+    ]),
     entry_points={
         "console_scripts": [
             "gwv = gwv.gwv:main"
