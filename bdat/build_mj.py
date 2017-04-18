@@ -55,7 +55,7 @@ def parseMjxml(mjxml):
                 mjrow[4] = men + "-" + kuten2gl(int(ku), int(ten))
             elif ch.tag == ns + "JISX0212":
                 ku, ten = ch.text.split("-")
-                mjrow[5] = men + "-" + kuten2gl(int(ku), int(ten))
+                mjrow[5] = kuten2gl(int(ku), int(ten))
             elif ch.tag == ns + "UCS":
                 for gch in ch:
                     if gch.tag == ns + "対応するUCS":
