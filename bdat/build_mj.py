@@ -68,13 +68,15 @@ def parseMjxml(mjxml):
                     if gch.tag == ns + "実装したUCS":
                         mjrow[6].add(gch.text[2:].lower())  # strip "U+"
                     elif gch.tag in (ns + "実装したMoji_JohoIVS", ns + "実装したHanyo-DenshiIVS"):
+                        seq = gch.text.split("_")
+                        mjrow[6].add(seq[0].lower())
                         # XXXX_E01YY -> uxxxx-ue01yy
-                        mjrow[7].add("-".join("u" + cp.lower()
-                                              for cp in gch.text.split("_")))
+                        mjrow[7].add("-".join("u" + cp.lower() for cp in seq))
                     elif gch.tag == ns + "実装したSVS":
+                        seq = gch.text.split("_")
+                        mjrow[6].add(seq[0].lower())
                         # XXXX_FE0Y -> uxxxx-ufe0y
-                        mjrow[8] = "-".join("u" + cp.lower()
-                                            for cp in gch.text.split("_"))
+                        mjrow[8] = "-".join("u" + cp.lower() for cp in seq)
             elif ch.tag == ns + "登記統一文字番号":
                 mjrow[9] = ch.text
             elif ch.tag == ns + "大漢和":

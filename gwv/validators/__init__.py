@@ -20,6 +20,7 @@ all_validator_names = [
     "illegal",
     "skew",
     "donotuse",
+    "mj",
     "ucsalias",
     "dup",
     "naming",

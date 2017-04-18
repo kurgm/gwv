@@ -10,7 +10,7 @@ GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
   - [x] `skew`
   - [x] `donotuse`
   - [ ] `kosekitoki`
-  - [ ] `mj`
+  - [x] `mj`
   - [x] `ucsalias`
   - [x] `dup`
   - [x] `naming`
