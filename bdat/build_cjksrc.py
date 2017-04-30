@@ -51,7 +51,6 @@ def parseCJKSrc(cjksrctxt):
 
 
 def main():
-    log.setLevel("DEBUG")
     cjksrcjson_path = os.path.join(os.path.dirname(__file__),
                                    "..", "gwv", "data", CJKSRC_JSON_FILENAME)
     cjksrcjson_path = os.path.normpath(cjksrcjson_path)
