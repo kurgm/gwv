@@ -24,7 +24,7 @@ MIT
 
 - クソコードを（とりあえず）移植する
   - [x] `corner`
-  - [ ] `related`
+  - [x] `related`
   - [x] `illegal`
   - [x] `skew`
   - [x] `donotuse`

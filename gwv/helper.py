@@ -115,3 +115,46 @@ def load_package_data(name):
     with open(filename) as f:
         dat = json.load(f)
     return dat
+
+
+class CJKSources(object):
+
+    COLUMN_G = 0
+    COLUMN_T = 1
+    COLUMN_J = 2
+    COLUMN_K = 3
+    COLUMN_KP = 4
+    COLUMN_V = 5
+    COLUMN_H = 6
+    COLUMN_M = 7
+    COLUMN_U = 8
+    COLUMN_COMPATIBILITY_VARIANT = 9
+
+    region2index = {
+        "g": COLUMN_G,
+        "t": COLUMN_T,
+        "j": COLUMN_J,
+        "k": COLUMN_K,
+        "kp": COLUMN_KP,
+        "v": COLUMN_V,
+        "h": COLUMN_H,
+        "m": COLUMN_M,
+        "u": COLUMN_U,
+    }
+
+    def __init__(self):
+        self.data = None
+
+    def load(self):
+        self.data = load_package_data("data/cjksrc.json")
+
+    def get(self, ucs, column):
+        if self.data is None:
+            self.load()
+        record = self.data.get(ucs)
+        if record is None:
+            return None
+        return record[column]
+
+
+cjk_sources = CJKSources()
