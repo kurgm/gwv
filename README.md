@@ -39,7 +39,7 @@ MIT
   - [x] `delvar`
   - [x] `numexp`
   - [x] `mustrenew`
-  - [ ] `j`
+  - [x] `j`
   - [x] `width`
 - [ ] クソ性を低くする
 - [ ] テストを書く

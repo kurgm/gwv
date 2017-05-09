@@ -31,6 +31,7 @@ all_validator_names = [
     "delvar",
     "numexp",
     "mustrenew",
+    "j",
     "width",
 ]
 
