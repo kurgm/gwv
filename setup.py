@@ -15,6 +15,9 @@ class my_install(install):
         import bdat.build_mj
         bdat.build_mj.main()
 
+        import bdat.build_cjksrc
+        bdat.build_cjksrc.main()
+
     def run(self):
         self._pre_install()
         install.run(self)
