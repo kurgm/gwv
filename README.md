@@ -22,24 +22,6 @@ MIT
 
 ## Roadmap
 
-- クソコードを（とりあえず）移植する
-  - [x] `corner`
-  - [x] `related`
-  - [x] `illegal`
-  - [x] `skew`
-  - [x] `donotuse`
-  - [ ] `kosekitoki`
-  - [x] `mj`
-  - [x] `ucsalias`
-  - [x] `dup`
-  - [x] `naming`
-  - [x] `ids`
-  - [x] `order`
-  - [x] `delquote`
-  - [x] `delvar`
-  - [x] `numexp`
-  - [x] `mustrenew`
-  - [x] `j`
-  - [x] `width`
+- [x] クソコードを（とりあえず）移植する
 - [ ] クソ性を低くする
 - [ ] テストを書く

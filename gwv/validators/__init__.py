@@ -21,6 +21,7 @@ all_validator_names = [
     "illegal",
     "skew",
     "donotuse",
+    "kosekitoki",
     "mj",
     "ucsalias",
     "dup",
