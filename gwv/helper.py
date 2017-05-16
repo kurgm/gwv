@@ -111,8 +111,7 @@ class GWGroupLazyLoader(object):
 
 
 def load_package_data(name):
-    filename = pkg_resources.resource_filename("gwv", name)
-    with open(filename) as f:
+    with pkg_resources.resource_stream("gwv", name) as f:
         dat = json.load(f)
     return dat
 
