@@ -54,11 +54,13 @@ class Validator(ValidatorClass):
         if len(splitname) > 2:
             return False
 
-        if splitname[0] in ("extd", "extf"):
-            # TODO: sources of extd, extf- glyphs
-            # jsource = cjk_sources.get(name, cjk_sources.COLUMN_J)
-            # if jsource is None:
-            #     return checkJV(kage)
+        if splitname[0] == "extf":
+            jsource = cjk_sources.get(name, cjk_sources.COLUMN_J)
+            if jsource is None:
+                return checkJV(kage)
+            return False
+
+        if splitname[0] == "exte":
             return False
 
         # uXXXX, uXXXX-...
