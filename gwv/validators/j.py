@@ -61,8 +61,8 @@ class Validator(ValidatorClass):
             return False
 
         if splitname[0] == "irg2015":
-            # TODO: irg2015 sources
-            return False
+            # irg2015- glyphs have no J source
+            return checkJV(kage)
 
         # uXXXX, uXXXX-...
         ucs = splitname[0]

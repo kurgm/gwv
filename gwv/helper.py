@@ -157,6 +157,21 @@ class CJKSources(object):
         for seq, sources in extf.iteritems():
             self.data["extf-" + seq] = dict(zip(extf_columns, sources))
 
+        # irg2015- sources not needed yet
+
+        # irg2015 = load_package_data("data/irg2015.json")
+        # irg2015_columns = [
+        #     CJKSources.COLUMN_U,  # UTC source
+        #     CJKSources.COLUMN_T,
+        #     CJKSources.COLUMN_K,
+        #     CJKSources.COLUMN_U,  # SAT source
+        #     CJKSources.COLUMN_G,
+        # ]
+        # for seq, sources in irg2015.iteritems():
+        #     self.data["irg2015-" + seq] = d = dict(zip(irg2015_columns, sources))
+        #     if sources[0] and sources[3]:
+        #         d[CJKSources.COLUMN_U] = "{0[0]};{0[3]}".format(sources)
+
     def get(self, ucs, column):
         if self.data is None:
             self.load()
