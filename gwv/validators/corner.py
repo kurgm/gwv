@@ -9,6 +9,7 @@ import itertools
 import math
 import re
 
+from gwv.validators import filters as default_filters
 from gwv.validators import ValidatorClass
 
 
@@ -287,6 +288,7 @@ def is_ZH_corner(t, yoko, tate):
 
     return True
 
+
 TATE_CORNER_STYLES = (12, 13, 22, 23, 313, None, 413, None, None, None, 24)
 
 _re_gdesign = re.compile(r"^(u[0-9a-f]+-[gi](\d{2})?|zihai-\d{6})$")
@@ -301,8 +303,7 @@ _NO_ERROR = -2
 
 filters = {
     "alias": {False},
-    "category": {"ids", "togo", "togo-var", "gokan", "gokan-var", "cdp",
-                 "koseki-kanji", "toki", "ext", "other"}
+    "category": default_filters["category"] - {"user-owned", "ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji"}
 }
 
 

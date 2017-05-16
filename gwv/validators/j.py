@@ -60,7 +60,8 @@ class Validator(ValidatorClass):
                 return checkJV(kage)
             return False
 
-        if splitname[0] == "exte":
+        if splitname[0] == "irg2015":
+            # TODO: irg2015 sources
             return False
 
         # uXXXX, uXXXX-...
