@@ -13,7 +13,7 @@ def kageInt(s):
 
     KAGE Engine uses Math.floor to parse numbers in KAGE data.
     """
-    if isinstance(s, str):
+    if isinstance(s, (str, unicode)):
         s = s.strip()
         if s == "":
             return 0
