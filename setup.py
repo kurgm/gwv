@@ -30,7 +30,7 @@ setup(
         "*.tests", "*.tests.*", "tests.*", "tests",
         "*.bdat", "*.bdat.*", "bdat.*", "bdat"
     ]),
-    install_requires=[
+    setup_requires=[
         "xlrd"
     ],
     entry_points={
