@@ -73,7 +73,7 @@ class Validator(ValidatorClass):
             if firstBuhinType == "02":
                 return [2, fData[7]]  # 左右のIDSだが右部品が最初
             if not isComplicated and firstBuhinType not in ("01", "08") and aspect > 1.8:
-                return [6, [0, gdata[0]]]  # 左右のIDSだが最初の部品が横長の配置
+                return [6, [0, kage.lines[0].strdata]]  # 左右のIDSだが最初の部品が横長の配置
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
                 return [3, [fkline.line_number, fkline.strdata]]  # 左右のIDSだが左の字が最初でない
@@ -84,7 +84,7 @@ class Validator(ValidatorClass):
             if firstBuhinType in ("04", "14", "24"):
                 return [12, fData[7]]  # 上下のIDSだが下部品が最初
             if not isComplicated and firstBuhinType not in ("03", "09") and aspect < 0.65:
-                return [15, [0, gdata[0]]]  # 上下のIDSだが最初の部品が縦長の配置
+                return [15, [0, kage.lines[0].strdata]]  # 上下のIDSだが最初の部品が縦長の配置
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
                 return [13, [fkline.line_number, fkline.strdata]]  # 上下のIDSだが上の字が最初でない
