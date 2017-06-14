@@ -9,16 +9,13 @@ import math
 
 
 def kageInt(s):
-    """Imitates Math.floor in ECMAScript (returns an int).
+    """Imitates Math.floor(+s) in ECMAScript (returns an int).
 
     KAGE Engine uses Math.floor to parse numbers in KAGE data.
     """
-    if isinstance(s, (str, unicode)):
-        s = s.strip()
-        if s == "":
-            return 0
-    elif isinstance(s, float):
-        return int(math.floor(s))
+    s = s.strip()
+    if s == "":
+        return 0
     try:
         # decimal integer literal (may have leading 0 digits)
         return int(s)
