@@ -12,8 +12,12 @@ import mmap
 import os.path
 import shutil
 import tempfile
-import urllib
 import zipfile
+
+try:
+    from urllib import urlretrieve
+except ImportError:
+    from urllib.request import urlretrieve
 
 import xlrd
 
@@ -63,7 +67,7 @@ def main():
         return
 
     log.info("Downloading {}...".format(F2_ZIP_URL))
-    filename, headers = urllib.urlretrieve(F2_ZIP_URL)
+    filename, headers = urlretrieve(F2_ZIP_URL)
     log.info("Download completed")
 
     with tempfile.TemporaryFile() as f2xlsfile:
