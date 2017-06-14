@@ -11,8 +11,12 @@ import logging
 import os.path
 import shutil
 import tempfile
-import urllib
 import zipfile
+
+try:
+    from urllib import FancyURLopener
+except ImportError:
+    from urllib.request import FancyURLopener
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -37,6 +41,7 @@ def parseCJKSrc(cjksrctxt):
     ], range(10)))
 
     for line in cjksrctxt:
+        line = line.decode("utf-8")
         if not line.startswith("U+"):
             continue
         ucs, tag, val = line.rstrip().split("\t")
@@ -59,7 +64,7 @@ def main():
         return
 
     log.info("Downloading {}...".format(UCS_ZIP_URL))
-    opener = urllib.FancyURLopener()
+    opener = FancyURLopener()
     opener.addheader(
         "Cookie", "url_ok=/ittf/PubliclyAvailableStandards/c066791_IEC_10646_2014_Amd_2_2016_Electronic_inserts.zip")
     filename, headers = opener.retrieve(UCS_ZIP_URL)

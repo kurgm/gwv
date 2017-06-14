@@ -18,6 +18,12 @@ class my_install(install):
         import bdat.build_cjksrc
         bdat.build_cjksrc.main()
 
+        import bdat.build_extf
+        bdat.build_extf.main()
+
+        import bdat.build_irg2015
+        bdat.build_irg2015.main()
+
     def run(self):
         self._pre_install()
         install.run(self)

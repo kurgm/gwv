@@ -12,8 +12,12 @@ import mmap
 import os.path
 import shutil
 import tempfile
-import urllib
 import zipfile
+
+try:
+    from urllib import urlretrieve
+except ImportError:
+    from urllib.request import urlretrieve
 
 import xlrd
 
@@ -30,7 +34,7 @@ def parseIRG2015XLS(irg2015xls):
     bk = xlrd.open_workbook(file_contents=irg2015xls, on_demand=True)
     sh = bk.sheet_by_index(0)  # IRGN2179IRG_Working_Set2015v3.0
     rows = sh.get_rows()
-    rows.next()  # skip header row
+    next(rows)  # skip header row
     for row in rows:
         # Sequence Number
         assert row[0].ctype == xlrd.XL_CELL_TEXT
@@ -62,7 +66,7 @@ def main():
         return
 
     log.info("Downloading {}...".format(IRG2015_ZIP_URL))
-    filename, headers = urllib.urlretrieve(IRG2015_ZIP_URL)
+    filename, headers = urlretrieve(IRG2015_ZIP_URL)
     log.info("Download completed")
 
     with tempfile.TemporaryFile() as irg2015xlsfile:

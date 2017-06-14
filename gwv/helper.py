@@ -79,12 +79,16 @@ _re_gwlink = re.compile(r"\[\[(?:[^]]+\s)?([0-9a-z_-]+(?:@\d+)?)\]\]")
 
 
 def getGlyphsInGroup(groupname):
-    import urllib
-    import urllib2
+    try:
+        from urllib import quote
+        from urllib2 import urlopen
+    except ImportError:
+        from urllib.parse import quote
+        from urllib.request import urlopen
     url = "http://glyphwiki.org/wiki/Group:{}?action=edit".format(
-        urllib.quote(groupname.encode("utf-8")))
-    f = urllib2.urlopen(url, timeout=60)
-    data = f.read()
+        quote(groupname.encode("utf-8")))
+    f = urlopen(url, timeout=60)
+    data = f.read().decode("utf-8")
     f.close()
     s = _re_textarea.split(data)[1]
     return [m.group(1) for m in _re_gwlink.finditer(s)]
@@ -154,7 +158,8 @@ class CJKSources(object):
             CJKSources.COLUMN_U,  # SAT source
             CJKSources.COLUMN_K,
         ]
-        for seq, sources in extf.iteritems():
+        for seq in extf:
+            sources = extf[seq]
             self.data["extf-" + seq] = dict(zip(extf_columns, sources))
 
         # irg2015- sources not needed yet
@@ -167,7 +172,8 @@ class CJKSources(object):
         #     CJKSources.COLUMN_U,  # SAT source
         #     CJKSources.COLUMN_G,
         # ]
-        # for seq, sources in irg2015.iteritems():
+        # for seq in irg2015:
+        #     sources = irg2015[seq]
         #     self.data["irg2015-" + seq] = d = dict(zip(irg2015_columns, sources))
         #     if sources[0] and sources[3]:
         #         d[CJKSources.COLUMN_U] = "{0[0]};{0[3]}".format(sources)
