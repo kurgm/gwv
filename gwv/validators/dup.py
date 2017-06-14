@@ -126,7 +126,7 @@ class Validator(ValidatorClass):
                             tate1.t1 - tate1.t0, tate2.t1 - tate2.t0)
                     ]  # 縦
 
-        curve.sort(key=lambda (line, coords): coords[0])
+        curve.sort(key=lambda line_coords: line_coords[1][0])
         for (curve_1, curve_1_coords), (curve_2, curve_2_coords) in ineighbors(curve):
             if all(-3 <= curve_1_coords[j] - curve_2_coords[j] <= 3 for j in range(6)):
                 return [
