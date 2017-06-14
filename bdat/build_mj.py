@@ -29,7 +29,7 @@ def parseMjxml(mjxml):
     ns = "{urn:mojikiban:ipa:go:jp:mji}"
     mjdat = []
     mjit = iterparse(mjxml, events=("start", "end"))
-    ev, root = mjit.next()
+    ev, root = next(mjit)
     for ev, elem in mjit:
         if ev != "end" or elem.tag != ns + "MJ文字情報":
             continue

@@ -31,7 +31,7 @@ def parseF2XLS(f2xls):
     for sheet_num in [0, 1]:  # CJKF1v4.0, CJKF2v4.0
         sh = bk.sheet_by_index(sheet_num)
         rows = sh.get_rows()
-        rows.next()  # skip header row
+        next(rows)  # skip header row
         for row in rows:
             # CJK_F Seq. No.
             assert row[0].ctype == xlrd.XL_CELL_TEXT

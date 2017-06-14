@@ -30,7 +30,7 @@ def parseIRG2015XLS(irg2015xls):
     bk = xlrd.open_workbook(file_contents=irg2015xls, on_demand=True)
     sh = bk.sheet_by_index(0)  # IRGN2179IRG_Working_Set2015v3.0
     rows = sh.get_rows()
-    rows.next()  # skip header row
+    next(rows)  # skip header row
     for row in rows:
         # Sequence Number
         assert row[0].ctype == xlrd.XL_CELL_TEXT

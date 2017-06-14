@@ -54,9 +54,9 @@ def addLine(line, tate, yoko, x0, y0, x1, y1):
 
 def ineighbors(iterable):
     iterator = iter(iterable)
-    p = iterator.next()
+    p = next(iterator)
     while True:
-        n = iterator.next()
+        n = next(iterator)
         yield (p, n)
         p = n
 
