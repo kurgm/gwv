@@ -41,6 +41,7 @@ def parseCJKSrc(cjksrctxt):
     ], range(10)))
 
     for line in cjksrctxt:
+        line = line.decode("utf-8")
         if not line.startswith("U+"):
             continue
         ucs, tag, val = line.rstrip().split("\t")

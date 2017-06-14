@@ -88,7 +88,7 @@ def getGlyphsInGroup(groupname):
     url = "http://glyphwiki.org/wiki/Group:{}?action=edit".format(
         quote(groupname.encode("utf-8")))
     f = urlopen(url, timeout=60)
-    data = f.read()
+    data = f.read().decode("utf-8")
     f.close()
     s = _re_textarea.split(data)[1]
     return [m.group(1) for m in _re_gwlink.finditer(s)]
