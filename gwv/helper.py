@@ -154,7 +154,8 @@ class CJKSources(object):
             CJKSources.COLUMN_U,  # SAT source
             CJKSources.COLUMN_K,
         ]
-        for seq, sources in extf.iteritems():
+        for seq in extf:
+            sources = extf[seq]
             self.data["extf-" + seq] = dict(zip(extf_columns, sources))
 
         # irg2015- sources not needed yet
@@ -167,7 +168,8 @@ class CJKSources(object):
         #     CJKSources.COLUMN_U,  # SAT source
         #     CJKSources.COLUMN_G,
         # ]
-        # for seq, sources in irg2015.iteritems():
+        # for seq in irg2015:
+        #     sources = irg2015[seq]
         #     self.data["irg2015-" + seq] = d = dict(zip(irg2015_columns, sources))
         #     if sources[0] and sources[3]:
         #         d[CJKSources.COLUMN_U] = "{0[0]};{0[3]}".format(sources)
