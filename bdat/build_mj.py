@@ -105,10 +105,12 @@ def parseMjxml(mjxml):
     return mjdat
 
 
-def main():
-    mjjson_path = os.path.join(os.path.dirname(__file__),
-                               "..", "gwv", "data", MJ_JSON_FILENAME)
-    mjjson_path = os.path.normpath(mjjson_path)
+mjjson_path = os.path.join(os.path.dirname(__file__),
+                           "..", "gwv", "data", MJ_JSON_FILENAME)
+mjjson_path = os.path.normpath(mjjson_path)
+
+
+def main(mjjson_path=mjjson_path):
 
     if os.path.exists(mjjson_path):
         return
@@ -126,4 +128,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    if len(sys.argv) >= 2:
+        main(sys.argv[1])
+    else:
+        main()

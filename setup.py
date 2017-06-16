@@ -47,5 +47,6 @@ setup(
     cmdclass={'install': my_install},
     package_data={
         "gwv": ["data/*"],
-    }
+    },
+    test_suite="tests",
 )

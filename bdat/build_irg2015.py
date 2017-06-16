@@ -57,10 +57,12 @@ def parseIRG2015XLS(irg2015xls):
     return result
 
 
-def main():
-    irg2015json_path = os.path.join(os.path.dirname(__file__),
-                                    "..", "gwv", "data", IRG2015_JSON_FILENAME)
-    irg2015json_path = os.path.normpath(irg2015json_path)
+irg2015json_path = os.path.join(os.path.dirname(__file__),
+                                "..", "gwv", "data", IRG2015_JSON_FILENAME)
+irg2015json_path = os.path.normpath(irg2015json_path)
+
+
+def main(irg2015json_path=irg2015json_path):
 
     if os.path.exists(irg2015json_path):
         return
@@ -83,4 +85,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    if len(sys.argv) >= 2:
+        main(sys.argv[1])
+    else:
+        main()
