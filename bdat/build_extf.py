@@ -58,10 +58,12 @@ def parseF2XLS(f2xls):
     return result
 
 
-def main():
-    extfjson_path = os.path.join(os.path.dirname(__file__),
-                                 "..", "gwv", "data", EXTF_JSON_FILENAME)
-    extfjson_path = os.path.normpath(extfjson_path)
+extfjson_path = os.path.join(os.path.dirname(__file__),
+                             "..", "gwv", "data", EXTF_JSON_FILENAME)
+extfjson_path = os.path.normpath(extfjson_path)
+
+
+def main(extfjson_path=extfjson_path):
 
     if os.path.exists(extfjson_path):
         return
@@ -84,4 +86,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    if len(sys.argv) >= 2:
+        main(sys.argv[1])
+    else:
+        main()

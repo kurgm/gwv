@@ -55,10 +55,12 @@ def parseCJKSrc(cjksrctxt):
     return result
 
 
-def main():
-    cjksrcjson_path = os.path.join(os.path.dirname(__file__),
-                                   "..", "gwv", "data", CJKSRC_JSON_FILENAME)
-    cjksrcjson_path = os.path.normpath(cjksrcjson_path)
+cjksrcjson_path = os.path.join(os.path.dirname(__file__),
+                               "..", "gwv", "data", CJKSRC_JSON_FILENAME)
+cjksrcjson_path = os.path.normpath(cjksrcjson_path)
+
+
+def main(cjksrcjson_path=cjksrcjson_path):
 
     if os.path.exists(cjksrcjson_path):
         return
@@ -84,4 +86,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    if len(sys.argv) >= 2:
+        main(sys.argv[1])
+    else:
+        main()
