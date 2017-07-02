@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import re
 
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -18,7 +18,7 @@ filters = {
 _re_valid_chars = re.compile(r"^[\da-z_\:@-]+$")
 
 
-class Validator(ValidatorClass):
+class NumexpValidator(Validator):
 
     name = "numexp"
 
@@ -39,3 +39,6 @@ class Validator(ValidatorClass):
                 if str(numdata) != col:
                     return [3, [i, line]]  # 不正な数値の表現
         return False
+
+
+validator_class = NumexpValidator

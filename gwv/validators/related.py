@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 from gwv.helper import cjk_sources
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -16,7 +16,7 @@ filters = {
 }
 
 
-class Validator(ValidatorClass):
+class RelatedValidator(Validator):
 
     name = "related"
 
@@ -50,3 +50,6 @@ class Validator(ValidatorClass):
             return [1, expected_related]  # 関連字なし
 
         return False
+
+
+validator_class = RelatedValidator

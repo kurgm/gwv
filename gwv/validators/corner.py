@@ -10,7 +10,7 @@ import math
 import re
 
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 
 class Stroke(object):
@@ -307,7 +307,7 @@ filters = {
 }
 
 
-class Validator(ValidatorClass):
+class CornerValidator(Validator):
 
     name = "corner"
 
@@ -572,3 +572,6 @@ class Validator(ValidatorClass):
             return ["{:x}".format(result[0]), [result[1], glines[result[1]]], [result[2], glines[result[2]]]]
 
         return False
+
+
+validator_class = CornerValidator

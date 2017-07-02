@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import math
 
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {False},
@@ -61,7 +61,7 @@ def ineighbors(iterable):
         p = n
 
 
-class Validator(ValidatorClass):
+class DupValidator(Validator):
 
     name = "dup"
 
@@ -163,3 +163,6 @@ class Validator(ValidatorClass):
                     [buhinIchi1.line_number, buhinIchi1.strdata],
                     [buhinIchi2.line_number, buhinIchi2.strdata]
                 ]  # 部品位置
+
+
+validator_class = DupValidator

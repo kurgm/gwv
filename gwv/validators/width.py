@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import re
 
 from gwv.helper import GWGroupLazyLoader
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -64,7 +64,7 @@ buhinWidths = {
 }
 
 
-class Validator(ValidatorClass):
+class WidthValidator(Validator):
 
     name = "width"
 
@@ -121,3 +121,6 @@ class Validator(ValidatorClass):
         if (maxX <= 110 and minX < 90) is not (gWidth != 2):
             return [gWidth]
         return False
+
+
+validator_class = WidthValidator

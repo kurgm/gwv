@@ -80,7 +80,7 @@ filter_funcs = {
 }
 
 
-class ValidatorClass(object):
+class Validator(object):
 
     def __init__(self):
         self.results = {}

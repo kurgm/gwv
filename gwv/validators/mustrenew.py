@@ -6,7 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {False},
@@ -14,12 +14,12 @@ filters = {
 }
 
 
-class Validator(ValidatorClass):
+class MustrenewValidator(Validator):
 
     name = "mustrenew"
 
     def __init__(self, *args, **kwargs):
-        super(Validator, self).__init__(*args, **kwargs)
+        super(MustrenewValidator, self).__init__(*args, **kwargs)
         self.results["0"] = {}
         self.results["@"] = {}
 
@@ -47,3 +47,6 @@ class Validator(ValidatorClass):
             key: [[quoted] + val[quoted] for quoted in sorted(val.keys())]
             for key, val in self.results.items()
         }
+
+
+validator_class = MustrenewValidator

@@ -9,7 +9,7 @@ import math
 
 from gwv.helper import isYoko
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {False},
@@ -17,7 +17,7 @@ filters = {
 }
 
 
-class Validator(ValidatorClass):
+class SkewValidator(Validator):
 
     name = "skew"
 
@@ -75,4 +75,7 @@ class Validator(ValidatorClass):
             if key != "70":  # not 「縦払いの直線部分が横」
                 # 歪み角度が大きい順にソート
                 val.sort(key=lambda r: r[2], reverse=True)
-        return super(Validator, self).get_result()
+        return super(SkewValidator, self).get_result()
+
+
+validator_class = SkewValidator

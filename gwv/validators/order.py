@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import re
 
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {False},
@@ -20,7 +20,7 @@ _re_vars = re.compile(
     r"-([gtvhmi]|k[pv]?|us?|j[asv]?)?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
 
 
-class Validator(ValidatorClass):
+class OrderValidator(Validator):
 
     name = "order"
 
@@ -51,3 +51,6 @@ class Validator(ValidatorClass):
                     return [13, lG]  # 上部品が最後
                 if henka in ("05", "10", "11", "15"):
                     return [15, lG]  # 囲み外側部品が最初
+
+
+validator_class = OrderValidator

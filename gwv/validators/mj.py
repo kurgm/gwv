@@ -9,7 +9,7 @@ import re
 
 from gwv.helper import isTogoKanji
 from gwv.helper import load_package_data
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -183,7 +183,7 @@ def get_base(name, field):
     return name
 
 
-class Validator(ValidatorClass):
+class MjValidator(Validator):
 
     name = "mj"
 
@@ -239,3 +239,6 @@ class Validator(ValidatorClass):
                 # 関連字に related が設定されているが ucs_expected の間違い
                 return [1, related, list(ucs_expected)]
         return False
+
+
+validator_class = MjValidator
