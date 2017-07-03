@@ -429,7 +429,8 @@ class CornerValidator(Validator):
                                 errorNum = error_codes.VERTCONN_ON_TOPRIGHT  # 右上に接続型
                     if errorNum is not None:
                         if y.end_type == 0:
-                            errorNum = error_codes.OPEN_ON_HORICONN  # 接続(横)に開放型
+                            # 接続(横)に開放型
+                            errorNum = error_codes.OPEN_ON_HORICONN
                         Connection(t, y, 0, 2, errorNum)
 
                 if t.end_type in (0, 13, 313, 413, 23, 24, 32):
@@ -510,7 +511,8 @@ class CornerValidator(Validator):
                                 errorNum = error_codes.VERTCONN_ON_BOTTOMRIGHTHT  # 右下に接続型
                     if errorNum is not None:
                         if y.end_type == 0 and 0 <= xDif and errorNum != 0xa5:
-                            errorNum = error_codes.OPEN_ON_HORICONN  # 接続(横)に開放型
+                            # 接続(横)に開放型
+                            errorNum = error_codes.OPEN_ON_HORICONN
                         Connection(t, y, 2, 2, errorNum)
 
             for y in yoko_hori:
