@@ -11,6 +11,62 @@ import re
 
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    DISCONNECTED_TOPLEFT=0x00,  # 左上近い
+    DISCONNECTED_BOTTOMLEFT=0x11,  # 左下近い
+    DISCONNECTED_TOPRIGHT=0x22,  # 右上近い
+    DISCONNECTED_BOTTOMRIGHT=0x33,  # 右下近い
+    DISCONNECTED_BOTTOMLEFTZHOLD=0x44,  # 左下近い
+    DISCONNECTED_BOTTOMLEFTZHNEW=0x66,  # 左下近い
+    DISCONNECTED_HORICONN=0x77,  # 接続(横)近い
+    DISCONNECTED_VERTCONN=0x99,  # 接続(縦)近い
+    DISCONNECTED_BOTTOMRIGHTHT=0xAA,  # 右下H/T近い
+
+    TOPLEFT_ON_TOPRIGHT=0x20,  # 右上に左上型
+    TOPLEFT_ON_VERTCONN=0x90,  # 接続(縦)に左上型
+
+    BOTTOMLEFT_ON_BOTTOMRIGHT=0x31,  # 右下に左下型
+    BOTTOMLEFT_ON_BOTTOMLEFTZHOLD=0x41,  # 左下zh用旧に左下型
+    BOTTOMLEFT_ON_BOTTOMLEFTZHNEW=0x61,  # 左下zh用新に左下型
+    BOTTOMLEFT_ON_VERTCONN=0x91,  # 接続(縦)に左下型
+
+    TOPRIGHT_ON_TOPLEFT=0x02,  # 左上に右上型
+    TOPRIGHT_ON_VERTCONN=0x92,  # 接続(縦)に右上型
+
+    BOTTOMRIGHT_ON_BOTTOMLEFT=0x13,  # 左下に右下型
+    BOTTOMRIGHT_ON_VERTCONN=0x93,  # 接続(縦)に右下型
+
+    BOTTOMLEFTZHOLD_ON_BOTTOMLEFT=0x14,  # 左下に左下zh用旧型
+    BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT=0x34,  # 右下に左下zh用旧型
+    BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW=0x64,  # 左下zh用新に左下zh用旧型
+    BOTTOMLEFTZHOLD_ON_VERTCONN=0x94,  # 接続(縦)に左下zh用旧型
+
+    PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT=0xA5,  # 右下H/Tに擬似右下H/T型
+
+    BOTTOMLEFTZHNEW_ON_BOTTOMLEFT=0x16,  # 左下に左下zh用新型
+    BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT=0x36,  # 右下に左下zh用新型
+    BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD=0x46,  # 左下zh用旧に左下zh用新型
+    BOTTOMLEFTZHNEW_ON_VERTCONN=0x96,  # 接続(縦)に左下zh用新型
+
+    OPEN_ON_TOPLEFT=0x08,  # 左上に開放型
+    OPEN_ON_BOTTOMLEFT=0x18,  # 左下に開放型
+    OPEN_ON_TOPRIGHT=0x28,  # 右上に開放型
+    OPEN_ON_BOTTOMRIGHTHT=0x38,  # 右下に開放型
+    OPEN_ON_BOTTOMLEFTZHOLD=0x48,  # 左下zh用旧に開放型
+    OPEN_ON_HORICONN=0x78,  # 接続(横)に開放型
+    OPEN_ON_VERTCONN=0x98,  # 接続(縦)に開放型
+
+    VERTCONN_ON_TOPLEFT=0x09,  # 左上に接続型
+    VERTCONN_ON_BOTTOMLEFT=0x19,  # 左下に接続型
+    VERTCONN_ON_TOPRIGHT=0x29,  # 右上に接続型
+    VERTCONN_ON_BOTTOMRIGHTHT=0x39,  # 右下に接続型
+
+    BOTTOMRIGHTHT_ON_BOTTOMLEFT=0x1A,  # 左下に右下H/T
+    BOTTOMRIGHTHT_ON_VERTCONN=0x9A,  # 接続(縦)に右下H/T
+)
 
 
 class Stroke(object):
