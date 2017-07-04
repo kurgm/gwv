@@ -15,7 +15,7 @@ from gwv.validators import ErrorCodes
 
 
 error_codes = ErrorCodes(
-    DISCONNECTED_TOPLEFT="00",  # 左上近い
+    DISCONNECTED_TOPLEFT="0",  # 左上近い
     DISCONNECTED_BOTTOMLEFT="11",  # 左下近い
     DISCONNECTED_TOPRIGHT="22",  # 右上近い
     DISCONNECTED_BOTTOMRIGHT="33",  # 右下近い
@@ -33,7 +33,7 @@ error_codes = ErrorCodes(
     BOTTOMLEFT_ON_BOTTOMLEFTZHNEW="61",  # 左下zh用新に左下型
     BOTTOMLEFT_ON_VERTCONN="91",  # 接続(縦)に左下型
 
-    TOPRIGHT_ON_TOPLEFT="02",  # 左上に右上型
+    TOPRIGHT_ON_TOPLEFT="2",  # 左上に右上型
     TOPRIGHT_ON_VERTCONN="92",  # 接続(縦)に右上型
 
     BOTTOMRIGHT_ON_BOTTOMLEFT="13",  # 左下に右下型
@@ -51,7 +51,7 @@ error_codes = ErrorCodes(
     BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD="46",  # 左下zh用旧に左下zh用新型
     BOTTOMLEFTZHNEW_ON_VERTCONN="96",  # 接続(縦)に左下zh用新型
 
-    OPEN_ON_TOPLEFT="08",  # 左上に開放型
+    OPEN_ON_TOPLEFT="8",  # 左上に開放型
     OPEN_ON_BOTTOMLEFT="18",  # 左下に開放型
     OPEN_ON_TOPRIGHT="28",  # 右上に開放型
     OPEN_ON_BOTTOMRIGHTHT="38",  # 右下に開放型
@@ -59,7 +59,7 @@ error_codes = ErrorCodes(
     OPEN_ON_HORICONN="78",  # 接続(横)に開放型
     OPEN_ON_VERTCONN="98",  # 接続(縦)に開放型
 
-    VERTCONN_ON_TOPLEFT="09",  # 左上に接続型
+    VERTCONN_ON_TOPLEFT="9",  # 左上に接続型
     VERTCONN_ON_BOTTOMLEFT="19",  # 左下に接続型
     VERTCONN_ON_TOPRIGHT="29",  # 右上に接続型
     VERTCONN_ON_BOTTOMRIGHTHT="39",  # 右下に接続型
@@ -625,7 +625,7 @@ class CornerValidator(Validator):
             # 左下zh用の新旧よりその他の形状がおかしい接続を優先してエラーとする
             result = max(
                 results,
-                key=lambda r: 0 if r[0][0] == r[0][1] else 50 if r[0] in (
+                key=lambda r: 0 if int(r[0], 16) % 0x11 == 0 else 50 if r[0] in (
                     error_codes.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD,
                     error_codes.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW
                 ) else 100
