@@ -18,7 +18,7 @@ after_success:
 
 cache:
   - directories:
-    - cache
+    - gwv_data_cache
 
 before_cache:
   - if [ ! -d gwv_data_cache ]; then mkdir gwv_data_cache; fi
