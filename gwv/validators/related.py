@@ -13,11 +13,11 @@ from gwv.validators import ErrorCodes
 
 
 error_codes = ErrorCodes(
-    WRONG_RELATED=0,  # 間違った関連字
-    MISSING_RELATED=1,  # 関連字なし
-    ENTITY_NOT_FOUND=2,  # 実体が存在しない
-    WRONG_ENTITY_RELATED=10,  # 実体の関連字が違う
-    MISSING_ENTITY_RELATED=11,  # 実体が関連字なし
+    WRONG_RELATED="0",  # 間違った関連字
+    MISSING_RELATED="1",  # 関連字なし
+    ENTITY_NOT_FOUND="2",  # 実体が存在しない
+    WRONG_ENTITY_RELATED="10",  # 実体の関連字が違う
+    MISSING_ENTITY_RELATED="11",  # 実体が関連字なし
 )
 
 filters = {

@@ -13,22 +13,22 @@ from gwv.validators import ErrorCodes
 
 
 error_codes = ErrorCodes(
-    UNKNOWN_STROKE_TYPE=0,  # 未定義の筆画
-    TOO_FEW_COLUMNS=1,  # 列不足
-    TOO_MANY_NONZERO_COLUMNS=2,  # 列余分（非ゼロ）
-    TOO_MANY_ZERO_COLUMNS=3,  # 列余分（ゼロ値）
-    WRONG_NUMBER_OF_COLUMNS=4,  # 列数異常（99）
-    INVALID_DATA_0=5,  # 不正なデータ（0）
-    UNKNOWN_STROKE_FORM=6,  # 未定義の形状の組み合わせ
-    ALIAS_11_COLUMNS=7,  # エイリアスに11列
+    UNKNOWN_STROKE_TYPE="0",  # 未定義の筆画
+    TOO_FEW_COLUMNS="1",  # 列不足
+    TOO_MANY_NONZERO_COLUMNS="2",  # 列余分（非ゼロ）
+    TOO_MANY_ZERO_COLUMNS="3",  # 列余分（ゼロ値）
+    WRONG_NUMBER_OF_COLUMNS="4",  # 列数異常（99）
+    INVALID_DATA_0="5",  # 不正なデータ（0）
+    UNKNOWN_STROKE_FORM="6",  # 未定義の形状の組み合わせ
+    ALIAS_11_COLUMNS="7",  # エイリアスに11列
 
-    VERTCONN_IN_HORI_LINE=10,  # 横画に接続(縦)型
-    HORICONN_IN_VERT_LINE=11,  # 縦画に接続(横)型
-    HORIZONTAL_ORE_FIRST=30,  # 折れの前半が横
-    VERTICAL_ORE_LAST=31,  # 折れの後半が縦
-    HORIZONTAL_OTSU_FIRST=40,  # 乙の前半が横
-    LEFTWARD_OTSU_LAST=41,  # 乙の後半が左向き
-    BUHIN_ICHI=9,  # 部品位置
+    VERTCONN_IN_HORI_LINE="10",  # 横画に接続(縦)型
+    HORICONN_IN_VERT_LINE="11",  # 縦画に接続(横)型
+    HORIZONTAL_ORE_FIRST="30",  # 折れの前半が横
+    VERTICAL_ORE_LAST="31",  # 折れの後半が縦
+    HORIZONTAL_OTSU_FIRST="40",  # 乙の前半が横
+    LEFTWARD_OTSU_LAST="41",  # 乙の後半が左向き
+    BUHIN_ICHI="9",  # 部品位置
 )
 
 filters = {

@@ -15,57 +15,57 @@ from gwv.validators import ErrorCodes
 
 
 error_codes = ErrorCodes(
-    DISCONNECTED_TOPLEFT=0x00,  # 左上近い
-    DISCONNECTED_BOTTOMLEFT=0x11,  # 左下近い
-    DISCONNECTED_TOPRIGHT=0x22,  # 右上近い
-    DISCONNECTED_BOTTOMRIGHT=0x33,  # 右下近い
-    DISCONNECTED_BOTTOMLEFTZHOLD=0x44,  # 左下近い
-    DISCONNECTED_BOTTOMLEFTZHNEW=0x66,  # 左下近い
-    DISCONNECTED_HORICONN=0x77,  # 接続(横)近い
-    DISCONNECTED_VERTCONN=0x99,  # 接続(縦)近い
-    DISCONNECTED_BOTTOMRIGHTHT=0xAA,  # 右下H/T近い
+    DISCONNECTED_TOPLEFT="00",  # 左上近い
+    DISCONNECTED_BOTTOMLEFT="11",  # 左下近い
+    DISCONNECTED_TOPRIGHT="22",  # 右上近い
+    DISCONNECTED_BOTTOMRIGHT="33",  # 右下近い
+    DISCONNECTED_BOTTOMLEFTZHOLD="44",  # 左下近い
+    DISCONNECTED_BOTTOMLEFTZHNEW="66",  # 左下近い
+    DISCONNECTED_HORICONN="77",  # 接続(横)近い
+    DISCONNECTED_VERTCONN="99",  # 接続(縦)近い
+    DISCONNECTED_BOTTOMRIGHTHT="aa",  # 右下H/T近い
 
-    TOPLEFT_ON_TOPRIGHT=0x20,  # 右上に左上型
-    TOPLEFT_ON_VERTCONN=0x90,  # 接続(縦)に左上型
+    TOPLEFT_ON_TOPRIGHT="20",  # 右上に左上型
+    TOPLEFT_ON_VERTCONN="90",  # 接続(縦)に左上型
 
-    BOTTOMLEFT_ON_BOTTOMRIGHT=0x31,  # 右下に左下型
-    BOTTOMLEFT_ON_BOTTOMLEFTZHOLD=0x41,  # 左下zh用旧に左下型
-    BOTTOMLEFT_ON_BOTTOMLEFTZHNEW=0x61,  # 左下zh用新に左下型
-    BOTTOMLEFT_ON_VERTCONN=0x91,  # 接続(縦)に左下型
+    BOTTOMLEFT_ON_BOTTOMRIGHT="31",  # 右下に左下型
+    BOTTOMLEFT_ON_BOTTOMLEFTZHOLD="41",  # 左下zh用旧に左下型
+    BOTTOMLEFT_ON_BOTTOMLEFTZHNEW="61",  # 左下zh用新に左下型
+    BOTTOMLEFT_ON_VERTCONN="91",  # 接続(縦)に左下型
 
-    TOPRIGHT_ON_TOPLEFT=0x02,  # 左上に右上型
-    TOPRIGHT_ON_VERTCONN=0x92,  # 接続(縦)に右上型
+    TOPRIGHT_ON_TOPLEFT="02",  # 左上に右上型
+    TOPRIGHT_ON_VERTCONN="92",  # 接続(縦)に右上型
 
-    BOTTOMRIGHT_ON_BOTTOMLEFT=0x13,  # 左下に右下型
-    BOTTOMRIGHT_ON_VERTCONN=0x93,  # 接続(縦)に右下型
+    BOTTOMRIGHT_ON_BOTTOMLEFT="13",  # 左下に右下型
+    BOTTOMRIGHT_ON_VERTCONN="93",  # 接続(縦)に右下型
 
-    BOTTOMLEFTZHOLD_ON_BOTTOMLEFT=0x14,  # 左下に左下zh用旧型
-    BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT=0x34,  # 右下に左下zh用旧型
-    BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW=0x64,  # 左下zh用新に左下zh用旧型
-    BOTTOMLEFTZHOLD_ON_VERTCONN=0x94,  # 接続(縦)に左下zh用旧型
+    BOTTOMLEFTZHOLD_ON_BOTTOMLEFT="14",  # 左下に左下zh用旧型
+    BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT="34",  # 右下に左下zh用旧型
+    BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW="64",  # 左下zh用新に左下zh用旧型
+    BOTTOMLEFTZHOLD_ON_VERTCONN="94",  # 接続(縦)に左下zh用旧型
 
-    PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT=0xA5,  # 右下H/Tに擬似右下H/T型
+    PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT="a5",  # 右下H/Tに擬似右下H/T型
 
-    BOTTOMLEFTZHNEW_ON_BOTTOMLEFT=0x16,  # 左下に左下zh用新型
-    BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT=0x36,  # 右下に左下zh用新型
-    BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD=0x46,  # 左下zh用旧に左下zh用新型
-    BOTTOMLEFTZHNEW_ON_VERTCONN=0x96,  # 接続(縦)に左下zh用新型
+    BOTTOMLEFTZHNEW_ON_BOTTOMLEFT="16",  # 左下に左下zh用新型
+    BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT="36",  # 右下に左下zh用新型
+    BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD="46",  # 左下zh用旧に左下zh用新型
+    BOTTOMLEFTZHNEW_ON_VERTCONN="96",  # 接続(縦)に左下zh用新型
 
-    OPEN_ON_TOPLEFT=0x08,  # 左上に開放型
-    OPEN_ON_BOTTOMLEFT=0x18,  # 左下に開放型
-    OPEN_ON_TOPRIGHT=0x28,  # 右上に開放型
-    OPEN_ON_BOTTOMRIGHTHT=0x38,  # 右下に開放型
-    OPEN_ON_BOTTOMLEFTZHOLD=0x48,  # 左下zh用旧に開放型
-    OPEN_ON_HORICONN=0x78,  # 接続(横)に開放型
-    OPEN_ON_VERTCONN=0x98,  # 接続(縦)に開放型
+    OPEN_ON_TOPLEFT="08",  # 左上に開放型
+    OPEN_ON_BOTTOMLEFT="18",  # 左下に開放型
+    OPEN_ON_TOPRIGHT="28",  # 右上に開放型
+    OPEN_ON_BOTTOMRIGHTHT="38",  # 右下に開放型
+    OPEN_ON_BOTTOMLEFTZHOLD="48",  # 左下zh用旧に開放型
+    OPEN_ON_HORICONN="78",  # 接続(横)に開放型
+    OPEN_ON_VERTCONN="98",  # 接続(縦)に開放型
 
-    VERTCONN_ON_TOPLEFT=0x09,  # 左上に接続型
-    VERTCONN_ON_BOTTOMLEFT=0x19,  # 左下に接続型
-    VERTCONN_ON_TOPRIGHT=0x29,  # 右上に接続型
-    VERTCONN_ON_BOTTOMRIGHTHT=0x39,  # 右下に接続型
+    VERTCONN_ON_TOPLEFT="09",  # 左上に接続型
+    VERTCONN_ON_BOTTOMLEFT="19",  # 左下に接続型
+    VERTCONN_ON_TOPRIGHT="29",  # 右上に接続型
+    VERTCONN_ON_BOTTOMRIGHTHT="39",  # 右下に接続型
 
-    BOTTOMRIGHTHT_ON_BOTTOMLEFT=0x1A,  # 左下に右下H/T
-    BOTTOMRIGHTHT_ON_VERTCONN=0x9A,  # 接続(縦)に右下H/T
+    BOTTOMRIGHTHT_ON_BOTTOMLEFT="1a",  # 左下に右下H/T
+    BOTTOMRIGHTHT_ON_VERTCONN="9a",  # 接続(縦)に右下H/T
 )
 
 
@@ -528,8 +528,8 @@ class CornerValidator(Validator):
                     elif t.start_type != 0:
                         errorNum = error_codes.DISCONNECTED_VERTCONN  # 接続(縦)近い
                     if t.start_type is not None and t.start_type in TATE_CORNER_STYLES:
-                        errorNum = 0x90 + \
-                            TATE_CORNER_STYLES.index(t.start_type)  # 接続(縦)にカド型
+                        errorNum = "9{:x}".format(
+                            TATE_CORNER_STYLES.index(t.start_type))  # 接続(縦)にカド型
                     elif t.start_type == 0 and t.y0 <= y.y0 - 2:
                         errorNum = error_codes.OPEN_ON_VERTCONN  # 接続(縦)に開放型
                     if errorNum is not None:
@@ -546,8 +546,8 @@ class CornerValidator(Validator):
                     else:
                         errorNum = error_codes.DISCONNECTED_VERTCONN  # 接続(縦)近い
                     if t.end_type is not None and t.end_type in TATE_CORNER_STYLES:
-                        errorNum = 0x90 + \
-                            TATE_CORNER_STYLES.index(t.end_type)  # 接続(縦)にカド型
+                        errorNum = "9{:x}".format(
+                            TATE_CORNER_STYLES.index(t.end_type))  # 接続(縦)にカド型
                     elif t.end_type == 0:
                         errorNum = error_codes.OPEN_ON_VERTCONN  # 接続(縦)に開放型
                     Connection(t, y, 2, 1, errorNum)
@@ -625,9 +625,12 @@ class CornerValidator(Validator):
             # 左下zh用の新旧よりその他の形状がおかしい接続を優先してエラーとする
             result = max(
                 results,
-                key=lambda r: (100 if r[0] not in (error_codes.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD, error_codes.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW) else 50) if r[0] % 0x11 != 0 else 0)
+                key=lambda r: (100 if r[0] not in (
+                    error_codes.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD,
+                    error_codes.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW
+                ) else 50) if r[0][0] != r[0][1] else 0)
             glines = gdata.split("$")
-            return ["{:x}".format(result[0]), [result[1], glines[result[1]]], [result[2], glines[result[2]]]]
+            return [result[0], [result[1], glines[result[1]]], [result[2], glines[result[2]]]]
 
         return False
 
