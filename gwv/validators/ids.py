@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import re
 
 from gwv.kagedata import KageData
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -35,7 +35,7 @@ def indexOfFirstKanjiBuhinLine(sname, kage):
     return None
 
 
-class Validator(ValidatorClass):
+class IdsValidator(Validator):
 
     name = "ids"
 
@@ -101,3 +101,6 @@ class Validator(ValidatorClass):
                 return [33, [fkline.line_number, fkline.strdata]]  # 重ねIDSだがIDSで最初の字が最初でない
         else:
             return [90, sname[0]]  # 未定義のIDC
+
+
+validator_class = IdsValidator

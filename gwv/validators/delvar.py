@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 
 import re
 
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -19,7 +19,7 @@ _re_var_src_henka = re.compile(r"^(u[0-9a-f]{4,5}-([gtvhmi]|k[pv]?|us?|j[asv]?))
 _re_var_other = re.compile(r"^(u[0-9a-f]{4,5}|cdp[on]?-[0-9a-f]{4})-")
 
 
-class Validator(ValidatorClass):
+class DelvarValidator(Validator):
 
     name = "delvar"
 
@@ -31,3 +31,6 @@ class Validator(ValidatorClass):
             if prefix not in dump:
                 return [0, prefix]  # 派生元が無い
         return None
+
+
+validator_class = DelvarValidator

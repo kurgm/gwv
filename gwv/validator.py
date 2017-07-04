@@ -17,7 +17,7 @@ def validate(dump, validator_names=None, timestamp=None):
     for name in validator_names:
         __import__("gwv.validators." + name)
     validator_modules = [getattr(validators, name) for name in validator_names]
-    validator_instances = [mod.Validator() for mod in validator_modules]
+    validator_instances = [mod.validator_class() for mod in validator_modules]
 
     filternames = validators.filters.keys()
 

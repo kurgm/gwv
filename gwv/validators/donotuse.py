@@ -6,7 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {False},
@@ -14,7 +14,7 @@ filters = {
 }
 
 
-class Validator(ValidatorClass):
+class DonotuseValidator(Validator):
 
     name = "donotuse"
 
@@ -33,3 +33,6 @@ class Validator(ValidatorClass):
         if key not in self.results:
             self.results[key] = []
         self.results[key].append([glyphname] + error)
+
+
+validator_class = DonotuseValidator

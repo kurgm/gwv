@@ -9,8 +9,8 @@ from __future__ import unicode_literals
 import json
 import logging
 import os.path
-import shutil
-import tempfile
+# import shutil
+# import tempfile
 import zipfile
 
 try:
@@ -22,6 +22,7 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 
 UCS_ZIP_URL = "http://standards.iso.org/ittf/PubliclyAvailableStandards/c066791_IEC_10646_2014_Amd_2_2016_Electronic_inserts.zip"
+UNIHAN_ZIP_URL = "http://www.unicode.org/Public/10.0.0/ucd/Unihan.zip"
 CJKSRC_JSON_FILENAME = "cjksrc.json"
 
 
@@ -67,18 +68,21 @@ def main(cjksrcjson_path=cjksrcjson_path):
 
     log.info("Downloading {}...".format(UCS_ZIP_URL))
     opener = FancyURLopener()
-    opener.addheader(
-        "Cookie", "url_ok=/ittf/PubliclyAvailableStandards/c066791_IEC_10646_2014_Amd_2_2016_Electronic_inserts.zip")
-    filename, headers = opener.retrieve(UCS_ZIP_URL)
+    # opener.addheader(
+    #     "Cookie", "url_ok=/ittf/PubliclyAvailableStandards/c066791_IEC_10646_2014_Amd_2_2016_Electronic_inserts.zip")
+    # filename, headers = opener.retrieve(UCS_ZIP_URL)
+    filename, headers = opener.retrieve(UNIHAN_ZIP_URL)
     log.info("Download completed")
 
-    with tempfile.TemporaryFile() as ucszipfile_seekable:
-        with zipfile.ZipFile(filename) as isozip:
-            with isozip.open("C066791e_Electronic_inserts.zip") as ucszipfile:
-                shutil.copyfileobj(ucszipfile, ucszipfile_seekable)
+    # with tempfile.TemporaryFile() as ucszipfile_seekable:
+    #     with zipfile.ZipFile(filename) as isozip:
+    #         with isozip.open("C066791e_Electronic_inserts.zip") as ucszipfile:
+    #             shutil.copyfileobj(ucszipfile, ucszipfile_seekable)
 
-        with zipfile.ZipFile(ucszipfile_seekable) as ucszip:
-            with ucszip.open("CJKSrc.txt") as cjksrctxt:
+    #     with zipfile.ZipFile(ucszipfile_seekable) as ucszip:
+    #         with ucszip.open("CJKSrc.txt") as cjksrctxt:
+    with zipfile.ZipFile(filename) as unihanzip:
+        with unihanzip.open("Unihan_IRGSources.txt") as cjksrctxt:
                 cjksrc = parseCJKSrc(cjksrctxt)
 
     with open(cjksrcjson_path, "w") as cjksrcjson_file:

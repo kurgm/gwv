@@ -6,7 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from gwv.kagedata import KageData
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -14,7 +14,7 @@ filters = {
 }
 
 
-class Validator(ValidatorClass):
+class KosekitokiValidator(Validator):
 
     name = "kosekitoki"
 
@@ -47,3 +47,6 @@ class Validator(ValidatorClass):
                     # koseki-xxxxx0と異なる実体のエイリアス
                     return [2, entity, koseki_entity]
         return False
+
+
+validator_class = KosekitokiValidator

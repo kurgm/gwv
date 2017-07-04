@@ -80,7 +80,7 @@ filter_funcs = {
 }
 
 
-class ValidatorClass(object):
+class Validator(object):
 
     def __init__(self):
         self.results = {}
@@ -104,3 +104,17 @@ class ValidatorClass(object):
 
     def get_result(self):
         return self.results
+
+
+class ErrorCodes(object):
+
+    def __init__(self, **namemap):
+        self._map = namemap
+        self._invmap = {v: k for k, v in namemap.items()}
+        assert len(self._map) == len(self._invmap)
+
+    def __getattr__(self, name):
+        return self._map[name]
+
+    def __getitem__(self, key):
+        return self._invmap[key]

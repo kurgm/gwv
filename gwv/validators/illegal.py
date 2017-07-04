@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 from gwv.helper import isKanji
 from gwv.helper import isYoko
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -48,7 +48,7 @@ datalens = {
 }
 
 
-class Validator(ValidatorClass):
+class IllegalValidator(Validator):
 
     name = "illegal"
 
@@ -117,4 +117,7 @@ class Validator(ValidatorClass):
     def get_result(self):
         for val in self.results.values():
             val.sort(key=lambda r: r[1])
-        return super(Validator, self).get_result()
+        return super(IllegalValidator, self).get_result()
+
+
+validator_class = IllegalValidator

@@ -6,7 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -14,7 +14,7 @@ filters = {
 }
 
 
-class Validator(ValidatorClass):
+class DelquoteValidator(Validator):
 
     name = "delquote"
 
@@ -22,3 +22,6 @@ class Validator(ValidatorClass):
         for line in kage.lines:
             if line.data[0] == 99 and line.data[7].split("@")[0] not in dump:
                 return [0, line.data[7]]  # 無い部品を引用している
+
+
+validator_class = DelquoteValidator

@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 
 import re
 
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True},
@@ -20,7 +20,7 @@ _re_ucs_ = re.compile(r"^u[\da-f]+(-|$)")
 _re_ids = re.compile(r"^u2ff.-")
 
 
-class Validator(ValidatorClass):
+class UcsaliasValidator(Validator):
 
     name = "ucsalias"
 
@@ -61,3 +61,6 @@ class Validator(ValidatorClass):
             if s_entity[1] == "itaiji":
                 return [21, entity]  # uxxxx が uxxxx-itaiji-xxx の別名
         return False
+
+
+validator_class = UcsaliasValidator

@@ -11,7 +11,7 @@ from gwv.helper import cjk_sources
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
 from gwv.kagedata import KageData
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -45,7 +45,7 @@ source_separation = GWGroupLazyLoader("原規格分離")
 _re_region_opthenka = re.compile(r"^([gtvhmi]|k[pv]?|us?|j[asv]?)(\d{2})?$")
 
 
-class Validator(ValidatorClass):
+class JValidator(Validator):
 
     name = "j"
 
@@ -134,3 +134,6 @@ class Validator(ValidatorClass):
                 entity_kage = kage
             return checkJV(entity_kage)
         return False
+
+
+validator_class = JValidator

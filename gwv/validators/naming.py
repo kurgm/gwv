@@ -10,7 +10,7 @@ import re
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
 from gwv.validators import filters as default_filters
-from gwv.validators import ValidatorClass
+from gwv.validators import Validator
 
 filters = {
     "alias": {True, False},
@@ -63,7 +63,7 @@ _re_ids_kanji = re.compile(r"２-漢-漢|３-漢-漢-漢")
 _re_ucs = re.compile(r"(^|-)(u2?[\da-f]{4})(?=-|$)")
 
 
-class Validator(ValidatorClass):
+class NamingValidator(Validator):
 
     name = "naming"
 
@@ -123,3 +123,6 @@ class Validator(ValidatorClass):
         if not isVar and not isHenka and rules["rule-novar-nohenka"].match(name):
             return False
         return [0]  # 命名規則違反
+
+
+validator_class = NamingValidator
