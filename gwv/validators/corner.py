@@ -465,7 +465,7 @@ class CornerValidator(Validator):
                                 errorNum = error_codes.BOTTOMRIGHT_ON_BOTTOMLEFT  # 左下に右下型
                         elif t.end_type == 24:
                             if -6 <= yDif <= 4:
-                                errorNum = 0x1a  # 左下に右下H/T型
+                                errorNum = error_codes.BOTTOMRIGHTHT_ON_BOTTOMLEFT  # 左下に右下H/T型
                         elif t.end_type == 0:
                             if -19 <= yDif <= -2:
                                 errorNum = error_codes.OPEN_ON_BOTTOMLEFT  # 左下に開放型
@@ -482,7 +482,7 @@ class CornerValidator(Validator):
                     xDif = y.x1 - t.x1
                     yDif = y.y1 - t.y1
                     if y.end_type == 0 and t.end_type == 32 and 6 <= xDif <= 18 and 0 <= yDif <= 8:
-                        errorNum = 0xa5  # 右下H/Tに擬似右下H/T型
+                        errorNum = error_codes.PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT  # 右下H/Tに擬似右下H/T型
                     elif y.end_type != _STYLE_NO_END and -8 <= xDif <= 8:
                         if t.end_type == 13:
                             if -2 <= yDif <= 4:
@@ -502,7 +502,7 @@ class CornerValidator(Validator):
                             if 0 == xDif == yDif:
                                 errorNum = _NO_ERROR
                             elif -6 <= yDif <= 4:
-                                errorNum = 0xaa  # 右下H/T近い
+                                errorNum = error_codes.DISCONNECTED_BOTTOMRIGHTHT  # 右下H/T近い
                         elif t.end_type == 0:
                             if -19 <= yDif <= -2:
                                 errorNum = error_codes.OPEN_ON_BOTTOMRIGHTHT  # 右下に開放型
@@ -510,7 +510,7 @@ class CornerValidator(Validator):
                             if -19 <= yDif <= 0:
                                 errorNum = error_codes.VERTCONN_ON_BOTTOMRIGHTHT  # 右下に接続型
                     if errorNum is not None:
-                        if y.end_type == 0 and 0 <= xDif and errorNum != 0xa5:
+                        if y.end_type == 0 and 0 <= xDif and errorNum != error_codes.PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT:
                             # 接続(横)に開放型
                             errorNum = error_codes.OPEN_ON_HORICONN
                         Connection(t, y, 2, 2, errorNum)
