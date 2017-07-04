@@ -9,6 +9,16 @@ import re
 
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    BLANK_LINE="0",  # 空行
+    INVALID_CHAR="1",  # 不正な文字
+    NOT_AN_INT="2",  # 整数として解釈できない
+    NONNORMALIZED_NUMBER_EXPRESSION="3",  # 不正な数値の表現
+)
+
 
 filters = {
     "alias": {True, False},
@@ -25,9 +35,9 @@ class NumexpValidator(Validator):
     def is_invalid(self, name, related, kage, gdata, dump):
         for i, line in enumerate(gdata.split("$")):
             if line == "":
-                return [0, [i, line]]  # 空行
+                return [error_codes.BLANK_LINE, [i, line]]  # 空行
             if not _re_valid_chars.match(line):
-                return [1, [i, line]]  # 不正な文字
+                return [error_codes.INVALID_CHAR, [i, line]]  # 不正な文字
             data = line.split(":")
             for j, col in enumerate(data):
                 if j == 7 and data[0] == "99":
@@ -35,9 +45,10 @@ class NumexpValidator(Validator):
                 try:
                     numdata = int(col)
                 except ValueError:
-                    return [2, [i, line]]  # 整数として解釈できない
+                    return [error_codes.NOT_AN_INT, [i, line]]  # 整数として解釈できない
                 if str(numdata) != col:
-                    return [3, [i, line]]  # 不正な数値の表現
+                    # 不正な数値の表現
+                    return [error_codes.NONNORMALIZED_NUMBER_EXPRESSION, [i, line]]
         return False
 
 
