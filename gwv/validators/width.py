@@ -9,6 +9,15 @@ import re
 
 from gwv.helper import GWGroupLazyLoader
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    INCORRECT_NONSPACINGGLYPHS_HALFWIDTH="0",  # グループ:NonSpacingGlyphs-Halfwidthに含まれているが全角
+    INCORRECT_HALFWIDTHGLYPHS="1",  # グループ:HalfwidthGlyphsに含まれているが全角
+    INCORRECT_FULLWIDTHGLYPHS="2",  # 半角だがグループ:HalfwidthGlyphsに含まれていない
+)
+
 
 filters = {
     "alias": {True, False},
@@ -119,7 +128,7 @@ class WidthValidator(Validator):
             return False
         gWidth = getDWidth(name)
         if (maxX <= 110 and minX < 90) is not (gWidth != 2):
-            return [gWidth]
+            return [str(gWidth)]
         return False
 
 
