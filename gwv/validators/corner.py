@@ -625,10 +625,11 @@ class CornerValidator(Validator):
             # 左下zh用の新旧よりその他の形状がおかしい接続を優先してエラーとする
             result = max(
                 results,
-                key=lambda r: (100 if r[0] not in (
+                key=lambda r: 0 if r[0][0] == r[0][1] else 50 if r[0] in (
                     error_codes.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD,
                     error_codes.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW
-                ) else 50) if r[0][0] != r[0][1] else 0)
+                ) else 100
+            )
             glines = gdata.split("$")
             return [result[0], [result[1], glines[result[1]]], [result[2], glines[result[2]]]]
 
