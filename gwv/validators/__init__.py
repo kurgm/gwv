@@ -118,3 +118,6 @@ class ErrorCodes(object):
 
     def __getitem__(self, key):
         return self._invmap[key]
+
+    def __contains__(self, key):
+        return key in self._invmap
