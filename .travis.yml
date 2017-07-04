@@ -5,7 +5,7 @@ python:
   - "3.6"
 
 install:
-  - if [ -d gwv_data_cache ]; then mv gwv_data_cache/* gwv/data/; fi
+  - if [ -d gwv_data_cache ]; then ls gwv_data_cache/; mv gwv_data_cache/* gwv/data/; fi
   - python setup.py install
   - pip install coverage
   - pip install codecov
