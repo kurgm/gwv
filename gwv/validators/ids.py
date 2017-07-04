@@ -107,7 +107,7 @@ class IdsValidator(Validator):
         elif sname[0] in ("u2ff4", "u2ff5", "u2ff6", "u2ff7", "u2ff8", "u2ff9", "u2ffa"):
             # [-05] + [-06]
             if firstBuhinType in ("02", "06", "07"):
-                return [error_codes.OUTER_PART_NOT_FIRST_IN_SURROUND_IDS, fData[7]]  # 囲むIDSだが内側部品が最初
+                return [error_codes.FIRST_PART_INNER_IN_SURROUND_IDS, fData[7]]  # 囲むIDSだが内側部品が最初
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
                 return [error_codes.OUTER_PART_NOT_FIRST_IN_SURROUND_IDS, [fkline.line_number, fkline.strdata]]  # 囲みIDSだが外の字が最初でない
