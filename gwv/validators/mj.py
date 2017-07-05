@@ -10,6 +10,16 @@ import re
 from gwv.helper import isTogoKanji
 from gwv.helper import load_package_data
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    WRONG_ENTITY="0",  # entity_name のエイリアスになっているが entity_expected のエイリアスの間違い
+    WRONG_RELATED="1",  # 関連字に related が設定されているが ucs_expected の間違い
+    RELATED_UNSET="2",  # 関連字未設定であるが ucs_expected である
+    UNDEFINED_MJ="3",  # 欠番のMJ
+)
+
 
 filters = {
     "alias": {True, False},
@@ -195,7 +205,7 @@ class MjValidator(Validator):
         indices = mjtable.search(field, key)
         if not indices:
             if field == MJTable.FIELD_JMJ and key < "090000":  # 変体仮名でない
-                return [3]  # 欠番のMJ
+                return [error_codes.UNDEFINED_MJ]  # 欠番のMJ
             return False
 
         if kage.isAlias() and not re.compile(r"-itaiji-\d{3}$").search(name):
@@ -218,7 +228,7 @@ class MjValidator(Validator):
 
                     if expected_from_entity and base not in expected_from_entity:
                         # entity_name のエイリアスになっているが entity_expected のエイリアスの間違い
-                        return [0, entity_name, list(entity_expected)]
+                        return [error_codes.WRONG_ENTITY, entity_name, list(entity_expected)]
 
         ucs_expected = set()
         for idx in indices:
@@ -234,10 +244,10 @@ class MjValidator(Validator):
                 related = dump.get(gdata[19:], ("u3013", ))[0]
             if related == "u3013":
                 # 関連字未設定であるが ucs_expected である
-                return [2, None, list(ucs_expected)]
+                return [error_codes.RELATED_UNSET, None, list(ucs_expected)]
             elif related not in ucs_expected:
                 # 関連字に related が設定されているが ucs_expected の間違い
-                return [1, related, list(ucs_expected)]
+                return [error_codes.WRONG_RELATED, related, list(ucs_expected)]
         return False
 
 

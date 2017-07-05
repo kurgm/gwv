@@ -11,6 +11,16 @@ from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    NAMING_RULE_VIOLATION="0",  # 命名規則違反
+    INVALID_IDS="1",  # 不正なIDS
+    PROHIBITED_GLYPH_NAME="2",  # 禁止されたグリフ名
+    ENCODED_CDP_IN_IDS="3",  # UCSで符号化済みのCDP外字
+)
+
 
 filters = {
     "alias": {True, False},
@@ -78,14 +88,16 @@ class NamingValidator(Validator):
             isHenka = True
 
         if rules["dont-create"].match(name):
-            return [2]  # 禁止されたグリフ名
+            return [error_codes.PROHIBITED_GLYPH_NAME]  # 禁止されたグリフ名
         if _re_gl_glyph.match(name):
             if not _re_valid_gl.match(name[-4:]):
-                return [2]  # 禁止されたグリフ名（不正なGL領域の番号）
+                # 禁止されたグリフ名（不正なGL領域の番号）
+                return [error_codes.PROHIBITED_GLYPH_NAME]
         else:
             for m in _re_cdp.finditer(name):
                 if not _re_valid_cdp.match(m.group(3)):
-                    return [2]  # 禁止されたグリフ名（不正なCDP番号）
+                    # 禁止されたグリフ名（不正なCDP番号）
+                    return [error_codes.PROHIBITED_GLYPH_NAME]
 
         if _re_ids_head.match(name):
             idsReplacedName = name
@@ -96,7 +108,7 @@ class NamingValidator(Validator):
             while _re_ids_kanji.search(idsReplacedName):
                 idsReplacedName = _re_ids_kanji.sub("漢", idsReplacedName)
             if idsReplacedName != "漢":
-                return [1, idsReplacedName]  # 不正なIDS
+                return [error_codes.INVALID_IDS, idsReplacedName]  # 不正なIDS
 
             for m in _re_cdp.finditer(name):
                 cdp = m.group(1)
@@ -104,14 +116,15 @@ class NamingValidator(Validator):
                 if cdpv and cdp not in cdp_dict:
                     cdp = "cdp-" + cdp[-4:]
                 if cdp in cdp_dict:
-                    return [3, cdp, cdp_dict[cdp]]  # UCSで符号化済みのCDP外字
+                    # UCSで符号化済みのCDP外字
+                    return [error_codes.ENCODED_CDP_IN_IDS, cdp, cdp_dict[cdp]]
 
             for m in _re_ucs.finditer(name):
                 ucs = m.group(2)
                 if ucs == "u3013":
-                    return [1, idsReplacedName]  # 〓
+                    return [error_codes.INVALID_IDS, idsReplacedName]  # 〓
                 if "ue000" <= ucs <= "uf8ff":
-                    return [1, idsReplacedName]  # 私用領域
+                    return [error_codes.INVALID_IDS, idsReplacedName]  # 私用領域
             return False
 
         if rules["rule"].match(name):
@@ -122,7 +135,7 @@ class NamingValidator(Validator):
             return False
         if not isVar and not isHenka and rules["rule-novar-nohenka"].match(name):
             return False
-        return [0]  # 命名規則違反
+        return [error_codes.NAMING_RULE_VIOLATION]  # 命名規則違反
 
 
 validator_class = NamingValidator

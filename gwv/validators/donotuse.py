@@ -7,6 +7,13 @@ from __future__ import unicode_literals
 
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    DO_NOT_USE="0",  # do-not-use が引用されている
+)
+
 
 filters = {
     "alias": {False},
@@ -26,13 +33,9 @@ class DonotuseValidator(Validator):
             r = dump.get(line.data[7].split("@")[0])
             if r and "do-not-use" in r[1]:
                 quotings.append(line.data[7])
-        return quotings or False
-
-    def record(self, glyphname, error):
-        key = "0"
-        if key not in self.results:
-            self.results[key] = []
-        self.results[key].append([glyphname] + error)
+        if quotings:
+            return [error_codes.DO_NOT_USE] + quotings
+        return False
 
 
 validator_class = DonotuseValidator

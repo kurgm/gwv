@@ -9,6 +9,18 @@ import math
 
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    HORILINE="10",  # 横
+    VERTLINE="11",  # 縦
+    CURVE="2",  # 曲線
+    CCURVE="3",  # 複曲線
+    PART="99",  # 部品
+    PARTPOS="9",  # 部品位置
+)
+
 
 filters = {
     "alias": {False},
@@ -103,7 +115,7 @@ class DupValidator(Validator):
                     continue
                 if yoko2.t0 <= yoko1.t1 and yoko1.t0 <= yoko2.t1:
                     return [
-                        10,
+                        error_codes.HORILINE,
                         [yoko1.line.line_number, yoko1.line.strdata],
                         [yoko2.line.line_number, yoko2.line.strdata],
                         min(yoko1.t1 - yoko2.t0, yoko2.t1 - yoko1.t0,
@@ -119,7 +131,7 @@ class DupValidator(Validator):
                     continue
                 if tate2.t0 < tate1.t1 and tate1.t0 < tate2.t1:
                     return [
-                        11,
+                        error_codes.VERTLINE,
                         [tate1.line.line_number, tate1.line.strdata],
                         [tate2.line.line_number, tate2.line.strdata],
                         min(tate1.t1 - tate2.t0, tate2.t1 - tate1.t0,
@@ -130,7 +142,7 @@ class DupValidator(Validator):
         for (curve_1, curve_1_coords), (curve_2, curve_2_coords) in ineighbors(curve):
             if all(-3 <= curve_1_coords[j] - curve_2_coords[j] <= 3 for j in range(6)):
                 return [
-                    2,
+                    error_codes.CURVE,
                     [curve_1.line_number, curve_1.strdata],
                     [curve_2.line_number, curve_2.strdata]
                 ]  # 曲線
@@ -139,7 +151,7 @@ class DupValidator(Validator):
         for curve21, curve22 in ineighbors(curve2):
             if all(-3 <= curve21.data[j] - curve22.data[j] <= 3 for j in range(3, 11)):
                 return [
-                    3,
+                    error_codes.CCURVE,
                     [curve21.line_number, curve21.strdata],
                     [curve22.line_number, curve22.strdata]
                 ]  # 複曲線
@@ -150,7 +162,7 @@ class DupValidator(Validator):
                 continue
             if all(-3 <= buhin1.data[j] - buhin2.data[j] <= 3 for j in range(3, 7)):
                 return [
-                    99,
+                    error_codes.PART,
                     [buhin1.line_number, buhin1.strdata],
                     [buhin2.line_number, buhin2.strdata]
                 ]  # 部品
@@ -159,7 +171,7 @@ class DupValidator(Validator):
         for buhinIchi1, buhinIchi2 in ineighbors(buhinIchi):
             if all(-3 <= buhinIchi1.data[j] - buhinIchi2.data[j] <= 3 for j in range(3, 7)):
                 return [
-                    9,
+                    error_codes.PARTPOS,
                     [buhinIchi1.line_number, buhinIchi1.strdata],
                     [buhinIchi2.line_number, buhinIchi2.strdata]
                 ]  # 部品位置
