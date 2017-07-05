@@ -12,6 +12,19 @@ from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
 from gwv.kagedata import KageData
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    J_NOMARK_DIFFERENT="0",  # uxxxx-j, ja, jv (の実体)と無印(の実体)が違う
+    J_JV_COEXISTENT="1",  # uxxxx-j(a) と jv が共存している
+    NONJV_PART="2",  # -jvに使わない字形の部品が使用されている
+    JV_HAS_JSOURCE="30",  # Jソースがあるのにjv
+    KV_HAS_KSOURCE="31",  # Kソースがあるのにkv
+    NO_SOURCE="4",  # ソースが存在しない地域指定
+    JV_SOURCE_SEPARATION="5",  # 原規格分離-jv
+)
+
 
 filters = {
     "alias": {True, False},
@@ -36,7 +49,7 @@ def checkJV(kage):
     for part in used_parts:
         if part in jv_no_use_part_replacement:
             # -jvに使わない字形の部品が使用されている
-            return [2, part, jv_no_use_part_replacement[part]]
+            return [error_codes.NONJV_PART, part, jv_no_use_part_replacement[part]]
     return False
 
 
@@ -82,21 +95,21 @@ class JValidator(Validator):
         # Check sources
         if region == "jv":
             if jsource is not None:
-                return [30, jsource]  # Jソースがあるのにjv
+                return [error_codes.JV_HAS_JSOURCE, jsource]  # Jソースがあるのにjv
             if ucs in source_separation.get_data():
-                return [5]  # 原規格分離-jv
+                return [error_codes.JV_SOURCE_SEPARATION]  # 原規格分離-jv
         elif region == "kv":
             ksource = cjk_sources.get(ucs, cjk_sources.COLUMN_K)
             if ksource is not None:
-                return [31, ksource]  # Kソースがあるのにkv
+                return [error_codes.KV_HAS_KSOURCE, ksource]  # Kソースがあるのにkv
         else:  # not 仮想字形
             if region in ("j", "ja"):
                 if jsource is None:
-                    return [4]  # ソースが存在しない地域指定
+                    return [error_codes.NO_SOURCE]  # ソースが存在しない地域指定
             elif region in cjk_sources.region2index:
                 source = cjk_sources.get(ucs, cjk_sources.region2index[region])
                 if source is None:
-                    return [4]  # ソースが存在しない地域指定
+                    return [error_codes.NO_SOURCE]  # ソースが存在しない地域指定
             else:  # -i, -us, -js
                 return False
 
@@ -117,14 +130,17 @@ class JValidator(Validator):
             nomark_entity_name = ucs
 
         if entity_name != nomark_entity_name and not isHenka:
-            return [0]  # uxxxx-j, ja, jv (の実体)と無印(の実体)が違う
+            # uxxxx-j, ja, jv (の実体)と無印(の実体)が違う
+            return [error_codes.J_NOMARK_DIFFERENT]
 
         if region != "jv":
             return False
         if (ucs + "-j") in dump:
-            return [1, "j"]   # uxxxx-jv と uxxxx-j  が共存している
+            # uxxxx-jv と uxxxx-j  が共存している
+            return [error_codes.J_JV_COEXISTENT, "j"]
         if (ucs + "-ja") in dump:
-            return [1, "ja"]  # uxxxx-jv と uxxxx-ja が共存している
+            # uxxxx-jv と uxxxx-ja が共存している
+            return [error_codes.J_JV_COEXISTENT, "ja"]
         if ucs not in jv_no_apply_parts:
             if kage.isAlias():
                 if entity_name not in dump:

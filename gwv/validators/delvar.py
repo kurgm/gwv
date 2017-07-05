@@ -8,6 +8,13 @@ from __future__ import unicode_literals
 import re
 
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    BASE_NOT_FOUND="0",  # 派生元が無い
+)
+
 
 filters = {
     "alias": {True, False},
@@ -29,7 +36,7 @@ class DelvarValidator(Validator):
         if m:
             prefix = m.group(1)
             if prefix not in dump:
-                return [0, prefix]  # 派生元が無い
+                return [error_codes.BASE_NOT_FOUND, prefix]  # 派生元が無い
         return None
 
 

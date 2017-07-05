@@ -7,6 +7,15 @@ from __future__ import unicode_literals
 
 from gwv.kagedata import KageData
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    NOT_ALIAS="0",  # エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）
+    NOT_ALIAS_OF_KOSEKI="1",  # koseki-xxxxx0のエイリアスでない
+    NOT_ALIAS_OF_ENTITY_OF_KOSEKI="2",  # koseki-xxxxx0と異なる実体のエイリアス
+)
+
 
 filters = {
     "alias": {True, False},
@@ -36,16 +45,16 @@ class KosekitokiValidator(Validator):
             entity = name
             if entity != koseki_entity:
                 # エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）
-                return [0]
+                return [error_codes.NOT_ALIAS]
         else:
             entity = kage.lines[0].data[7]
             if entity != koseki_entity:
                 if koseki_entity == koseki_name:
                     # koseki-xxxxx0のエイリアスでない
-                    return [1, entity]
+                    return [error_codes.NOT_ALIAS_OF_KOSEKI, entity]
                 else:
                     # koseki-xxxxx0と異なる実体のエイリアス
-                    return [2, entity, koseki_entity]
+                    return [error_codes.NOT_ALIAS_OF_ENTITY_OF_KOSEKI, entity, koseki_entity]
         return False
 
 

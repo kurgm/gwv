@@ -9,6 +9,27 @@ from gwv.helper import isKanji
 from gwv.helper import isYoko
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    UNKNOWN_STROKE_TYPE="0",  # 未定義の筆画
+    TOO_FEW_COLUMNS="1",  # 列不足
+    TOO_MANY_NONZERO_COLUMNS="2",  # 列余分（非ゼロ）
+    TOO_MANY_ZERO_COLUMNS="3",  # 列余分（ゼロ値）
+    WRONG_NUMBER_OF_COLUMNS="4",  # 列数異常（99）
+    INVALID_DATA_0="5",  # 不正なデータ（0）
+    UNKNOWN_STROKE_FORM="6",  # 未定義の形状の組み合わせ
+    ALIAS_11_COLUMNS="7",  # エイリアスに11列
+
+    VERTCONN_IN_HORI_LINE="10",  # 横画に接続(縦)型
+    HORICONN_IN_VERT_LINE="11",  # 縦画に接続(横)型
+    HORIZONTAL_ORE_FIRST="30",  # 折れの前半が横
+    VERTICAL_ORE_LAST="31",  # 折れの後半が縦
+    HORIZONTAL_OTSU_FIRST="40",  # 乙の前半が横
+    LEFTWARD_OTSU_LAST="41",  # 乙の後半が左向き
+    BUHIN_ICHI="9",  # 部品位置
+)
 
 filters = {
     "alias": {True, False},
@@ -58,24 +79,30 @@ class IllegalValidator(Validator):
             stype = line.data[0]
             if stype != 99:
                 if stype not in datalens:
-                    return [0, [line.line_number, line.strdata]]  # 未定義の筆画
+                    # 未定義の筆画
+                    return [error_codes.UNKNOWN_STROKE_TYPE, [line.line_number, line.strdata]]
                 l = datalens[stype]
                 if lendata < l:
-                    return [1, [line.line_number, line.strdata]]  # 列不足
+                    # 列不足
+                    return [error_codes.TOO_FEW_COLUMNS, [line.line_number, line.strdata]]
                 if lendata > l:
                     if any(n != 0 for n in line.data[l:]):
                         # 列余分（非ゼロ）
-                        return [2, [line.line_number, line.strdata]]
-                    return [3, [line.line_number, line.strdata]]  # 列余分（ゼロ値）
+                        return [error_codes.TOO_MANY_NONZERO_COLUMNS, [line.line_number, line.strdata]]
+                    # 列余分（ゼロ値）
+                    return [error_codes.TOO_MANY_ZERO_COLUMNS, [line.line_number, line.strdata]]
             elif lendata != 8 and lendata != 11:
-                return [4, [line.line_number, line.strdata]]  # 列数異常（99）
+                # 列数異常（99）
+                return [error_codes.WRONG_NUMBER_OF_COLUMNS, [line.line_number, line.strdata]]
             elif lendata == 11 and kage.isAlias():
-                return [7, [line.line_number, line.strdata]]  # エイリアスに11列
+                # エイリアスに11列
+                return [error_codes.ALIAS_11_COLUMNS, [line.line_number, line.strdata]]
             if stype == 0:
                 if (line.data[1] == 0 and line.data[3] != 0) or \
                    (line.data[1] == -1 and line.data[3] != -1):
                     # 0:0:0, 0:-1:-1以外はkeijoKumiawaseで弾かれる
-                    return [5, [line.line_number, line.strdata]]  # 不正なデータ（0）
+                    # 不正なデータ（0）
+                    return [error_codes.INVALID_DATA_0, [line.line_number, line.strdata]]
             elif stype == 1:
                 sttType = line.data[1]
                 endType = line.data[2]
@@ -83,36 +110,42 @@ class IllegalValidator(Validator):
                     if isYoko(*line.data[3:7]):
                         if sttType > 2 or endType > 2:  # not in (0, 2)
                             # 横画に接続(縦)型
-                            return [10, [line.line_number, line.strdata]]
+                            return [error_codes.VERTCONN_IN_HORI_LINE, [line.line_number, line.strdata]]
                     elif sttType == 2 or endType == 2:
                         # 縦画に接続(横)型
-                        return [11, [line.line_number, line.strdata]]
+                        return [error_codes.HORICONN_IN_VERT_LINE, [line.line_number, line.strdata]]
             elif stype == 9:
-                return [9, [line.line_number, line.strdata]]  # 部品位置
+                # 部品位置
+                return [error_codes.BUHIN_ICHI, [line.line_number, line.strdata]]
             elif stype == 2:
                 pass
             elif stype == 3:
                 if isYoko(*line.data[3:7]):
-                    return [30, [line.line_number, line.strdata]]  # 折れの前半が横
+                    # 折れの前半が横
+                    return [error_codes.HORIZONTAL_ORE_FIRST, [line.line_number, line.strdata]]
                 if line.data[2] == 5 and line.data[7] - line.data[5] == 0:
-                    return [31, [line.line_number, line.strdata]]  # 折れの後半が縦
+                    # 折れの後半が縦
+                    return [error_codes.VERTICAL_ORE_LAST, [line.line_number, line.strdata]]
             elif stype == 4:
                 if isYoko(*line.data[3:7]):
-                    return [40, [line.line_number, line.strdata]]  # 乙の前半が横
+                    # 乙の前半が横
+                    return [error_codes.HORIZONTAL_OTSU_FIRST, [line.line_number, line.strdata]]
                 if line.data[2] == 5 and line.data[7] - line.data[5] <= 0:
-                    return [41, [line.line_number, line.strdata]]  # 乙の後半が左向き
+                    # 乙の後半が左向き
+                    return [error_codes.LEFTWARD_OTSU_LAST, [line.line_number, line.strdata]]
             if stype != 99:
                 strokeKeijo = tuple(line.data[0:3])
                 if strokeKeijo not in keijoKumiawase and (isKanji(name) or strokeKeijo not in hikanjiKeijoKumiawase):
                     # 未定義の形状の組み合わせ
-                    return [6, [line.line_number, line.strdata]]
+                    return [error_codes.UNKNOWN_STROKE_FORM, [line.line_number, line.strdata]]
         return False
 
     def record(self, glyphname, error):
         key = error[0]
         if key not in self.results:
             self.results[key] = []
-        self.results[key].append([glyphname, ":".join(error[1][1].split(":", 3)[:3])] + error[1:])
+        self.results[key].append([glyphname, ":".join(
+            error[1][1].split(":", 3)[:3])] + error[1:])
 
     def get_result(self):
         for val in self.results.values():

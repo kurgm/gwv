@@ -9,6 +9,18 @@ import re
 
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
+from gwv.validators import ErrorCodes
+
+
+error_codes = ErrorCodes(
+    RIGHT_PART_FIRST="2",  # 右部品が最初
+    BOTTOM_PART_FIRST="4",  # 下部品が最初
+    INNER_PART_FIRST="6",  # 囲み内側部品が最初
+    LEFT_PART_LAST="11",  # 左部品が最後
+    TOP_PART_LAST="13",  # 上部品が最後
+    OUTER_PART_LAST="15",  # 囲み外側部品が最後
+)
+
 
 filters = {
     "alias": {False},
@@ -35,22 +47,22 @@ class OrderValidator(Validator):
             if m:
                 henka = m.group(2)
                 if henka == "02":
-                    return [2, fG]  # 右部品が最初
+                    return [error_codes.RIGHT_PART_FIRST, fG]  # 右部品が最初
                 if henka in ("04", "14", "24"):
-                    return [4, fG]  # 下部品が最初
+                    return [error_codes.BOTTOM_PART_FIRST, fG]  # 下部品が最初
                 if henka == "06":
-                    return [6, fG]  # 囲み内側部品が最初
+                    return [error_codes.INNER_PART_FIRST, fG]  # 囲み内側部品が最初
         if last.data[0] == 99:
             lG = last.data[7]
             m = _re_vars.search(lG)
             if m:
                 henka = m.group(2)
                 if henka == "01":
-                    return [11, lG]  # 左部品が最後
+                    return [error_codes.LEFT_PART_LAST, lG]  # 左部品が最後
                 if henka == "03":
-                    return [13, lG]  # 上部品が最後
+                    return [error_codes.TOP_PART_LAST, lG]  # 上部品が最後
                 if henka in ("05", "10", "11", "15"):
-                    return [15, lG]  # 囲み外側部品が最初
+                    return [error_codes.OUTER_PART_LAST, lG]  # 囲み外側部品が最初
 
 
 validator_class = OrderValidator
