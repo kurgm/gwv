@@ -97,6 +97,7 @@
 			"^myogisho-z-\\d{5}[ab]?$",
 			"^nihon-no-kanji-\\d{5}$",
 			"^ninjal-\\d{9}$",
+			"^taiwanese-\\d{4}$",
 			"^tenrei-[1-6]\\d{3}[ab]\\d{2,3}$",
 			"^ttz-\\d{3}-\\d{2}-[a-z]+$",
 			"^unstable-bsh-[\\da-f]{4}$",
