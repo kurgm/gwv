@@ -169,5 +169,16 @@ class TestValidators(unittest.TestCase):
         )
         self.assertEqual(error_codes.A, "1")
         self.assertEqual(error_codes.B, "2")
+        with self.assertRaises(KeyError):
+            error_codes.C
+
         self.assertEqual(error_codes["1"], "A")
         self.assertEqual(error_codes["2"], "B")
+        with self.assertRaises(KeyError):
+            error_codes["3"]
+        with self.assertRaises(KeyError):
+            error_codes["A"]
+
+        self.assertTrue("1" in error_codes)
+        self.assertFalse("3" in error_codes)
+        self.assertFalse("A" in error_codes)
