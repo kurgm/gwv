@@ -180,3 +180,32 @@ class TestHelper(unittest.TestCase):
         # test caching
         data2 = loader.get_data()
         self.assertIs(data, data2)
+
+    def test_cjk_sources(self):
+        self.assertEqual(
+            helper.cjk_sources.get("u4e00", helper.cjk_sources.COLUMN_J),
+            "J0-306C")
+        self.assertEqual(
+            helper.cjk_sources.get("u3400", helper.cjk_sources.COLUMN_G),
+            "GKX-0078.01")
+        self.assertEqual(
+            helper.cjk_sources.get(
+                "uf900", helper.cjk_sources.COLUMN_COMPATIBILITY_VARIANT),
+            "U+8C48")
+
+        self.assertIsNone(
+            helper.cjk_sources.get("u4e00", helper.cjk_sources.COLUMN_M))
+        self.assertIsNone(
+            helper.cjk_sources.get("u0020", helper.cjk_sources.COLUMN_J))
+
+        self.assertEqual(
+            helper.cjk_sources.get("extf-00001", helper.cjk_sources.COLUMN_J),
+            "JMJ-059293")
+        self.assertEqual(
+            helper.cjk_sources.get("extf-00003", helper.cjk_sources.COLUMN_G),
+            "G_Z3422508")
+
+        self.assertIsNone(
+            helper.cjk_sources.get("extf-00001", helper.cjk_sources.COLUMN_G))
+        self.assertIsNone(
+            helper.cjk_sources.get("extf-12345", helper.cjk_sources.COLUMN_J))
