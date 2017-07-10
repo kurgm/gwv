@@ -79,7 +79,7 @@ class TestHelper(unittest.TestCase):
         self.assertFalse(helper.isTogoKanji("uf900"))
         self.assertEqual(
             [helper.isTogoKanji("u{:04x}".format(c))
-             for c in xrange(0xfa00, 0xfa2f + 1)],
+             for c in range(0xfa00, 0xfa2f + 1)],
             [
                 False, False, False, False, False, False, False, False,
                 False, False, False, False, False, False, True, True,
@@ -110,7 +110,7 @@ class TestHelper(unittest.TestCase):
         self.assertTrue(helper.isGokanKanji("uf900"))
         self.assertEqual(
             [helper.isGokanKanji("u{:04x}".format(c))
-             for c in xrange(0xfa00, 0xfa2f + 1)],
+             for c in range(0xfa00, 0xfa2f + 1)],
             [
                 True, True, True, True, True, True, True, True,
                 True, True, True, True, True, True, False, False,
