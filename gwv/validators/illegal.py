@@ -74,9 +74,16 @@ class IllegalValidator(Validator):
     name = "illegal"
 
     def is_invalid(self, name, related, kage, gdata, dump):
+        isKanjiGlyph = isKanji(name)
         for line in kage.lines:
             lendata = len(line.data)
             stype = line.data[0]
+            sttType = line.data[1]
+            endType = line.data[2]
+            if not isKanjiGlyph:
+                stype = stype % 100 if stype >= 0 else stype
+                sttType = sttType % 100 if sttType >= 0 else sttType
+                endType = endType % 100 if endType >= 0 else endType
             if stype != 99:
                 if stype not in datalens:
                     # 未定義の筆画
@@ -104,8 +111,6 @@ class IllegalValidator(Validator):
                     # 不正なデータ（0）
                     return [error_codes.INVALID_DATA_0, [line.line_number, line.strdata]]
             elif stype == 1:
-                sttType = line.data[1]
-                endType = line.data[2]
                 if sttType in (2, 12, 22, 32) or endType in (2, 32, 13, 23, 24, 313, 413):
                     if isYoko(*line.data[3:7]):
                         if sttType > 2 or endType > 2:  # not in (0, 2)
@@ -135,7 +140,10 @@ class IllegalValidator(Validator):
                     return [error_codes.LEFTWARD_OTSU_LAST, [line.line_number, line.strdata]]
             if stype != 99:
                 strokeKeijo = tuple(line.data[0:3])
-                if strokeKeijo not in keijoKumiawase and (isKanji(name) or strokeKeijo not in hikanjiKeijoKumiawase):
+                if not isKanjiGlyph:
+                    strokeKeijo = tuple(x % 100 if x >= 0 else x for x in strokeKeijo)
+
+                if strokeKeijo not in keijoKumiawase and (isKanjiGlyph or strokeKeijo not in hikanjiKeijoKumiawase):
                     # 未定義の形状の組み合わせ
                     return [error_codes.UNKNOWN_STROKE_FORM, [line.line_number, line.strdata]]
         return False
