@@ -3,7 +3,7 @@
 		"regex": [
 			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-vert$",
 			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-(full|half)width$",
-			"^u2?[\\da-f]{4}-(g|t|j|k|v|h|kp|u|m|us|i|ja|js|jv|kv)(\\d{2})?$"
+			"^u2?[\\da-f]{4}-(g|t|j|k|v|h|kp|u|m|us|i|ja|js|jv|[gktv]v)(\\d{2})?$"
 		],
 		"string": [
 			"sandbox",
@@ -98,6 +98,8 @@
 			"^nihon-no-kanji-\\d{5}$",
 			"^ninjal-\\d{9}$",
 			"^parts-u[\\da-f]{4,5}-\\d{3}$",
+			"^shincho-\\d{5}$",
+			"^t13-[\\da-f]{4}$",
 			"^taiwanese-\\d{4}$",
 			"^tenrei-[1-6]\\d{3}[ab]\\d{2,3}$",
 			"^ttz-\\d{3}-\\d{2}-[a-z]+$",

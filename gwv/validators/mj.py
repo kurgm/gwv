@@ -53,9 +53,10 @@ class MJTable(object):
     FIELD_SVS = 8
     FIELD_TOKI = 9
     FIELD_DKW = 10
-    FIELD_HEISEI = 11
+    FIELD_SHINCHO = 11
+    FIELD_HEISEI = 12
 
-    n_fields = 12
+    n_fields = 13
 
     heisei_gw_map = [
         ("JA", "j90"),
@@ -89,6 +90,8 @@ class MJTable(object):
             return "toki-" + key
         if field == MJTable.FIELD_DKW:
             return "dkw-" + key
+        if field == MJTable.FIELD_SHINCHO:
+            return "shincho-" + key
         if field == MJTable.FIELD_HEISEI:
             m = re.compile(r"(J[ABCD])").match(key)
             if m:
@@ -155,6 +158,10 @@ class MJTable(object):
         m = re.compile(r"^heisei-([a-z0-9]+)$").match(glyphname)
         if m:
             return MJTable.FIELD_HEISEI, m.group(1)
+
+        m = re.compile(r"^shincho-(\d{5})$").match(glyphname)
+        if m:
+            return MJTable.FIELD_SHINCHO, m.group(1)
 
         return None, None
 

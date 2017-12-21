@@ -38,10 +38,10 @@ def parseMjxml(mjxml):
         if ev != "end" or elem.tag != ns + "MJ文字情報":
             continue
 
-        # [jmj,koseki,juki,nyukan,x0213,x0212,ucs,ivs,svs,toki,dkw,heisei]
+        # [jmj,koseki,juki,nyukan,x0213,x0212,ucs,ivs,svs,toki,dkw,shincho,heisei]
         # ucs, ivsは複数ある可能性あり
         mjrow = [None, None, None, None, None, None,
-                 set(), set(), None, None, None, None]
+                 set(), set(), None, None, None, None, None]
         for ch in elem:
             if ch.tag == ns + "MJ文字図形名":
                 mjrow[0] = ch.text[2:]  # strip "MJ"
@@ -91,8 +91,10 @@ def parseMjxml(mjxml):
                 else:
                     mjrow[10] = "{:0>5}{}".format(
                         dkwnum, "d" * ch.text.count("'"))
-            elif ch.tag == ns + "平成明朝":
+            elif ch.tag == ns + "日本語漢字辞典":
                 mjrow[11] = ch.text
+            elif ch.tag == ns + "平成明朝":
+                mjrow[12] = "{:0>5}".format(ch.text)
 
         # set to list
         mjrow[6] = list(mjrow[6])

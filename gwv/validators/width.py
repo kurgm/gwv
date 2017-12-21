@@ -8,12 +8,14 @@ from __future__ import unicode_literals
 import re
 
 from gwv.helper import GWGroupLazyLoader
+from gwv.helper import RE_REGIONS
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
 
 error_codes = ErrorCodes(
-    INCORRECT_NONSPACINGGLYPHS_HALFWIDTH="0",  # グループ:NonSpacingGlyphs-Halfwidthに含まれているが全角
+    # グループ:NonSpacingGlyphs-Halfwidthに含まれているが全角
+    INCORRECT_NONSPACINGGLYPHS_HALFWIDTH="0",
     INCORRECT_HALFWIDTHGLYPHS="1",  # グループ:HalfwidthGlyphsに含まれているが全角
     INCORRECT_FULLWIDTHGLYPHS="2",  # 半角だがグループ:HalfwidthGlyphsに含まれていない
 )
@@ -27,11 +29,12 @@ filters = {
 _re_halfWidth = re.compile(
     r"-halfwidth$|^uff(6[1-9a-f]|[7-9a-d][0-9a-f]|e[8-e])$")
 _re_fullWidth = re.compile(r"-fullwidth$|^uff([0-5][0-9a-f]|60|e[0-6])$")
-_re_hen = re.compile(r"-([gtvhmi]|k[pv]?|us?|j[asv]?)?01(-(var|itaiji)-|$)")
+_re_hen = re.compile(r"-" + RE_REGIONS + r"?01(-(var|itaiji)-|$)")
 
 
 halflist = GWGroupLazyLoader("HalfwidthGlyphs", isset=True)
-nonspacinghalflist = GWGroupLazyLoader("NonSpacingGlyphs-Halfwidth", isset=True)
+nonspacinghalflist = GWGroupLazyLoader(
+    "NonSpacingGlyphs-Halfwidth", isset=True)
 
 
 def getDWidth(glyphname):
