@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 import re
 
+from gwv.helper import RE_REGIONS
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -22,7 +23,8 @@ filters = {
 }
 
 _re_var_nnn_henka = re.compile(r"^(.+)-((var|itaiji)-\d{3}|\d{2})$")
-_re_var_src_henka = re.compile(r"^(u[0-9a-f]{4,5}-([gtvhmi]|k[pv]?|us?|j[asv]?))(\d{2})$")
+_re_var_src_henka = re.compile(
+    r"^(u[0-9a-f]{4,5}-" + RE_REGIONS + r")(\d{2})$")
 _re_var_other = re.compile(r"^(u[0-9a-f]{4,5}|cdp[on]?-[0-9a-f]{4})-")
 
 

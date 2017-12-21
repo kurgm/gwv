@@ -10,6 +10,7 @@ import re
 from gwv.helper import cjk_sources
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
+from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -55,7 +56,7 @@ def checkJV(kage):
 
 source_separation = GWGroupLazyLoader("原規格分離")
 
-_re_region_opthenka = re.compile(r"^([gtvhmi]|k[pv]?|us?|j[asv]?)(\d{2})?$")
+_re_region_opthenka = re.compile(r"^(" + RE_REGIONS + r")(\d{2})?$")
 
 
 class JValidator(Validator):
@@ -102,6 +103,9 @@ class JValidator(Validator):
             ksource = cjk_sources.get(ucs, cjk_sources.COLUMN_K)
             if ksource is not None:
                 return [error_codes.KV_HAS_KSOURCE, ksource]  # Kソースがあるのにkv
+        elif region in ("gv", "tv", "vv"):
+            # TODO
+            return False
         else:  # not 仮想字形
             if region in ("j", "ja"):
                 if jsource is None:

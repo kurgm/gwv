@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 import re
 
+from gwv.helper import RE_REGIONS
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -26,7 +27,7 @@ filters = {
                  "ucs-hikanji", "ucs-hikanji-var"}
 }
 
-_re_sources = re.compile(r"^([gtvhmi]|j[asv]?|k[pv]?|us?)$")
+_re_sources = re.compile(r"^" + RE_REGIONS + r"$")
 _re_ucs_ = re.compile(r"^u[\da-f]+(-|$)")
 _re_ids = re.compile(r"^u2ff.-")
 

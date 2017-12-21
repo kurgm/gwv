@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 import re
 
+from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -33,7 +34,8 @@ filters = {
 
 
 _re_idc = re.compile(r"^u2ff[\dab]$")
-_re_vars = re.compile(r"-([gtvhmi]|k[pv]?|us?|j[asv]?)?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
+_re_vars = re.compile(
+    r"-" + RE_REGIONS + r"?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
 
 
 def indexOfFirstKanjiBuhinLine(sname, kage):
@@ -69,52 +71,64 @@ class IdsValidator(Validator):
         if fData[4] == fData[6]:
             aspect = float("inf")
         else:
-            aspect = abs(float(fData[3] - fData[5]) / (fData[4] - fData[6]))  # x/y
+            aspect = abs(float(fData[3] - fData[5]) /
+                         (fData[4] - fData[6]))  # x/y
 
         sname = name.split("-")
 
         # ⿰⿱ とか ⿱⿰ とかで始まるものは最初の部品の縦横比を予測できない
-        isComplicated = (sname[1] in ("u2ff0", "u2ff2") and sname[0] in ("u2ff1", "u2ff3")) or \
-                        (sname[1] in ("u2ff1", "u2ff3") and sname[0] in ("u2ff0", "u2ff2"))
+        isComplicated = ((sname[1] in ("u2ff0", "u2ff2") and sname[0] in ("u2ff1", "u2ff3")) or
+                         (sname[1] in ("u2ff1", "u2ff3") and sname[0] in ("u2ff0", "u2ff2")))
 
         m = _re_vars.search(fData[7])
         if m:
-            firstBuhinType = m.group(2)  # 偏化変形接尾コード
+            firstBuhinType = m.group(1)  # 偏化変形接尾コード
         else:
             firstBuhinType = None
         if sname[0] in ("u2ff0", "u2ff2"):
             # [-01] + [-02] or [-01] + [-01] + [-02]
             if firstBuhinType in ("03", "04", "09", "14", "24") and fData[5] - fData[3] > 175.0:
-                return [error_codes.FIRST_PART_TB_IN_LR_IDS, fData[7]]  # 左右のIDSだが最初が上下の部品
+                # 左右のIDSだが最初が上下の部品
+                return [error_codes.FIRST_PART_TB_IN_LR_IDS, fData[7]]
             if firstBuhinType == "02":
-                return [error_codes.FIRST_PART_RIGHT_IN_LR_IDS, fData[7]]  # 左右のIDSだが右部品が最初
+                # 左右のIDSだが右部品が最初
+                return [error_codes.FIRST_PART_RIGHT_IN_LR_IDS, fData[7]]
             if not isComplicated and firstBuhinType not in ("01", "08") and aspect > 1.8:
-                return [error_codes.FIRST_PART_LANDSCAPE_IN_LR_IDS, [0, kage.lines[0].strdata]]  # 左右のIDSだが最初の部品が横長の配置
+                # 左右のIDSだが最初の部品が横長の配置
+                return [error_codes.FIRST_PART_LANDSCAPE_IN_LR_IDS, [0, kage.lines[0].strdata]]
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
-                return [error_codes.LEFT_PART_NOT_FIRST_IN_LR_IDS, [fkline.line_number, fkline.strdata]]  # 左右のIDSだが左の字が最初でない
+                # 左右のIDSだが左の字が最初でない
+                return [error_codes.LEFT_PART_NOT_FIRST_IN_LR_IDS, [fkline.line_number, fkline.strdata]]
         elif sname[0] in ("u2ff1", "u2ff3"):
             # [-03] + [-04] or [-03] + [-03] + [-04]
             if firstBuhinType in ("01", "02", "08") and fData[6] - fData[4] > 175.0:
-                return [error_codes.FIRST_PART_LR_IN_TB_IDS, fData[7]]  # 上下のIDSだが最初が左右の部品
+                # 上下のIDSだが最初が左右の部品
+                return [error_codes.FIRST_PART_LR_IN_TB_IDS, fData[7]]
             if firstBuhinType in ("04", "14", "24"):
-                return [error_codes.FIRST_PART_BOTTOM_IN_TB_IDS, fData[7]]  # 上下のIDSだが下部品が最初
+                # 上下のIDSだが下部品が最初
+                return [error_codes.FIRST_PART_BOTTOM_IN_TB_IDS, fData[7]]
             if not isComplicated and firstBuhinType not in ("03", "09") and aspect < 0.65:
-                return [error_codes.FIRST_PART_PORTRAIT_IN_TB_IDS, [0, kage.lines[0].strdata]]  # 上下のIDSだが最初の部品が縦長の配置
+                # 上下のIDSだが最初の部品が縦長の配置
+                return [error_codes.FIRST_PART_PORTRAIT_IN_TB_IDS, [0, kage.lines[0].strdata]]
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
-                return [error_codes.TOP_PART_NOT_FIRST_IN_TB_IDS, [fkline.line_number, fkline.strdata]]  # 上下のIDSだが上の字が最初でない
+                # 上下のIDSだが上の字が最初でない
+                return [error_codes.TOP_PART_NOT_FIRST_IN_TB_IDS, [fkline.line_number, fkline.strdata]]
         elif sname[0] in ("u2ff4", "u2ff5", "u2ff6", "u2ff7", "u2ff8", "u2ff9", "u2ffa"):
             # [-05] + [-06]
             if firstBuhinType in ("02", "06", "07"):
-                return [error_codes.FIRST_PART_INNER_IN_SURROUND_IDS, fData[7]]  # 囲むIDSだが内側部品が最初
+                # 囲むIDSだが内側部品が最初
+                return [error_codes.FIRST_PART_INNER_IN_SURROUND_IDS, fData[7]]
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
-                return [error_codes.OUTER_PART_NOT_FIRST_IN_SURROUND_IDS, [fkline.line_number, fkline.strdata]]  # 囲みIDSだが外の字が最初でない
+                # 囲みIDSだが外の字が最初でない
+                return [error_codes.OUTER_PART_NOT_FIRST_IN_SURROUND_IDS, [fkline.line_number, fkline.strdata]]
         elif sname[0] == "u2ffb":
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
-                return [error_codes.FIRST_PART_NOT_FIRST_IN_OVERLAP_IDS, [fkline.line_number, fkline.strdata]]  # 重ねIDSだがIDSで最初の字が最初でない
+                # 重ねIDSだがIDSで最初の字が最初でない
+                return [error_codes.FIRST_PART_NOT_FIRST_IN_OVERLAP_IDS, [fkline.line_number, fkline.strdata]]
         else:
             return [error_codes.UNKNOWN_IDC, sname[0]]  # 未定義のIDC
 

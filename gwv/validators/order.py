@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 
 import re
 
+from gwv.helper import RE_REGIONS
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -29,7 +30,7 @@ filters = {
 
 
 _re_vars = re.compile(
-    r"-([gtvhmi]|k[pv]?|us?|j[asv]?)?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
+    r"-" + RE_REGIONS + r"?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
 
 
 class OrderValidator(Validator):
@@ -45,7 +46,7 @@ class OrderValidator(Validator):
             fG = first.data[7]
             m = _re_vars.search(fG)
             if m:
-                henka = m.group(2)
+                henka = m.group(1)
                 if henka == "02":
                     return [error_codes.RIGHT_PART_FIRST, fG]  # 右部品が最初
                 if henka in ("04", "14", "24"):
@@ -56,7 +57,7 @@ class OrderValidator(Validator):
             lG = last.data[7]
             m = _re_vars.search(lG)
             if m:
-                henka = m.group(2)
+                henka = m.group(1)
                 if henka == "01":
                     return [error_codes.LEFT_PART_LAST, lG]  # 左部品が最後
                 if henka == "03":

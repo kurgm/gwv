@@ -6,8 +6,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
-import pkg_resources
 import re
+
+import pkg_resources
 
 
 _re_ids = re.compile(r"u2ff[\dab]-")
@@ -60,6 +61,7 @@ def isGokanKanji(name):
 
 
 _re_ucs = re.compile(r"^u[\da-f]{4,6}$")
+RE_REGIONS = r"(?:[gtv]v?|[hmi]|k[pv]?|us?|j[asv]?)"
 
 
 def isUcs(name):
