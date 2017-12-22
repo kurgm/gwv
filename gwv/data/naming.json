@@ -103,6 +103,7 @@
 			"^taiwanese-\\d{4}$",
 			"^tenrei-[1-6]\\d{3}[ab]\\d{2,3}$",
 			"^ttz-\\d{3}-\\d{2}-[a-z]+$",
+			"^uk-\\d{5}$",
 			"^unstable-bsh-[\\da-f]{4}$",
 			"^unstable-u[\\da-f]{4,5}$",
 			"^fx-kisho-chimei-\\d{3}$"
