@@ -13,7 +13,8 @@
 	"rule-novar": {
 		"regex": [
 			"^u2?[\\da-f]{4}-u(e01[\\da-f]{2}|fe0[\\da-f])$",
-			"^sosho-u2?[\\da-f]{4}-\\d{3}$"
+			"^sosho-u2?[\\da-f]{4}-\\d{3}$",
+			"^unstable-u[\\da-f]{4,5}(-ufe0[\\da-f])?$"
 		]
 	},
 	"rule-nohenka": {},
@@ -98,6 +99,7 @@
 			"^nihon-no-kanji-\\d{5}$",
 			"^ninjal-\\d{9}$",
 			"^parts-u[\\da-f]{4,5}-\\d{3}$",
+			"^sdjt-\\d{5}$",
 			"^shincho-\\d{5}$",
 			"^t13-[\\da-f]{4}$",
 			"^taiwanese-\\d{4}$",
