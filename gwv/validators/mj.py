@@ -54,9 +54,10 @@ class MJTable(object):
     FIELD_TOKI = 9
     FIELD_DKW = 10
     FIELD_SHINCHO = 11
-    FIELD_HEISEI = 12
+    FIELD_SDJT = 12
+    FIELD_HEISEI = 13
 
-    n_fields = 13
+    n_fields = 14
 
     heisei_gw_map = [
         ("JA", "j90"),
@@ -92,6 +93,8 @@ class MJTable(object):
             return "dkw-" + key
         if field == MJTable.FIELD_SHINCHO:
             return "shincho-" + key
+        if field == MJTable.FIELD_SDJT:
+            return "sdjt-" + key
         if field == MJTable.FIELD_HEISEI:
             m = re.compile(r"(J[ABCD])").match(key)
             if m:
@@ -155,13 +158,17 @@ class MJTable(object):
                 MJTable.gw2heisei_dic[m.group(1)],
                 gl2kuten(m.group(2)))
 
-        m = re.compile(r"^heisei-([a-z0-9]+)$").match(glyphname)
-        if m:
-            return MJTable.FIELD_HEISEI, m.group(1)
-
         m = re.compile(r"^shincho-(\d{5})$").match(glyphname)
         if m:
             return MJTable.FIELD_SHINCHO, m.group(1)
+
+        m = re.compile(r"^sdjt-(\d{5})$").match(glyphname)
+        if m:
+            return MJTable.FIELD_SDJT, m.group(1)
+
+        m = re.compile(r"^heisei-([a-z0-9]+)$").match(glyphname)
+        if m:
+            return MJTable.FIELD_HEISEI, m.group(1)
 
         return None, None
 
@@ -179,7 +186,7 @@ class MJTable(object):
     def __init__(self):
         self._table = load_package_data("data/mj00501.json")
 
-        self._key2indices = [{} for x in range(MJTable.n_fields)]
+        self._key2indices = [{} for _ in range(MJTable.n_fields)]
         for mjIdx, row in enumerate(self._table):
             for column, keys in enumerate(row):
                 if keys is None:
