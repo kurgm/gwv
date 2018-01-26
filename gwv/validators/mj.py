@@ -55,18 +55,8 @@ class MJTable(object):
     FIELD_DKW = 10
     FIELD_SHINCHO = 11
     FIELD_SDJT = 12
-    FIELD_HEISEI = 13
 
-    n_fields = 14
-
-    heisei_gw_map = [
-        ("JA", "j90"),
-        ("JB", "jsp"),
-        ("JC", "jx1-2000"),
-        ("JD", "jx2")
-    ]
-    heisei2gw_dic = dict(heisei_gw_map)
-    gw2heisei_dic = dict((g, h) for h, g in heisei_gw_map)
+    n_fields = 13
 
     def key2gw(self, field, key):
         if field == MJTable.FIELD_UCS:
@@ -95,11 +85,6 @@ class MJTable(object):
             return "shincho-" + key
         if field == MJTable.FIELD_SDJT:
             return "sdjt-" + key
-        if field == MJTable.FIELD_HEISEI:
-            m = re.compile(r"(J[ABCD])").match(key)
-            if m:
-                return MJTable.heisei2gw_dic[m.group(1)] + "-" + kuten2gl(int(key[2:4]), int(key[4:6]))
-            return "heisei-" + key.lower()
 
     def glyphname_to_field_key(self, glyphname):
         if re.compile(r"^u[0-9a-f]{4,6}-ue01[0-9a-f]{2}$").match(glyphname):
@@ -151,13 +136,6 @@ class MJTable(object):
         if m:
             return MJTable.FIELD_X0212, m.group(1)
 
-        m = re.compile(
-            r"^(j90|jsp|jx1-2000|jx2)-([0-9a-f]{4})$").match(glyphname)
-        if m:
-            return MJTable.FIELD_HEISEI, "{0}{1[0]:02}{1[1]:02}".format(
-                MJTable.gw2heisei_dic[m.group(1)],
-                gl2kuten(m.group(2)))
-
         m = re.compile(r"^shincho-(\d{5})$").match(glyphname)
         if m:
             return MJTable.FIELD_SHINCHO, m.group(1)
@@ -165,10 +143,6 @@ class MJTable(object):
         m = re.compile(r"^sdjt-(\d{5})$").match(glyphname)
         if m:
             return MJTable.FIELD_SDJT, m.group(1)
-
-        m = re.compile(r"^heisei-([a-z0-9]+)$").match(glyphname)
-        if m:
-            return MJTable.FIELD_HEISEI, m.group(1)
 
         return None, None
 
@@ -184,7 +158,7 @@ class MJTable(object):
         return self._key2indices[field].get(key.lower(), [])
 
     def __init__(self):
-        self._table = load_package_data("data/mj00501.json")
+        self._table = load_package_data("data/mj.json")
 
         self._key2indices = [{} for _ in range(MJTable.n_fields)]
         for mjIdx, row in enumerate(self._table):

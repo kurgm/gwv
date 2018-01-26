@@ -20,8 +20,8 @@ except ImportError:
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-MJ_ZIP_URL = "http://dl.mojikiban.ipa.go.jp/mji.00501.zip"
-MJ_JSON_FILENAME = "mj00501.json"
+MJ_ZIP_URL = "https://oscdl.ipa.go.jp/mji.00502.zip"
+MJ_JSON_FILENAME = "mj.json"
 
 
 def kuten2gl(ku, ten):
@@ -38,10 +38,10 @@ def parseMjxml(mjxml):
         if ev != "end" or elem.tag != ns + "MJ文字情報":
             continue
 
-        # [jmj,koseki,juki,nyukan,x0213,x0212,ucs,ivs,svs,toki,dkw,shincho,sdjt,heisei]
+        # [jmj,koseki,juki,nyukan,x0213,x0212,ucs,ivs,svs,toki,dkw,shincho,sdjt]
         # ucs, ivsは複数ある可能性あり
         mjrow = [None, None, None, None, None, None,
-                 set(), set(), None, None, None, None, None, None]
+                 set(), set(), None, None, None, None, None]
         for ch in elem:
             if ch.tag == ns + "MJ文字図形名":
                 mjrow[0] = ch.text[2:]  # strip "MJ"
@@ -71,7 +71,7 @@ def parseMjxml(mjxml):
                 for gch in ch:
                     if gch.tag == ns + "実装したUCS":
                         mjrow[6].add(gch.text[2:].lower())  # strip "U+"
-                    elif gch.tag in (ns + "実装したMoji_JohoIVS", ns + "実装したHanyo-DenshiIVS"):
+                    elif gch.tag == ns + "実装したMoji_JohoIVS":
                         seq = gch.text.split("_")
                         mjrow[6].add(seq[0].lower())
                         # XXXX_E01YY -> uxxxx-ue01yy
@@ -95,8 +95,6 @@ def parseMjxml(mjxml):
                 mjrow[11] = "{:0>5}".format(ch.text)
             elif ch.tag == ns + "新大字典":
                 mjrow[12] = "{:0>5}".format(ch.text)
-            elif ch.tag == ns + "平成明朝":
-                mjrow[13] = ch.text
 
         # set to list
         mjrow[6] = list(mjrow[6])
@@ -120,11 +118,11 @@ def main(mjjson_path=mjjson_path):
         return
 
     log.info("Downloading {}...".format(MJ_ZIP_URL))
-    filename, headers = urlretrieve(MJ_ZIP_URL)
+    filename, _headers = urlretrieve(MJ_ZIP_URL)
     log.info("Download completed")
 
     with zipfile.ZipFile(filename) as mjzip:
-        with mjzip.open("mji.00501.xml") as mjxml:
+        with mjzip.open("mji.00502.xml") as mjxml:
             mjdat = parseMjxml(mjxml)
 
     with open(mjjson_path, "w") as mjjson_file:
