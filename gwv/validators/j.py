@@ -54,7 +54,7 @@ def checkJV(kage):
     return False
 
 
-source_separation = GWGroupLazyLoader("原規格分離")
+source_separation = GWGroupLazyLoader("原規格分離", isset=True)
 
 _re_region_opthenka = re.compile(r"^(" + RE_REGIONS + r")(\d{2})?$")
 
@@ -71,20 +71,21 @@ class JValidator(Validator):
         if splitname[0] == "extf":
             jsource = cjk_sources.get(name, cjk_sources.COLUMN_J)
             if jsource is None:
-                return checkJV(kage)
+                return checkJV(kage.get_entity(dump))
             return False
 
         if splitname[0] == "irg2015":
             # irg2015- glyphs have no J source
-            return checkJV(kage)
+            return checkJV(kage.get_entity(dump))
 
         # uXXXX, uXXXX-...
         ucs = splitname[0]
         jsource = cjk_sources.get(ucs, cjk_sources.COLUMN_J)
 
         if len(splitname) == 1:  # 無印
-            if jsource is None and ucs not in jv_no_apply_parts:
-                return checkJV(kage)
+            if jsource is None and ucs not in jv_no_apply_parts and \
+                    ucs not in source_separation.get_data():
+                return checkJV(kage.get_entity(dump))
             return False
 
         m = _re_region_opthenka.match(splitname[1])
@@ -146,13 +147,7 @@ class JValidator(Validator):
             # uxxxx-jv と uxxxx-ja が共存している
             return [error_codes.J_JV_COEXISTENT, "ja"]
         if ucs not in jv_no_apply_parts:
-            if kage.isAlias():
-                if entity_name not in dump:
-                    return False  # 実体が見つからない
-                entity_kage = KageData(dump[entity_name][1])
-            else:
-                entity_kage = kage
-            return checkJV(entity_kage)
+            return checkJV(kage.get_entity(dump))
         return False
 
 

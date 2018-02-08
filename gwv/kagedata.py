@@ -53,6 +53,13 @@ class KageData(object):
         res = self.len == 1 and self.lines[0].strdata[:19] == "99:0:0:0:0:200:200:"
         self.isAlias = _cachelambdas[res]
         return res
+    
+    def get_entity(self, dump):
+        if self.isAlias():
+            entity_name = self.lines[0][7]
+            if entity_name in dump:
+                return KageData(dump[entity_name][1])
+        return self
 
 
 class KageLine(object):
