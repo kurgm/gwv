@@ -56,7 +56,7 @@ class KageData(object):
     
     def get_entity(self, dump):
         if self.isAlias():
-            entity_name = self.lines[0][7]
+            entity_name = self.lines[0].data[7]
             if entity_name in dump:
                 return KageData(dump[entity_name][1])
         return self
