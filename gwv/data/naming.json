@@ -96,6 +96,7 @@
 			"^lgccc-\\d{4}$",
 			"^misc-.+$",
 			"^myogisho-z-\\d{5}[ab]?$",
+			"^negative-sandbox-.+$",
 			"^nihon-no-kanji-\\d{5}$",
 			"^ninjal-\\d{9}$",
 			"^parts-u[\\da-f]{4,5}-\\d{3}$",
