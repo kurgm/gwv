@@ -62,7 +62,7 @@ class UcsaliasValidator(Validator):
                 return [error_codes.REGION_IS_ALIAS_OF_NOMARK] if entity == sname[0] else False
             return False
         if not _re_ucs_.match(entity) or _re_ids.match(entity):
-            if entity == "undefined" or entity[:5] == "extf-":
+            if entity == "undefined":
                 return False
             # “uxxxx”が“uyyyy-…”以外やIDSのエイリアス
             return [error_codes.UCS_IS_ALIAS_OF_NON_UCS, entity]

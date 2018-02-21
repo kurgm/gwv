@@ -68,12 +68,6 @@ class JValidator(Validator):
         if len(splitname) > 2:
             return False
 
-        if splitname[0] == "extf":
-            jsource = cjk_sources.get(name, cjk_sources.COLUMN_J)
-            if jsource is None:
-                return checkJV(kage.get_entity(dump))
-            return False
-
         if splitname[0] == "irg2015":
             # irg2015- glyphs have no J source
             return checkJV(kage.get_entity(dump))

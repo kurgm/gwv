@@ -45,7 +45,7 @@ class RelatedValidator(Validator):
         if kage.isAlias():
             entity_name = gdata[19:]
             entity_header = entity_name.split("-")[0]
-            if isTogoKanji(entity_header) or entity_header == "extf":
+            if isTogoKanji(entity_header):
                 return False
             if entity_name not in dump:
                 return [error_codes.ENTITY_NOT_FOUND, entity_name]  # 実体が存在しない

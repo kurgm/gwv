@@ -47,7 +47,7 @@ _re_ids = re.compile(r"u2ff[\dab]-")
 _re_cdp = re.compile(r"cdp[on]?-[\da-f]{4}(-|$)")
 _re_koseki = re.compile(r"^koseki-\d{6}$")
 _re_toki = re.compile(r"^toki-\d{8}$")
-_re_ext = re.compile(r"^(extf|irg2015)-\d{5}$")
+_re_ext = re.compile(r"^irg2015-\d{5}$")
 
 
 def _categorize(glyphname):

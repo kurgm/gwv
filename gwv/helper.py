@@ -153,17 +153,6 @@ class CJKSources(object):
     def load(self):
         self.data = load_package_data("data/cjksrc.json")
 
-        extf = load_package_data("data/extf.json")
-        extf_columns = [
-            CJKSources.COLUMN_G,
-            CJKSources.COLUMN_J,
-            CJKSources.COLUMN_U,  # SAT source
-            CJKSources.COLUMN_K,
-        ]
-        for seq in extf:
-            sources = extf[seq]
-            self.data["extf-" + seq] = dict(zip(extf_columns, sources))
-
         # irg2015- sources not needed yet
 
         # irg2015 = load_package_data("data/irg2015.json")
