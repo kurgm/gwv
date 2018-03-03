@@ -3,6 +3,7 @@
 		"regex": [
 			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-vert$",
 			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-(full|half)width$",
+			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-sans$",
 			"^u2?[\\da-f]{4}-(g|t|j|k|v|h|kp|u|m|us|i|ja|js|jv|[gktv]v)(\\d{2})?$"
 		],
 		"string": [
@@ -109,6 +110,7 @@
 			"^uk-\\d{5}$",
 			"^unstable-bsh-[\\da-f]{4}$",
 			"^unstable-u[\\da-f]{4,5}$",
+			"^unstable-nishiki-(e[\\da-f]|f[0-8]|(f|10)[\\da-f]{2})[\\da-f]{2}$",
 			"^fx-kisho-chimei-\\d{3}$"
 		],
 		"string": [
