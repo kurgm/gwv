@@ -58,7 +58,7 @@
 			"^kokuji-no-jiten-\\d{4}$",
 			"^kp1-[\\da-f]{4}$",
 			"^kumimoji-.+$",
-			"^kx-\\d{6}$",
+			"^kx-\\d{7}$",
 			"^mac-\\d{5}$",
 			"^nihonjin-no-tsukutta-kanji-\\d{3}(ks?)?$",
 			"^nyukan-[ef][\\da-f]{3}$",
