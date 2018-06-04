@@ -40,7 +40,8 @@ filters = {
     "alias": {True, False},
     "category": {"user-owned", "ids", "togo", "togo-var", "gokan", "gokan-var",
                  "ucs-hikanji", "ucs-hikanji-var", "cdp", "koseki-kanji",
-                 "koseki-hikanji", "toki", "ext", "other"}
+                 "koseki-hikanji", "toki", "ext", "other"},
+    "transform": {True, False},
 }
 
 _re_ids = re.compile(r"u2ff[\dab]-")
@@ -76,7 +77,8 @@ def _categorize(glyphname):
 
 filter_funcs = {
     "alias": lambda glyphname, related, kage, data: kage.isAlias(),
-    "category": lambda glyphname, related, kage, data: _categorize(glyphname)
+    "category": lambda glyphname, related, kage, data: _categorize(glyphname),
+    "transform": lambda glyphname, related, kage, data: kage.has_transform,
 }
 
 

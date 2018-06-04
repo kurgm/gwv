@@ -23,7 +23,8 @@ error_codes = ErrorCodes(
 
 filters = {
     "alias": {True, False},
-    "category": {"user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"}
+    "category": {"user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"},
+    "transform": {False},
 }
 
 _re_halfWidth = re.compile(

@@ -25,7 +25,8 @@ error_codes = ErrorCodes(
 
 filters = {
     "alias": {False},
-    "category": default_filters["category"] - {"user-owned"}
+    "category": default_filters["category"] - {"user-owned"},
+    "transform": {False},
 }
 
 

@@ -359,7 +359,8 @@ _NO_ERROR = -2
 
 filters = {
     "alias": {False},
-    "category": default_filters["category"] - {"user-owned", "ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji"}
+    "category": default_filters["category"] - {"user-owned", "ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji"},
+    "transform": {False},
 }
 
 

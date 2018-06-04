@@ -38,7 +38,7 @@ filters = {
 
 
 keijoKumiawase = {tuple([int(x) for x in keijoStr.split(":")]) for keijoStr in (
-    "0:0:0,0:-1:-1,"
+    "0:0:0,0:-1:-1,0:99:1,0:99:2,0:99:3,0:98:0,0:97:0,"
     "1:0:0,1:0:13,1:0:2,1:0:23,1:0:24,1:0:313,1:0:32,1:0:4,1:12:0,1:12:13,1:12:23,1:12:24,1:12:313,1:12:32,1:12:413,1:2:0,1:2:2,1:22:0,1:22:13,1:22:23,1:22:24,1:22:313,1:22:32,1:22:4,1:22:413,1:32:0,1:32:13,1:32:23,1:32:24,1:32:313,1:32:32,1:32:4,1:32:413,"
     "2:0:5,2:0:7,2:12:7,2:22:4,2:22:5,2:22:7,2:32:4,2:32:5,2:32:7,2:7:0,2:7:4,2:7:8,"
     "3:0:0,3:0:5,3:12:0,3:12:5,3:22:5,3:32:0,3:32:5,"
@@ -58,7 +58,6 @@ hikanjiKeijoKumiawase = {tuple([int(x) for x in keijoStr.split(":")]) for keijoS
 
 # {筆画タイプ: データ列数}
 datalens = {
-    0: 4,
     1: 7,
     2: 9,
     3: 9,
@@ -84,7 +83,18 @@ class IllegalValidator(Validator):
                 stype = stype % 100 if stype >= 0 else stype
                 sttType = sttType % 100 if sttType >= 0 else sttType
                 endType = endType % 100 if endType >= 0 else endType
-            if stype != 99:
+            if stype == 99:
+                if lendata != 8 and lendata != 11:
+                    # 列数異常（99）
+                    return [error_codes.WRONG_NUMBER_OF_COLUMNS, [line.line_number, line.strdata]]
+                elif lendata == 11 and kage.isAlias():
+                    # エイリアスに11列
+                    return [error_codes.ALIAS_11_COLUMNS, [line.line_number, line.strdata]]
+            elif stype == 0:
+                if lendata != 4 and lendata != 7:
+                    # 列数異常（0）
+                    return [error_codes.WRONG_NUMBER_OF_COLUMNS, [line.line_number, line.strdata]]
+            else:
                 if stype not in datalens:
                     # 未定義の筆画
                     return [error_codes.UNKNOWN_STROKE_TYPE, [line.line_number, line.strdata]]
@@ -98,16 +108,9 @@ class IllegalValidator(Validator):
                         return [error_codes.TOO_MANY_NONZERO_COLUMNS, [line.line_number, line.strdata]]
                     # 列余分（ゼロ値）
                     return [error_codes.TOO_MANY_ZERO_COLUMNS, [line.line_number, line.strdata]]
-            elif lendata != 8 and lendata != 11:
-                # 列数異常（99）
-                return [error_codes.WRONG_NUMBER_OF_COLUMNS, [line.line_number, line.strdata]]
-            elif lendata == 11 and kage.isAlias():
-                # エイリアスに11列
-                return [error_codes.ALIAS_11_COLUMNS, [line.line_number, line.strdata]]
             if stype == 0:
                 if (line.data[1] == 0 and line.data[3] != 0) or \
                    (line.data[1] == -1 and line.data[3] != -1):
-                    # 0:0:0, 0:-1:-1以外はkeijoKumiawaseで弾かれる
                     # 不正なデータ（0）
                     return [error_codes.INVALID_DATA_0, [line.line_number, line.strdata]]
             elif stype == 1:
@@ -141,7 +144,8 @@ class IllegalValidator(Validator):
             if stype != 99:
                 strokeKeijo = tuple(line.data[0:3])
                 if not isKanjiGlyph:
-                    strokeKeijo = tuple(x % 100 if x >= 0 else x for x in strokeKeijo)
+                    strokeKeijo = tuple(
+                        x % 100 if x >= 0 else x for x in strokeKeijo)
 
                 if strokeKeijo not in keijoKumiawase and (isKanjiGlyph or strokeKeijo not in hikanjiKeijoKumiawase):
                     # 未定義の形状の組み合わせ
