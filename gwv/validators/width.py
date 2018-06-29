@@ -16,8 +16,10 @@ from gwv.validators import ErrorCodes
 error_codes = ErrorCodes(
     # グループ:NonSpacingGlyphs-Halfwidthに含まれているが全角
     INCORRECT_NONSPACINGGLYPHS_HALFWIDTH="0",
-    INCORRECT_HALFWIDTHGLYPHS="1",  # グループ:HalfwidthGlyphsに含まれているが全角
-    INCORRECT_FULLWIDTHGLYPHS="2",  # 半角だがグループ:HalfwidthGlyphsに含まれていない
+    # グループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれているが全角
+    INCORRECT_HALFWIDTHGLYPHS="1",
+    # 半角だがグループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれていない
+    INCORRECT_FULLWIDTHGLYPHS="2",
 )
 
 
@@ -33,7 +35,11 @@ _re_fullWidth = re.compile(r"-fullwidth$|^uff([0-5][0-9a-f]|60|e[0-6])$")
 _re_hen = re.compile(r"-" + RE_REGIONS + r"?01(-(var|itaiji)-|$)")
 
 
-halflist = GWGroupLazyLoader("HalfwidthGlyphs", isset=True)
+halflists = [
+    GWGroupLazyLoader("HalfwidthGlyphs-BMP", isset=True),
+    GWGroupLazyLoader("HalfwidthGlyphs-SMP", isset=True),
+    GWGroupLazyLoader("HalfwidthGlyphs-nonUCS", isset=True),
+]
 nonspacinghalflist = GWGroupLazyLoader(
     "NonSpacingGlyphs-Halfwidth", isset=True)
 
@@ -41,8 +47,9 @@ nonspacinghalflist = GWGroupLazyLoader(
 def getDWidth(glyphname):
     if glyphname in nonspacinghalflist.get_data():
         return 0
-    if glyphname in halflist.get_data():
-        return 1
+    for halflist in halflists:
+        if glyphname in halflist.get_data():
+            return 1
     return 2
 
 
