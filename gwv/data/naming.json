@@ -1,9 +1,6 @@
 {
 	"rule-novar-nohenka": {
 		"regex": [
-			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-vert$",
-			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-(full|half)width$",
-			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-sans$",
 			"^u2?[\\da-f]{4}-(g|t|j|k|v|h|kp|u|m|us|i|ja|js|jv|[gktv]v)(\\d{2})?$"
 		],
 		"string": [
@@ -18,15 +15,20 @@
 			"^unstable-u[\\da-f]{4,5}(-ufe0[\\da-f])?$"
 		]
 	},
-	"rule-nohenka": {},
+	"rule-nohenka": {
+		"regex": [
+			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-vert$",
+			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-(full|half)width$"
+		]
+	},
 	"rule": {
 		"regex": [
 			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*$",
+			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-sans$",
 			"^ue0[01][\\da-f]{2}$",
 			"^koseki-\\d{6}$",
 			"^a[jk]1-\\d{5}$",
 			"^b-[\\da-f]{4}$",
-			"^c[1-9a-fhk]-[\\da-f]{4}$",
 			"^cbeta-\\d{5}$",
 			"^cdp[on]?-[\\da-f]{4}$",
 			"^daitudien-\\d{6}$",
@@ -85,6 +87,7 @@
 			"^z-sat\\d{5}$",
 			"^zihai-\\d{6}$",
 			"^aj2-\\d{4}$",
+			"^c([1-9a-f]|1[13])-[\\da-f]{4}$",
 			"^g-(gfc|gfz|idc|ocd|xhz)\\d{3}$",
 			"^g-(cy|idc|lgyj|pglg|xc)\\d{4}$",
 			"^g-(cyy|fzc|gjz|msw|zfy|zjw)\\d{5}$",
@@ -93,6 +96,7 @@
 			"^hka-[\\da-f]{4}$",
 			"^hokke-\\d{3}[1-6]{2}[12]?$",
 			"^irg2015-\\d{5}$",
+			"^irg2017-\\d{5}$",
 			"^kokuji-[a-z]+-\\d{3}$",
 			"^lgccc-\\d{4}$",
 			"^misc-.+$",
@@ -111,6 +115,7 @@
 			"^unstable-bsh-[\\da-f]{4}$",
 			"^unstable-u[\\da-f]{4,5}$",
 			"^unstable-nishiki-(e[\\da-f]|f[0-8]|(f|10)[\\da-f]{2})[\\da-f]{2}$",
+			"^v-f[\\da-f]{4}$",
 			"^fx-kisho-chimei-\\d{3}$"
 		],
 		"string": [
