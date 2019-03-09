@@ -6,9 +6,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import codecs
 import json
 import logging
 import os.path
+import zipfile
 
 try:
     from urllib import FancyURLopener
@@ -18,8 +20,30 @@ except ImportError:
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-CJKSRC_URL = "http://www.unicode.org/wg2/iso10646/edition5/data/CJKSrc.txt"
+CJKSRC_URL = "https://www.unicode.org/wg2/iso10646/edition5/data/CJKSrc.txt"
+UNIHAN_ZIP_URL = "https://www.unicode.org/Public/12.0.0/ucd/Unihan.zip"
 CJKSRC_JSON_FILENAME = "cjksrc.json"
+
+
+def get_iso_CJKSrc(url=CJKSRC_URL):
+    log.info("Downloading {}...".format(url))
+    opener = FancyURLopener()
+    filename, _headers = opener.retrieve(url)
+    log.info("Download completed")
+
+    with open(filename) as cjksrctxt:
+        return parseCJKSrc(cjksrctxt)
+
+
+def get_unihan_CJKSrc(url=UNIHAN_ZIP_URL):
+    log.info("Downloading {}...".format(url))
+    opener = FancyURLopener()
+    filename, _headers = opener.retrieve(url)
+    log.info("Download completed")
+
+    with zipfile.ZipFile(filename) as unihanzip:
+        with unihanzip.open("Unihan_IRGSources.txt") as cjksrctxt:
+            return parseCJKSrc(codecs.iterdecode(cjksrctxt, "utf-8"))
 
 
 def parseCJKSrc(cjksrctxt):
@@ -61,13 +85,7 @@ def main(cjksrcjson_path=cjksrcjson_path):
     if os.path.exists(cjksrcjson_path):
         return
 
-    log.info("Downloading {}...".format(CJKSRC_URL))
-    opener = FancyURLopener()
-    filename, _headers = opener.retrieve(CJKSRC_URL)
-    log.info("Download completed")
-
-    with open(filename) as cjksrctxt:
-        cjksrc = parseCJKSrc(cjksrctxt)
+    cjksrc = get_unihan_CJKSrc()
 
     with open(cjksrcjson_path, "w") as cjksrcjson_file:
         json.dump(cjksrc, cjksrcjson_file, separators=(",", ":"))
