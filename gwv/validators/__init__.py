@@ -87,6 +87,9 @@ class Validator(object):
     def __init__(self):
         self.results = {}
 
+    def setup(self, dump):
+        pass
+
     def validate(self, glyphname, related, kage, gdata, dump):
         try:
             is_invalid = self.is_invalid(glyphname, related, kage, gdata, dump)

@@ -31,6 +31,9 @@ def validate(dump, validator_names=None, timestamp=None):
     filter_funcs = [validators.filter_funcs[filtername]
                     for filtername in filternames]
 
+    for val in validator_instances:
+        val.setup(dump)
+
     for glyphname in sorted(dump.keys()):
         related, data = dump[glyphname]
         kage = KageData(data)

@@ -10,6 +10,8 @@ import re
 
 import pkg_resources
 
+from gwv.kagedata import KageData
+
 
 _re_ids = re.compile(r"u2ff[\dab]-")
 _re_koseki = re.compile(r"^koseki-\d{6}$")
@@ -179,3 +181,23 @@ class CJKSources(object):
 
 
 cjk_sources = CJKSources()
+
+
+def get_alias_of(dump, name):
+    if get_alias_of.dic is not None:
+        return get_alias_of.dic.get(name, [name])
+    get_alias_of.dic = {}
+    for gname in dump:
+        if gname in get_alias_of.dic:
+            continue
+        kage = KageData(dump[gname][1])
+        if not kage.isAlias():
+            continue
+        entity_name = kage.lines[0].data[7]
+        entry = get_alias_of.dic.setdefault(entity_name, [entity_name])
+        entry.append(gname)
+        get_alias_of.dic[gname] = entry
+    return get_alias_of(dump, name)
+
+
+get_alias_of.dic = None

@@ -8,12 +8,13 @@ from __future__ import unicode_literals
 import re
 
 from gwv.helper import cjk_sources
+from gwv.helper import get_alias_of
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
-from gwv.validators import Validator
 from gwv.validators import ErrorCodes
+from gwv.validators import Validator
 
 
 error_codes = ErrorCodes(
@@ -33,13 +34,20 @@ filters = {
 }
 
 
-jv_data = load_package_data("data/jv.json")
-jv_no_use_part_replacement = {
-    no_use: use
-    for use, no_uses in jv_data["no-use-part"].items()
-    for no_use in no_uses
-}
-jv_no_apply_parts = set(jv_data["no-apply-jv"])
+def setup_jv_data(dump):
+    global jv_no_use_part_replacement, jv_no_apply_parts
+    jv_data = load_package_data("data/jv.json")
+    jv_no_use_part_replacement = {
+        no_use_alias: use
+        for use, no_uses in jv_data["no-use-part"].items()
+        for no_use in no_uses
+        for no_use_alias in get_alias_of(dump, no_use)
+    }
+    jv_no_apply_parts = {
+        part_alias
+        for part in jv_data["no-apply-jv"]
+        for part_alias in get_alias_of(dump, part)
+    }
 
 
 def checkJV(kage):
@@ -62,6 +70,9 @@ _re_region_opthenka = re.compile(r"^(" + RE_REGIONS + r")(\d{2})?$")
 class JValidator(Validator):
 
     name = "j"
+
+    def setup(self, dump):
+        setup_jv_data(dump)
 
     def is_invalid(self, name, related, kage, gdata, dump):
         splitname = name.split("-")
