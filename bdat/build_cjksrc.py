@@ -13,9 +13,9 @@ import os.path
 import zipfile
 
 try:
-    from urllib import FancyURLopener
+    from urllib import urlretrieve
 except ImportError:
-    from urllib.request import FancyURLopener
+    from urllib.request import urlretrieve
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -27,8 +27,7 @@ CJKSRC_JSON_FILENAME = "cjksrc.json"
 
 def get_iso_CJKSrc(url=CJKSRC_URL):
     log.info("Downloading {}...".format(url))
-    opener = FancyURLopener()
-    filename, _headers = opener.retrieve(url)
+    filename, _headers = urlretrieve(url)
     log.info("Download completed")
 
     with open(filename) as cjksrctxt:
@@ -37,8 +36,7 @@ def get_iso_CJKSrc(url=CJKSRC_URL):
 
 def get_unihan_CJKSrc(url=UNIHAN_ZIP_URL):
     log.info("Downloading {}...".format(url))
-    opener = FancyURLopener()
-    filename, _headers = opener.retrieve(url)
+    filename, _headers = urlretrieve(url)
     log.info("Download completed")
 
     with zipfile.ZipFile(filename) as unihanzip:
