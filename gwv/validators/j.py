@@ -34,41 +34,6 @@ filters = {
 }
 
 
-_re_jv_no_apply_part_variant = re.compile(
-    r"-(" + RE_REGIONS + r")(\d{2})?$|(-\d{2})?(-var-\d{3})$")
-
-
-def setup_jv_data(dump):
-    global jv_no_use_part_replacement, jv_no_apply_parts
-    jv_data = load_package_data("data/jv.json")
-    jv_no_use_part_replacement = {
-        no_use_alias: use
-        for use, no_uses in jv_data["no-use-part"].items()
-        for no_use in no_uses
-        for no_use_alias in get_alias_of(dump, no_use)
-    }
-    re_no_apply_jv = re.compile(
-        r"(" + r"|".join(jv_data["no-apply-jv"]) +
-        r")(-(" + RE_REGIONS + r")(\d{2})?$|(-\d{2})?(-var-\d{3})?)$")
-    jv_no_apply_parts = {
-        part_alias
-        for part in dump if re_no_apply_jv.match(part)
-        for part_alias in get_alias_of(dump, part)
-    }
-
-
-def checkJV(kage):
-    used_parts = [kageline.data[7].split("@")[0]
-                  for kageline in kage.lines if kageline.data[0] == 99]
-    if any(part in jv_no_apply_parts for part in used_parts):
-        return False  # 簡体字特有の字形
-    for part in used_parts:
-        if part in jv_no_use_part_replacement:
-            # -jvに使わない字形の部品が使用されている
-            return [error_codes.NONJV_PART, part, jv_no_use_part_replacement[part]]
-    return False
-
-
 source_separation = GWGroupLazyLoader("原規格分離", isset=True)
 
 _re_region_opthenka = re.compile(r"^(" + RE_REGIONS + r")(\d{2})?$")
@@ -78,8 +43,41 @@ class JValidator(Validator):
 
     name = "j"
 
+    def __init__(self):
+        Validator.__init__(self)
+        self.jv_no_use_part_replacement = {}
+        self.jv_no_apply_parts = set()
+
     def setup(self, dump):
-        setup_jv_data(dump)
+        jv_data = load_package_data("data/jv.json")
+        self.jv_no_use_part_replacement = {
+            no_use_alias: use
+            for use, no_uses in jv_data["no-use-part"].items()
+            for no_use in no_uses
+            for no_use_alias in get_alias_of(dump, no_use)
+        }
+        re_no_apply_jv = re.compile(
+            r"(" + r"|".join(jv_data["no-apply-jv"]) +
+            r")(-(" + RE_REGIONS + r")(\d{2})?$|(-\d{2})?(-var-\d{3})?)$")
+        self.jv_no_apply_parts = {
+            part_alias
+            for part in dump if re_no_apply_jv.match(part)
+            for part_alias in get_alias_of(dump, part)
+        }
+
+    def checkJV(self, kage):
+        used_parts = [kageline.data[7].split("@")[0]
+                      for kageline in kage.lines if kageline.data[0] == 99]
+        if any(part in self.jv_no_apply_parts for part in used_parts):
+            return False  # 簡体字特有の字形
+        for part in used_parts:
+            if part in self.jv_no_use_part_replacement:
+                # -jvに使わない字形の部品が使用されている
+                return [
+                    error_codes.NONJV_PART,
+                    part, self.jv_no_use_part_replacement[part]
+                ]
+        return False
 
     def is_invalid(self, name, related, kage, gdata, dump):
         splitname = name.split("-")
@@ -88,16 +86,16 @@ class JValidator(Validator):
 
         if splitname[0] in ("irg2015", "irg2017"):
             # irg2015-, irg2017- glyphs have no J source
-            return checkJV(kage.get_entity(dump))
+            return self.checkJV(kage.get_entity(dump))
 
         # uXXXX, uXXXX-...
         ucs = splitname[0]
         jsource = cjk_sources.get(ucs, cjk_sources.COLUMN_J)
 
         if len(splitname) == 1:  # 無印
-            if jsource is None and ucs not in jv_no_apply_parts and \
+            if jsource is None and ucs not in self.jv_no_apply_parts and \
                     ucs not in source_separation.get_data():
-                return checkJV(kage.get_entity(dump))
+                return self.checkJV(kage.get_entity(dump))
             return False
 
         m = _re_region_opthenka.match(splitname[1])
@@ -158,8 +156,8 @@ class JValidator(Validator):
         if (ucs + "-ja") in dump:
             # uxxxx-jv と uxxxx-ja が共存している
             return [error_codes.J_JV_COEXISTENT, "ja"]
-        if ucs not in jv_no_apply_parts:
-            return checkJV(kage.get_entity(dump))
+        if ucs not in self.jv_no_apply_parts:
+            return self.checkJV(kage.get_entity(dump))
         return False
 
 
