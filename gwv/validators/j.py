@@ -34,6 +34,10 @@ filters = {
 }
 
 
+_re_jv_no_apply_part_variant = re.compile(
+    r"-(" + RE_REGIONS + r")(\d{2})?$|(-\d{2})?(-var-\d{3})$")
+
+
 def setup_jv_data(dump):
     global jv_no_use_part_replacement, jv_no_apply_parts
     jv_data = load_package_data("data/jv.json")
@@ -43,9 +47,12 @@ def setup_jv_data(dump):
         for no_use in no_uses
         for no_use_alias in get_alias_of(dump, no_use)
     }
+    re_no_apply_jv = re.compile(
+        r"(" + r"|".join(jv_data["no-apply-jv"]) +
+        r")(-(" + RE_REGIONS + r")(\d{2})?$|(-\d{2})?(-var-\d{3})?)$")
     jv_no_apply_parts = {
         part_alias
-        for part in jv_data["no-apply-jv"]
+        for part in dump if re_no_apply_jv.match(part)
         for part_alias in get_alias_of(dump, part)
     }
 
