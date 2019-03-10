@@ -23,7 +23,8 @@ error_codes = ErrorCodes(
     NONJV_PART="2",  # -jvに使わない字形の部品が使用されている
     JV_HAS_JSOURCE="30",  # Jソースがあるのにjv
     KV_HAS_KSOURCE="31",  # Kソースがあるのにkv
-    NO_SOURCE="4",  # ソースが存在しない地域指定
+    NO_SOURCE="40",  # ソースが存在しない地域指定
+    NO_SOURCE_HENKA="41",  # ソースが存在しない地域指定（偏化変形）
     JV_SOURCE_SEPARATION="5",  # 原規格分離-jv
 )
 
@@ -120,11 +121,15 @@ class JValidator(Validator):
         else:  # not 仮想字形
             if region in ("j", "ja"):
                 if jsource is None:
-                    return [error_codes.NO_SOURCE]  # ソースが存在しない地域指定
+                    # ソースが存在しない地域指定
+                    return [error_codes.NO_SOURCE_HENKA
+                            if isHenka else error_codes.NO_SOURCE]
             elif region in cjk_sources.region2index:
                 source = cjk_sources.get(ucs, cjk_sources.region2index[region])
                 if source is None:
-                    return [error_codes.NO_SOURCE]  # ソースが存在しない地域指定
+                    # ソースが存在しない地域指定
+                    return [error_codes.NO_SOURCE_HENKA
+                            if isHenka else error_codes.NO_SOURCE]
             else:  # -i, -us, -js
                 return False
 
