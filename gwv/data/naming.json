@@ -113,6 +113,7 @@
 			"^taiwanese-\\d{4}$",
 			"^tdcntd-\\d{6}$",
 			"^tenrei-[1-6]\\d{3}[ab]\\d{2,3}$",
+			"^tf-[\\da-f]{4}$",
 			"^ttz-\\d{3}-\\d{2}-[a-z]+$",
 			"^unstable-bsh-[\\da-f]{4}$",
 			"^unstable-u[\\da-f]{4,5}(-ufe0[\\da-f])?$",
