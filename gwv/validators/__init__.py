@@ -40,7 +40,7 @@ filters = {
     "alias": {True, False},
     "category": {"user-owned", "ids", "togo", "togo-var", "gokan", "gokan-var",
                  "ucs-hikanji", "ucs-hikanji-var", "cdp", "koseki-kanji",
-                 "koseki-hikanji", "toki", "ext", "other"},
+                 "koseki-hikanji", "toki", "ext", "bsh", "other"},
     "transform": {True, False},
 }
 
@@ -49,6 +49,7 @@ _re_cdp = re.compile(r"cdp[on]?-[\da-f]{4}(-|$)")
 _re_koseki = re.compile(r"^koseki-\d{6}$")
 _re_toki = re.compile(r"^toki-\d{8}$")
 _re_ext = re.compile(r"^irg201[57]-\d{5}$")
+_re_bsh = re.compile(r"^unstable-bsh-[\da-f]{4}$")
 
 
 def _categorize(glyphname):
@@ -72,6 +73,8 @@ def _categorize(glyphname):
         return "toki"
     if _re_ext.match(glyphname):
         return "ext"
+    if _re_bsh.match(glyphname):
+        return "bsh"
     return "other"
 
 
