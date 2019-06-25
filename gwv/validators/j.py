@@ -31,7 +31,7 @@ error_codes = ErrorCodes(
 
 filters = {
     "alias": {True, False},
-    "category": {"togo", "togo-var", "gokan-var", "ext"}
+    "category": {"togo", "togo-var", "gokan-var", "ext", "bsh"}
 }
 
 
@@ -82,6 +82,10 @@ class JValidator(Validator):
 
     def is_invalid(self, name, related, kage, gdata, dump):
         splitname = name.split("-")
+
+        if len(splitname) == 3 and splitname[:2] == ["unstable", "bsh"]:
+            return self.checkJV(kage.get_entity(dump))
+
         if len(splitname) > 2:
             return False
 
