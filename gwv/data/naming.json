@@ -521,5 +521,11 @@
 			"gt-78018",
 			"gt-78047"
 		]
+	},
+	"deprecated-rule": {
+		"regex": [
+			"^geog-qin-\\d+$",
+			"^kx-\\d{6}$"
+		]
 	}
 }

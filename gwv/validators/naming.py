@@ -19,6 +19,7 @@ error_codes = ErrorCodes(
     INVALID_IDS="1",  # 不正なIDS
     PROHIBITED_GLYPH_NAME="2",  # 禁止されたグリフ名
     ENCODED_CDP_IN_IDS="3",  # UCSで符号化済みのCDP外字
+    DEPRECATED_NAMING_RULE="4",  # 廃止予定の命名規則
 )
 
 
@@ -135,6 +136,10 @@ class NamingValidator(Validator):
             return False
         if not isVar and not isHenka and rules["rule-novar-nohenka"].match(name):
             return False
+
+        if rules["deprecated-rule"].match(name):
+            return [error_codes.DEPRECATED_NAMING_RULE]  # 廃止予定の命名規則
+
         return [error_codes.NAMING_RULE_VIOLATION]  # 命名規則違反
 
 
