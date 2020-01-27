@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/kurgm/gwv.svg?branch=master)](https://travis-ci.org/kurgm/gwv)
 [![codecov](https://codecov.io/gh/kurgm/gwv/branch/master/graph/badge.svg)](https://codecov.io/gh/kurgm/gwv)
 
-GlyphWiki data validator - http://ku6goma.appspot.com/gwv/
+GlyphWiki data validator - https://kurgm.github.io/gwv-view/
 
 
 ## Installation
