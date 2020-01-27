@@ -20,7 +20,7 @@ except ImportError:
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-MJ_ZIP_URL = "https://oscdl.ipa.go.jp/mji.00502.zip"
+MJ_ZIP_URL = "https://mojikiban.ipa.go.jp/OSCDL/mji.00502.zip"
 MJ_JSON_FILENAME = "mj.json"
 
 
