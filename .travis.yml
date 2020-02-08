@@ -22,4 +22,4 @@ cache:
 
 before_cache:
   - if [ ! -d gwv_data_cache ]; then mkdir gwv_data_cache; fi
-  - mv gwv/data/cjksrc.json gwv/data/irg2015.json gwv/data/mj.json gwv_data_cache/
+  - mv gwv/data/cjksrc.json gwv/data/mj.json gwv_data_cache/
