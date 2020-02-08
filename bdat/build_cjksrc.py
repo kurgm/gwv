@@ -21,7 +21,7 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 
 CJKSRC_URL = "https://www.unicode.org/wg2/iso10646/edition5/data/CJKSrc.txt"
-UNIHAN_ZIP_URL = "https://www.unicode.org/Public/12.0.0/ucd/Unihan.zip"
+UNIHAN_ZIP_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
 CJKSRC_JSON_FILENAME = "cjksrc.json"
 
 
