@@ -9,7 +9,7 @@ import shutil
 import tempfile
 import zipfile
 
-from strict_xlsx import iterxlsx
+from .strict_xlsx import iterxlsx
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
