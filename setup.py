@@ -8,6 +8,8 @@ from setuptools.command.install import install
 from setuptools import find_packages
 from setuptools import setup
 
+from gwv import __version__
+
 
 class my_install(install):
 
@@ -25,7 +27,7 @@ class my_install(install):
 
 setup(
     name="gwv",
-    version="1.0",
+    version=__version__,
     packages=find_packages(exclude=[
         "*.tests", "*.tests.*", "tests.*", "tests",
         "*.bdat", "*.bdat.*", "bdat.*", "bdat"
