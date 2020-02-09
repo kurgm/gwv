@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 
+from collections import defaultdict
 import json
 import logging
 import os
 from urllib.request import urlretrieve
-from xml.etree.ElementTree import iterparse
+import shutil
+import tempfile
 import zipfile
+
+from strict_xlsx import iterxlsx
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-MJ_ZIP_URL = "https://moji.or.jp/wp-content/mojikiban/oscdl/mji.00502.zip"
+MJ_ZIP_URL = "https://moji.or.jp/wp-content/mojikiban/oscdl/mji.00601-xlsx.zip"
 MJ_JSON_FILENAME = "mj.json"
 
 
@@ -19,81 +23,83 @@ def kuten2gl(ku: int, ten: int):
     return "{:02x}{:02x}".format(ku + 32, ten + 32)
 
 
-def parseMjxml(mjxml):
-    ns = "{urn:mojikiban:ipa:go:jp:mji}"
+def parseMjxlsx(mjxlsx):
     mjdat = []
-    mjit = iterparse(mjxml, events=("start", "end"))
-    ev, root = next(mjit)
-    for ev, elem in mjit:
-        if ev != "end" or elem.tag != ns + "MJ文字情報":
-            continue
-
+    mjit = iterxlsx(mjxlsx, "sheet1")
+    header = next(mjit)
+    for row in mjit:
+        rowdata = defaultdict(lambda: None, {
+            header[col]: value
+            for col, value in row.items()
+        })
         # [jmj,koseki,juki,nyukan,x0213,x0212,ucs,ivs,svs,toki,dkw,shincho,sdjt]
         # ucs, ivsは複数ある可能性あり
         mjrow = [None, None, None, None, None, None,
                  set(), set(), None, None, None, None, None]
-        for ch in elem:
-            if ch.tag == ns + "MJ文字図形名":
-                mjrow[0] = ch.text[2:]  # strip "MJ"
-            elif ch.tag == ns + "戸籍統一文字番号":
-                if ch.text:
-                    mjrow[1] = ch.text
-            elif ch.tag == ns + "住基ネット統一文字コード":
-                if ch.text:
-                    mjrow[2] = ch.text[2:].lower()  # strip "J+"
-            elif ch.tag == ns + "入管外字コード":
-                if ch.text:
-                    mjrow[3] = ch.text.lower()
-            elif ch.tag == ns + "JISX0213":
-                men, ku, ten = ch[0].text.split("-")
-                mjrow[4] = men + "-" + kuten2gl(int(ku), int(ten))
-            elif ch.tag == ns + "JISX0212":
-                ku, ten = ch.text.split("-")
-                mjrow[5] = kuten2gl(int(ku), int(ten))
-            elif ch.tag == ns + "UCS":
-                for gch in ch:
-                    if gch.tag == ns + "対応するUCS":
-                        if gch.text:
-                            mjrow[6].add(gch.text[2:].lower())  # strip "U+"
-                    elif gch.tag == ns + "対応する互換漢字":
-                        mjrow[6].add(gch.text[2:].lower())  # strip "U+"
-            elif ch.tag == ns + "IPAmj明朝フォント実装":
-                for gch in ch:
-                    if gch.tag == ns + "実装したUCS":
-                        mjrow[6].add(gch.text[2:].lower())  # strip "U+"
-                    elif gch.tag == ns + "実装したMoji_JohoIVS":
-                        seq = gch.text.split("_")
-                        mjrow[6].add(seq[0].lower())
-                        # XXXX_E01YY -> uxxxx-ue01yy
-                        mjrow[7].add("-".join("u" + cp.lower() for cp in seq))
-                    elif gch.tag == ns + "実装したSVS":
-                        seq = gch.text.split("_")
-                        mjrow[6].add(seq[0].lower())
-                        # XXXX_FE0Y -> uxxxx-ufe0y
-                        mjrow[8] = "-".join("u" + cp.lower() for cp in seq)
-            elif ch.tag == ns + "登記統一文字番号":
-                mjrow[9] = ch.text
-            elif ch.tag == ns + "大漢和":
-                dkwnum = ch.text.lstrip("補").rstrip("#'")
-                if ch.text.startswith("補"):
-                    mjrow[10] = "h{:0>4}{}".format(
-                        dkwnum, "d" * ch.text.count("'"))
-                else:
-                    mjrow[10] = "{:0>5}{}".format(
-                        dkwnum, "d" * ch.text.count("'"))
-            elif ch.tag == ns + "日本語漢字辞典":
-                mjrow[11] = "{:0>5}".format(ch.text)
-            elif ch.tag == ns + "新大字典":
-                mjrow[12] = "{:0>5}".format(ch.text)
+        mjrow[0] = rowdata["MJ文字図形名"][2:]  # strip "MJ"
+        chtext = rowdata["戸籍統一文字番号"]
+        if chtext:
+            mjrow[1] = chtext
+        chtext = rowdata["住基ネット統一文字コード"]
+        if chtext:
+            mjrow[2] = chtext[2:].lower()  # strip "J+"
+        chtext = rowdata["入管外字コード"]
+        if chtext:
+            mjrow[3] = chtext[2:].lower()  # strip "0x"
+        chtext = rowdata["X0213"]
+        if chtext:
+            men, ku, ten = chtext.split("-")
+            mjrow[4] = men + "-" + kuten2gl(int(ku), int(ten))
+        chtext = rowdata["X0212"]
+        if chtext:
+            ku, ten = chtext.split("-")
+            mjrow[5] = kuten2gl(int(ku), int(ten))
+        chtext = rowdata["対応するUCS"]
+        if chtext:
+            mjrow[6].add(chtext[2:].lower())  # strip "U+"
+        chtext = rowdata["対応する互換漢字"]
+        if chtext:
+            mjrow[6].add(chtext[2:].lower())  # strip "U+"
+        chtext = rowdata["実装したUCS"]
+        if chtext:
+            mjrow[6].add(chtext[2:].lower())  # strip "U+"
+        chtext = rowdata["実装したMoji_JohoコレクションIVS"]
+        if chtext:
+            seq = chtext.split("_")
+            mjrow[6].add(seq[0].lower())
+            # XXXX_E01YY -> uxxxx-ue01yy
+            mjrow[7].add("-".join("u" + cp.lower() for cp in seq))
+        chtext = rowdata["実装したSVS"]
+        if chtext:
+            seq = chtext.split("_")
+            mjrow[6].add(seq[0].lower())
+            # XXXX_FE0Y -> uxxxx-ufe0y
+            mjrow[8] = "-".join("u" + cp.lower() for cp in seq)
+        chtext = rowdata["登記統一文字番号(参考)"]
+        if chtext:
+            mjrow[9] = chtext
+        chtext = rowdata["大漢和"]
+        if chtext:
+            chtext = str(chtext)
+            dkwnum = chtext.lstrip("補").rstrip("#'")
+            if chtext.startswith("補"):
+                mjrow[10] = "h{:0>4}{}".format(
+                    dkwnum, "d" * chtext.count("'"))
+            else:
+                mjrow[10] = "{:0>5}{}".format(
+                    dkwnum, "d" * chtext.count("'"))
+        chtext = rowdata["日本語漢字辞典"]
+        if chtext:
+            mjrow[11] = "{:0>5}".format(chtext)
+        chtext = rowdata["新大字典"]
+        if chtext:
+            mjrow[12] = "{:0>5}".format(chtext)
 
         # set to list
         mjrow[6] = list(mjrow[6])
         mjrow[7] = list(mjrow[7])
 
         mjdat.append(mjrow)
-
-        # free memory
-        root.clear()
     return mjdat
 
 
@@ -113,9 +119,12 @@ def main(mjjson_path: str = mjjson_path):
     filename, _headers = urlretrieve(MJ_ZIP_URL)
     log.info("Download completed")
 
-    with zipfile.ZipFile(filename) as mjzip:
-        with mjzip.open("mji.00502.xml") as mjxml:
-            mjdat = parseMjxml(mjxml)
+    with tempfile.TemporaryFile() as mjxlsx_seekable:
+        with zipfile.ZipFile(filename) as mjzip:
+            with mjzip.open("mji.00601.xlsx") as mjxlsx:
+                shutil.copyfileobj(mjxlsx, mjxlsx_seekable)
+
+        mjdat = parseMjxlsx(mjxlsx_seekable)
 
     with open(mjjson_path, "w") as mjjson_file:
         json.dump(mjdat, mjjson_file, separators=(",", ":"))
