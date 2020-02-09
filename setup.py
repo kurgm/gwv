@@ -30,9 +30,6 @@ setup(
         "*.tests", "*.tests.*", "tests.*", "tests",
         "*.bdat", "*.bdat.*", "bdat.*", "bdat"
     ]),
-    setup_requires=[
-        "xlrd"
-    ],
     entry_points={
         "console_scripts": [
             "gwv = gwv.gwv:main"

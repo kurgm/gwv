@@ -9,7 +9,7 @@ GlyphWiki data validator - https://kurgm.github.io/gwv-view/
 ## Installation
 
 ```sh
-python setup.py install
+pip install .
 ```
 
 
