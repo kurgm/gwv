@@ -1,7 +1,7 @@
 {
 	"rule-novar-nohenka": {
 		"regex": [
-			"^u2?[\\da-f]{4}-(g|t|j|k|v|h|kp|u|m|us|i|ja|js|jv|[gktv]v)(\\d{2})?$"
+			"^u[23]?[\\da-f]{4}-(g|t|j|k|v|h|kp|u|m|us|i|ja|js|jv|[gktv]v)(\\d{2})?$"
 		],
 		"string": [
 			"sandbox",
@@ -10,21 +10,21 @@
 	},
 	"rule-novar": {
 		"regex": [
-			"^u2?[\\da-f]{4}-u(e01[\\da-f]{2}|fe0[\\da-f])$",
-			"^sosho-u2?[\\da-f]{4}-\\d{3}$",
+			"^u[23]?[\\da-f]{4}-u(e01[\\da-f]{2}|fe0[\\da-f])$",
+			"^sosho-u[23]?[\\da-f]{4}-\\d{3}$",
 			"^unstable-u[\\da-f]{4,5}(-ufe0[\\da-f])?$"
 		]
 	},
 	"rule-nohenka": {
 		"regex": [
-			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-vert$",
-			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-(full|half)width$"
+			"^u[1-3]?[\\da-f]{4}(-u[1-3]?[\\da-f]{4})*-vert$",
+			"^u[1-3]?[\\da-f]{4}(-u[1-3]?[\\da-f]{4})*-(full|half)width$"
 		]
 	},
 	"rule": {
 		"regex": [
-			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*$",
-			"^u[12]?[\\da-f]{4}(-u[12]?[\\da-f]{4})*-sans$",
+			"^u[1-3]?[\\da-f]{4}(-u[1-3]?[\\da-f]{4})*$",
+			"^u[1-3]?[\\da-f]{4}(-u[1-3]?[\\da-f]{4})*-sans$",
 			"^ue0[01][\\da-f]{2}$",
 			"^koseki-\\d{6}$",
 			"^a[jk]1-\\d{5}$",

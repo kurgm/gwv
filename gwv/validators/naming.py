@@ -69,9 +69,9 @@ _re_ids_head = re.compile(r"u2ff[\dab]-")
 _re_idc_2 = re.compile(r"(^|-)u2ff[014-9ab](?=-|$)")
 _re_idc_3 = re.compile(r"(^|-)u2ff[23](?=-|$)")
 _re_kanji = re.compile(
-    r"-(?:u2?[\da-f]{4}(?:-u(?:e01[\da-f]{2}|fe0[\da-f]))?|cdp[on]?-[\da-f]{4})(?=-|$)")
+    r"-(?:u[23]?[\da-f]{4}(?:-u(?:e01[\da-f]{2}|fe0[\da-f]))?|cdp[on]?-[\da-f]{4})(?=-|$)")
 _re_ids_kanji = re.compile(r"２-漢-漢|３-漢-漢-漢")
-_re_ucs = re.compile(r"(^|-)(u2?[\da-f]{4})(?=-|$)")
+_re_ucs = re.compile(r"(^|-)(u[23]?[\da-f]{4})(?=-|$)")
 
 
 class NamingValidator(Validator):
