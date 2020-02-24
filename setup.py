@@ -4,16 +4,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from setuptools.command.install import install
+from distutils.command.build import build
 from setuptools import find_packages
 from setuptools import setup
 
 from gwv import __version__
 
 
-class my_install(install):
+class my_build(build):
 
-    def _pre_install(self):
+    def _pre_build(self):
         import bdat.build_mj
         bdat.build_mj.main()
 
@@ -21,8 +21,8 @@ class my_install(install):
         bdat.build_cjksrc.main()
 
     def run(self):
-        self._pre_install()
-        install.run(self)
+        self._pre_build()
+        build.run(self)
 
 
 setup(
@@ -37,7 +37,7 @@ setup(
             "gwv = gwv.gwv:main"
         ]
     },
-    cmdclass={'install': my_install},
+    cmdclass={'build': my_build},
     package_data={
         "gwv": ["data/*"],
     },
