@@ -46,7 +46,7 @@ def get_unihan_CJKSrc(url=UNIHAN_ZIP_URL):
 
 def parseCJKSrc(cjksrctxt):
     result = {}
-    tag2idx = dict(zip([
+    taglist = [
         "kIRG_GSource",
         "kIRG_TSource",
         "kIRG_JSource",
@@ -59,7 +59,8 @@ def parseCJKSrc(cjksrctxt):
         "kIRG_SSource",
         "kIRG_UKSource",
         "kCompatibilityVariant"
-    ], range(10)))
+    ]
+    tag2idx = {tag: idx for idx, tag in enumerate(taglist)}
 
     for line in cjksrctxt:
         if not line.startswith("U+"):
@@ -69,7 +70,7 @@ def parseCJKSrc(cjksrctxt):
             continue
         ucs = "u" + ucs[2:].lower()
         if ucs not in result:
-            result[ucs] = [None] * 10
+            result[ucs] = [None] * len(taglist)
         result[ucs][tag2idx[tag]] = val
 
     return result
