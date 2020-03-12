@@ -77,8 +77,8 @@ class IllegalValidator(Validator):
         for line in kage.lines:
             lendata = len(line.data)
             stype = line.data[0]
-            sttType = line.data[1]
-            endType = line.data[2]
+            sttType = line.data[1] if lendata >= 2 else 0
+            endType = line.data[2] if lendata >= 3 else 0
             if not isKanjiGlyph:
                 stype = stype % 100 if stype >= 0 else stype
                 sttType = sttType % 100 if sttType >= 0 else sttType
