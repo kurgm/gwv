@@ -1,7 +1,7 @@
 {
 	"rule-novar-nohenka": {
 		"regex": [
-			"^u[23]?[\\da-f]{4}-(g|t|j|k|v|h|kp|u|m|us|i|ja|js|jv|[gktv]v)(\\d{2})?$"
+			"^u[23]?[\\da-f]{4}-(g|t|j|k|v|h|kp|u|s|uk|m|us|i|ja|js|jv|[gktv]v)(\\d{2})?$"
 		],
 		"string": [
 			"sandbox",

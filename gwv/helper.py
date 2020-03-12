@@ -63,7 +63,7 @@ def isGokanKanji(name):
 
 
 _re_ucs = re.compile(r"^u[\da-f]{4,6}$")
-RE_REGIONS = r"(?:[gtv]v?|[hmi]|k[pv]?|us?|j[asv]?)"
+RE_REGIONS = r"(?:[gtv]v?|[hmis]|k[pv]?|u[ks]?|j[asv]?)"
 
 
 def isUcs(name):
@@ -135,7 +135,9 @@ class CJKSources(object):
     COLUMN_H = 6
     COLUMN_M = 7
     COLUMN_U = 8
-    COLUMN_COMPATIBILITY_VARIANT = 9
+    COLUMN_S = 9
+    COLUMN_UK = 10
+    COLUMN_COMPATIBILITY_VARIANT = 11
 
     region2index = {
         "g": COLUMN_G,
@@ -147,6 +149,8 @@ class CJKSources(object):
         "h": COLUMN_H,
         "m": COLUMN_M,
         "u": COLUMN_U,
+        "s": COLUMN_S,
+        "uk": COLUMN_UK,
     }
 
     def __init__(self):
