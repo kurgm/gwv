@@ -6,19 +6,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from . import build_cjksrc
-from . import build_mj
-
-
-BUILDFUNCS = [
-    build_cjksrc.main,
-    build_mj.main,
-]
+from . import BUILDFUNCS
 
 
 def main():
-    from . import __main__
-    __main__.main()
+    for buildfunc in BUILDFUNCS:
+        buildfunc()
 
 
 if __name__ == "__main__":
