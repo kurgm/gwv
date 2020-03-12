@@ -14,11 +14,8 @@ from gwv import __version__
 class my_build(build):
 
     def _pre_build(self):
-        import bdat.build_mj
-        bdat.build_mj.main()
-
-        import bdat.build_cjksrc
-        bdat.build_cjksrc.main()
+        import bdat
+        bdat.main()
 
     def run(self):
         self._pre_build()
