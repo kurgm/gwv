@@ -2,11 +2,11 @@ language: python
 
 python:
   - "2.7"
-  - "3.6"
+  - "3.8"
 
 install:
   - if [ -d gwv_data_cache ] && [ -n "$(ls -A gwv_data_cache)" ]; then ls gwv_data_cache/; mv gwv_data_cache/* gwv/data/; fi
-  - pip install .
+  - python bdat/__init__.py
   - pip install coverage
   - pip install codecov
 
