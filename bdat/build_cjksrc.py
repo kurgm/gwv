@@ -56,6 +56,8 @@ def parseCJKSrc(cjksrctxt):
         "kIRG_HSource",
         "kIRG_MSource",
         "kIRG_USource",
+        "kIRG_SSource",
+        "kIRG_UKSource",
         "kCompatibilityVariant"
     ], range(10)))
 
