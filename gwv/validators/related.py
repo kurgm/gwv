@@ -33,7 +33,8 @@ class RelatedValidator(Validator):
             expected_related = "u" + u[2:].lower()
 
         if related != "u3013" and expected_related != related:
-            return [error_codes.WRONG_RELATED, related, expected_related]  # 間違った関連字
+            # 間違った関連字
+            return [error_codes.WRONG_RELATED, related, expected_related]
 
         if kage.isAlias():
             entity_name = gdata[19:]
@@ -46,11 +47,15 @@ class RelatedValidator(Validator):
             related = dump[entity_name][0]
             if related == "u3013":
                 # 実体が関連字なし
-                return [error_codes.MISSING_ENTITY_RELATED, entity_name, expected_related]
+                return [
+                    error_codes.MISSING_ENTITY_RELATED,
+                    entity_name, expected_related]
 
             if expected_related != related:
                 # 実体の関連字が違う
-                return [error_codes.WRONG_ENTITY_RELATED, entity_name, related, expected_related]
+                return [
+                    error_codes.WRONG_ENTITY_RELATED,
+                    entity_name, related, expected_related]
 
         elif related == "u3013":
             return [error_codes.MISSING_RELATED, expected_related]  # 関連字なし

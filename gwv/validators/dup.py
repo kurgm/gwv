@@ -136,8 +136,10 @@ class DupValidator(Validator):
                     ]  # 縦
 
         curve.sort(key=lambda line_coords: line_coords[1][0])
-        for (curve_1, curve_1_coords), (curve_2, curve_2_coords) in ineighbors(curve):
-            if all(-3 <= curve_1_coords[j] - curve_2_coords[j] <= 3 for j in range(6)):
+        for (curve_1, curve_1_coords), (curve_2, curve_2_coords) in \
+                ineighbors(curve):
+            if all(-3 <= curve_1_coords[j] - curve_2_coords[j] <= 3
+                   for j in range(6)):
                 return [
                     error_codes.CURVE,
                     [curve_1.line_number, curve_1.strdata],
@@ -146,7 +148,8 @@ class DupValidator(Validator):
 
         curve2.sort(key=lambda line: line.data[3])
         for curve21, curve22 in ineighbors(curve2):
-            if all(-3 <= curve21.data[j] - curve22.data[j] <= 3 for j in range(3, 11)):
+            if all(-3 <= curve21.data[j] - curve22.data[j] <= 3
+                   for j in range(3, 11)):
                 return [
                     error_codes.CCURVE,
                     [curve21.line_number, curve21.strdata],
@@ -157,7 +160,8 @@ class DupValidator(Validator):
         for buhin1, buhin2 in ineighbors(buhin):
             if buhin1.data[7] != buhin2.data[7]:
                 continue
-            if all(-3 <= buhin1.data[j] - buhin2.data[j] <= 3 for j in range(3, 7)):
+            if all(-3 <= buhin1.data[j] - buhin2.data[j] <= 3
+                   for j in range(3, 7)):
                 return [
                     error_codes.PART,
                     [buhin1.line_number, buhin1.strdata],
@@ -166,7 +170,8 @@ class DupValidator(Validator):
 
         buhinIchi.sort(key=lambda line: line.data[3])
         for buhinIchi1, buhinIchi2 in ineighbors(buhinIchi):
-            if all(-3 <= buhinIchi1.data[j] - buhinIchi2.data[j] <= 3 for j in range(3, 7)):
+            if all(-3 <= buhinIchi1.data[j] - buhinIchi2.data[j] <= 3
+                   for j in range(3, 7)):
                 return [
                     error_codes.PARTPOS,
                     [buhinIchi1.line_number, buhinIchi1.strdata],

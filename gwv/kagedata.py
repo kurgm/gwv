@@ -42,9 +42,11 @@ class KageData(object):
                             for i, l in enumerate(data.split("$"))])
         self.len = len(self.lines)
         self.isAlias = _cachelambdas[
-            self.len == 1 and self.lines[0].strdata[:19] == "99:0:0:0:0:200:200:"]
+            self.len == 1 and
+            self.lines[0].strdata.startswith("99:0:0:0:0:200:200:")]
         self.has_transform = any(
-            len(line.data) >= 2 and line.data[0] == 0 and line.data[1] in (97, 98, 99)
+            len(line.data) >= 2 and
+            line.data[0] == 0 and line.data[1] in (97, 98, 99)
             for line in self.lines)
 
     def get_entity(self, dump):
@@ -64,5 +66,6 @@ class KageLine(object):
         if kageIntSuppressError(sdata[0]) != 99:
             self.data = tuple([kageIntSuppressError(x) for x in sdata])
         else:
-            self.data = tuple(
-                [kageIntSuppressError(x) if i != 7 else x for i, x in enumerate(sdata)])
+            self.data = tuple([
+                kageIntSuppressError(x) if i != 7 else x
+                for i, x in enumerate(sdata)])

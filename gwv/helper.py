@@ -22,9 +22,26 @@ def isKanji(name):
 
 
 _re_togo_f = re.compile(
-    r"^u(4d[c-f][0-9a-f]|9ff[d-f]|2a6d[ef]|2a6[ef][0-9a-f]|2b73[5-9a-f]|2b81[ef]|2cea[2-9a-f]|2ebe[1-9a-f]|2ebf[0-9a-f]|3134[b-f]|313[5-9a-f][0-9a-f])$")
+    r"""^u(
+        4d[c-f][0-9a-f]|              # Ext A
+        9ff[d-f]|                     # URO
+        2a6d[ef]|2a6[ef][0-9a-f]|     # Ext B
+        2b73[5-9a-f]|                 # Ext C
+        2b81[ef]|                     # Ext D
+        2cea[2-9a-f]|                 # Ext E
+        2ebe[1-9a-f]|2ebf[0-9a-f]|    # Ext F
+        3134[b-f]|313[5-9a-f][0-9a-f] # Ext G
+    )$""",
+    re.X)
 _re_togo_t1 = re.compile(
-    r"^u(3[4-9a-f]|[4-9][0-9a-f]|2[0-9a-d][0-9a-f]|2e[0-9ab]|30[0-9a-f]|31[0-3])[\da-f]{2}$")
+    r"""^u(
+        3[4-9a-f]|          # Ext A
+        [4-9][0-9a-f]|      # URO
+        2[0-9a-d][0-9a-f]|  # Ext B, C, D, E, F
+        2e[0-9ab]|          # Ext F
+        30[0-9a-f]|31[0-3]  # Ext G
+    )[\da-f]{2}$""",
+    re.X)
 _re_togo_t2 = re.compile(r"^ufa(0[ef]|1[134f]|2[134789])$")
 
 

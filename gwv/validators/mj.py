@@ -207,9 +207,12 @@ class MjValidator(Validator):
 
                     base = get_base(name, field)
 
-                    if expected_from_entity and base not in expected_from_entity:
+                    if expected_from_entity and \
+                            base not in expected_from_entity:
                         # entity_name のエイリアスになっているが entity_expected のエイリアスの間違い
-                        return [error_codes.WRONG_ENTITY, entity_name, list(entity_expected)]
+                        return [
+                            error_codes.WRONG_ENTITY,
+                            entity_name, list(entity_expected)]
 
         ucs_expected = set()
         for idx in indices:

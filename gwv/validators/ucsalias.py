@@ -42,17 +42,21 @@ class UcsaliasValidator(Validator):
                 if sname[0] not in dump:
                     return False  # 無印が見つからない
                 nomark_data = dump[sname[0]][1].split("$")
-                if len(nomark_data) == 1 and nomark_data[0][:19] == "99:0:0:0:0:200:200:":
+                if len(nomark_data) == 1 and \
+                        nomark_data[0].startswith("99:0:0:0:0:200:200:"):
                     nomark_entity = nomark_data[0][19:]
                 else:
                     nomark_entity = sname[0]
                 if sname[1] == "var":
                     # uxxxx-var-xxx が uxxxx (の実体)の別名
-                    return [error_codes.VAR_HAS_SAME_ENTITY_AS_NOMARK, entity] if entity == nomark_entity else False
+                    return [error_codes.VAR_HAS_SAME_ENTITY_AS_NOMARK, entity]\
+                        if entity == nomark_entity else False
                 # uxxxx-itaiji-xxx が uxxxx (の実体)の別名
-                return [error_codes.ITAIJI_HAS_SAME_ENTITY_AS_NOMARK, entity] if entity == nomark_entity else False
+                return [error_codes.ITAIJI_HAS_SAME_ENTITY_AS_NOMARK, entity] \
+                    if entity == nomark_entity else False
             if _re_sources.match(sname[1]):
-                return [error_codes.REGION_IS_ALIAS_OF_NOMARK] if entity == sname[0] else False
+                return [error_codes.REGION_IS_ALIAS_OF_NOMARK] \
+                    if entity == sname[0] else False
             return False
         if not _re_ucs_.match(entity) or _re_ids.match(entity):
             if entity == "undefined":

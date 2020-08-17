@@ -15,10 +15,13 @@ def validate(dump, validator_names=None, timestamp=None):
     filternames = validators.filters.keys()
 
     filtered_validators = {
-        k: [] for k in itertools.product(*[validators.filters[filtername] for filtername in filternames])
+        k: [] for k in itertools.product(*[
+            validators.filters[filtername] for filtername in filternames])
     }
     for mod, val in zip(validator_modules, validator_instances):
-        for k in itertools.product(*[mod.filters.get(filtername, validators.filters[filtername]) for filtername in filternames]):
+        for k in itertools.product(*[
+                mod.filters.get(filtername, validators.filters[filtername])
+                for filtername in filternames]):
             filtered_validators[k].append(val)
 
     filter_funcs = [validators.filter_funcs[filtername]

@@ -29,7 +29,8 @@ class NamingRules(object):
         self.string = set(data.get("string", []))
 
     def match(self, name):
-        return name in self.string or any(regex.search(name) for regex in self.regex)
+        return name in self.string or any(
+            regex.search(name) for regex in self.regex)
 
 
 def get_naming_rules():
@@ -62,7 +63,11 @@ _re_ids_head = re.compile(r"u2ff[\dab]-")
 _re_idc_2 = re.compile(r"(^|-)u2ff[014-9ab](?=-|$)")
 _re_idc_3 = re.compile(r"(^|-)u2ff[23](?=-|$)")
 _re_kanji = re.compile(
-    r"-(?:u[23]?[\da-f]{4}(?:-u(?:e01[\da-f]{2}|fe0[\da-f]))?|cdp[on]?-[\da-f]{4})(?=-|$)")
+    r"""-(?:
+        u[23]?[\da-f]{4}(?:-u(?:e01[\da-f]{2}|fe0[\da-f]))?|
+        cdp[on]?-[\da-f]{4}
+    )(?=-|$)""",
+    re.X)
 _re_ids_kanji = re.compile(r"２-漢-漢|３-漢-漢-漢")
 _re_ucs = re.compile(r"(^|-)(u[23]?[\da-f]{4})(?=-|$)")
 
@@ -127,7 +132,8 @@ class NamingValidator(Validator):
             return False
         if not isHenka and rules["rule-nohenka"].match(name):
             return False
-        if not isVar and not isHenka and rules["rule-novar-nohenka"].match(name):
+        if not isVar and not isHenka and \
+                rules["rule-novar-nohenka"].match(name):
             return False
 
         if rules["deprecated-rule"].match(name):

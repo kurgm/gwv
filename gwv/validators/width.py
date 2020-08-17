@@ -18,7 +18,8 @@ error_codes = ErrorCodes(
 
 filters = {
     "alias": {True, False},
-    "category": {"user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"},
+    "category": {
+        "user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"},
     "transform": {False},
 }
 
@@ -117,7 +118,8 @@ class WidthValidator(Validator):
                             bL = minX
                             bR = maxX
                         elif bgW == 2:
-                            if _re_fullWidth.search(gn) or (gn + "-halfwidth") in dump:
+                            if _re_fullWidth.search(gn) or \
+                                    (gn + "-halfwidth") in dump:
                                 bL = xL + w * 0.31
                                 bR = xL + w * 0.69
                             else:

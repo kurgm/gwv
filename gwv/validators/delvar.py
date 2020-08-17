@@ -12,7 +12,8 @@ error_codes = ErrorCodes(
 
 filters = {
     "alias": {True, False},
-    "category": {"ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}
+    "category": {
+        "ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}
 }
 
 _re_var_nnn_henka = re.compile(r"^(.+)-((var|itaiji)-\d{3}|\d{2})$")

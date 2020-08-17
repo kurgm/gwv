@@ -175,7 +175,8 @@ class Segment(object):
         return math.atan2(self.y1 - self.y0, self.x1 - self.x0)
 
     def isYoko(self):
-        return (self.y0 == self.y1 and self.x0 != self.x1) or -_d45 < self.getTheta() < _d45
+        return (self.y0 == self.y1 and self.x0 != self.x1) or (
+            -_d45 < self.getTheta() < _d45)
 
 
 class Connection(object):
@@ -243,8 +244,8 @@ def is_ZH_corner(t, yoko, tate):
     # but not
     # ┐┐
     # └┘
-    if t.isVert() and (t.sttConnect is None or t.sttConnect.yoko_pos != 2) and \
-            y.endConnect is not None and y.endConnect.tate_pos == 2:
+    if (t.isVert() and (t.sttConnect is None or t.sttConnect.yoko_pos != 2) and
+            y.endConnect is not None and y.endConnect.tate_pos == 2):
         t2 = y.endConnect.tate
         if t2.sttConnect is not None and t2.sttConnect.yoko_pos == 2:
             return False
@@ -276,8 +277,10 @@ def is_ZH_corner(t, yoko, tate):
                 for oy in yoko:
                     if oy == my:
                         continue
-                    if oy.sttConnect is None and oy.end_type != _STYLE_NO_END and \
-                       oy.endConnect is not None and oy.endConnect.tate_pos == 1 and \
+                    if oy.sttConnect is None and \
+                       oy.end_type != _STYLE_NO_END and \
+                       oy.endConnect is not None and \
+                       oy.endConnect.tate_pos == 1 and \
                        oy.x0 > my.x1 and -4 <= oy.y0 - my.y1 <= 4:
                         return False  # 臼
 
@@ -296,7 +299,8 @@ def is_ZH_corner(t, yoko, tate):
        y.endConnect is not None and y.endConnect.tate_pos == 0:
         t2Type = y.endConnect.tate.stroke.stype
         y2 = t.sttConnect.yoko
-        if t2Type == 3 and y2.endConnect is not None and y2.endConnect.tate_pos == 0:
+        if t2Type == 3 and y2.endConnect is not None and \
+                y2.endConnect.tate_pos == 0:
             t3 = y2.endConnect.tate
             if t3.endConnect is not None and t3.endConnect.yoko_pos == 2:
                 return False
@@ -319,7 +323,8 @@ def is_ZH_corner(t, yoko, tate):
                y2.endConnect is not None and y2.endConnect.tate_pos == 1 and \
                y2.endConnect.tate == y.endConnect.tate:
                 if any(my.endConnect.tate == y2.endConnect.tate for my in midys
-                       if my.endConnect is not None and my.endConnect.tate_pos == 1):
+                       if my.endConnect is not None and
+                       my.endConnect.tate_pos == 1):
                     return False
 
     # 廿
@@ -331,7 +336,8 @@ def is_ZH_corner(t, yoko, tate):
             ymax = min(t.y1, t2.y1)
             for py in yoko:
                 if py.sttConnect is py.endConnect is None and \
-                        py.end_type == 0 and py.x0 < y.x0 and py.x1 > y.x1 and \
+                        py.end_type == 0 and \
+                        py.x0 < y.x0 and py.x1 > y.x1 and \
                         ymin < py.y0 < ymax and ymin < py.y1 < ymax:
                     return False
 
@@ -352,7 +358,8 @@ _NO_ERROR = -2
 
 filters = {
     "alias": {False},
-    "category": default_filters["category"] - {"user-owned", "ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji"},
+    "category": default_filters["category"] - {
+        "user-owned", "ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji"},
     "transform": {False},
 }
 
@@ -386,19 +393,24 @@ class CornerValidator(Validator):
                     yDif = y.y0 - t.y0
                     if y.start_type != _STYLE_NO_END and -7 <= xDif <= 9:
                         if t.start_type == 12:
-                            if 0 == xDif == yDif or y.stroke.stype in (2, 6, 7):
+                            if 0 == xDif == yDif or \
+                                    y.stroke.stype in (2, 6, 7):
                                 errorNum = _NO_ERROR
                             elif -5 <= yDif <= 3:
-                                errorNum = error_codes.DISCONNECTED_TOPLEFT  # 左上近い
+                                # 左上近い
+                                errorNum = error_codes.DISCONNECTED_TOPLEFT
                         elif t.start_type == 22:
                             if -5 <= yDif <= 5:
-                                errorNum = error_codes.TOPRIGHT_ON_TOPLEFT  # 左上に右上型
+                                # 左上に右上型
+                                errorNum = error_codes.TOPRIGHT_ON_TOPLEFT
                         elif t.start_type == 0:
                             if 0 <= yDif <= 6:
-                                errorNum = error_codes.OPEN_ON_TOPLEFT  # 左上に開放型
+                                # 左上に開放型
+                                errorNum = error_codes.OPEN_ON_TOPLEFT
                         elif t.start_type == 32:
                             if -5 <= yDif <= 0:
-                                errorNum = error_codes.VERTCONN_ON_TOPLEFT  # 左上に接続型
+                                # 左上に接続型
+                                errorNum = error_codes.VERTCONN_ON_TOPLEFT
                     if errorNum is not None:
                         Connection(t, y, 0, 0, errorNum)
 
@@ -409,18 +421,22 @@ class CornerValidator(Validator):
                     if y.end_type != _STYLE_NO_END and -7 <= xDif <= 9:
                         if t.start_type == 12:
                             if -5 <= yDif <= 3:
-                                errorNum = error_codes.TOPLEFT_ON_TOPRIGHT  # 右上に左上型
+                                # 右上に左上型
+                                errorNum = error_codes.TOPLEFT_ON_TOPRIGHT
                         elif t.start_type == 22:
                             if 0 == xDif == yDif:
                                 errorNum = _NO_ERROR
                             elif -5 <= yDif <= 5:
-                                errorNum = error_codes.DISCONNECTED_TOPRIGHT  # 右上近い
+                                # 右上近い
+                                errorNum = error_codes.DISCONNECTED_TOPRIGHT
                         elif t.start_type == 0:
                             if 0 <= yDif <= 6:
-                                errorNum = error_codes.OPEN_ON_TOPRIGHT  # 右上に開放型
+                                # 右上に開放型
+                                errorNum = error_codes.OPEN_ON_TOPRIGHT
                         elif t.start_type == 32:
                             if -5 <= yDif <= 0:
-                                errorNum = error_codes.VERTCONN_ON_TOPRIGHT  # 右上に接続型
+                                # 右上に接続型
+                                errorNum = error_codes.VERTCONN_ON_TOPRIGHT
                     if errorNum is not None:
                         if y.end_type == 0:
                             # 接続(横)に開放型
@@ -437,37 +453,49 @@ class CornerValidator(Validator):
                             if 0 == xDif == yDif:
                                 errorNum = _NO_ERROR
                             elif -2 <= yDif <= 4:
-                                errorNum = error_codes.DISCONNECTED_BOTTOMLEFT  # 左下近い
+                                # 左下近い
+                                errorNum = error_codes.DISCONNECTED_BOTTOMLEFT
                         elif t.end_type == 313:
                             if 0 == xDif == yDif:
                                 if isGdesign:
-                                    errorNum = error_codes.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW  # 左下zh用新に左下zh用旧型
+                                    # 左下zh用新に左下zh用旧型
+                                    errorNum = error_codes.\
+                                        BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW
                                 else:
                                     errorNum = _NO_ERROR
                             elif -14 <= yDif <= 4:
-                                errorNum = error_codes.DISCONNECTED_BOTTOMLEFTZHOLD  # 左下zh用旧近い
+                                errorNum = error_codes.\
+                                    DISCONNECTED_BOTTOMLEFTZHOLD  # 左下zh用旧近い
                         elif t.end_type == 413:
                             if 0 == xDif == yDif:
                                 if isTdesign:
-                                    errorNum = error_codes.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD  # 左下zh用旧に左下zh用新型
+                                    # 左下zh用旧に左下zh用新型
+                                    errorNum = error_codes.\
+                                        BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD
                                 else:
                                     errorNum = _NO_ERROR
                             elif -14 <= yDif <= 4:
-                                errorNum = error_codes.DISCONNECTED_BOTTOMLEFTZHNEW  # 左下zh用新近い
+                                errorNum = error_codes.\
+                                    DISCONNECTED_BOTTOMLEFTZHNEW  # 左下zh用新近い
                         elif t.end_type == 23:
                             if -6 <= yDif <= 4:
-                                errorNum = error_codes.BOTTOMRIGHT_ON_BOTTOMLEFT  # 左下に右下型
+                                errorNum = error_codes.\
+                                    BOTTOMRIGHT_ON_BOTTOMLEFT  # 左下に右下型
                         elif t.end_type == 24:
                             if -6 <= yDif <= 4:
-                                errorNum = error_codes.BOTTOMRIGHTHT_ON_BOTTOMLEFT  # 左下に右下H/T型
+                                errorNum = error_codes.\
+                                    BOTTOMRIGHTHT_ON_BOTTOMLEFT  # 左下に右下H/T型
                         elif t.end_type == 0:
                             if -19 <= yDif <= -2:
-                                errorNum = error_codes.OPEN_ON_BOTTOMLEFT  # 左下に開放型
+                                # 左下に開放型
+                                errorNum = error_codes.OPEN_ON_BOTTOMLEFT
                             elif -1 <= yDif <= 4:
-                                errorNum = error_codes.OPEN_ON_BOTTOMLEFTZHOLD  # 左下zh用旧に開放型
+                                # 左下zh用旧に開放型
+                                errorNum = error_codes.OPEN_ON_BOTTOMLEFTZHOLD
                         elif t.end_type == 32:
                             if 0 <= yDif <= 4:
-                                errorNum = error_codes.VERTCONN_ON_BOTTOMLEFT  # 左下に接続型 | 左下zh用かも？
+                                # 左下に接続型 | 左下zh用かも？
+                                errorNum = error_codes.VERTCONN_ON_BOTTOMLEFT
                     if errorNum is not None:
                         Connection(t, y, 2, 0, errorNum)
 
@@ -475,71 +503,96 @@ class CornerValidator(Validator):
                     errorNum = None
                     xDif = y.x1 - t.x1
                     yDif = y.y1 - t.y1
-                    if y.end_type == 0 and t.end_type == 32 and 6 <= xDif <= 18 and 0 <= yDif <= 8:
-                        errorNum = error_codes.PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT  # 右下H/Tに擬似右下H/T型
+                    if y.end_type == 0 and t.end_type == 32 and \
+                            6 <= xDif <= 18 and 0 <= yDif <= 8:
+                        # 右下H/Tに擬似右下H/T型
+                        errorNum = error_codes.\
+                            PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT
                     elif y.end_type != _STYLE_NO_END and -8 <= xDif <= 8:
                         if t.end_type == 13:
                             if -2 <= yDif <= 4:
-                                errorNum = error_codes.BOTTOMLEFT_ON_BOTTOMRIGHT  # 右下に左下型
+                                errorNum = error_codes.\
+                                    BOTTOMLEFT_ON_BOTTOMRIGHT  # 右下に左下型
                         elif t.end_type == 313:
                             if -14 <= yDif <= 4:
-                                errorNum = error_codes.BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT  # 右下に左下zh用旧
+                                errorNum = error_codes.\
+                                    BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT  # 右下に左下zh用旧
                         elif t.end_type == 413:
                             if -14 <= yDif <= 4:
-                                errorNum = error_codes.BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT  # 右下に左下zh用新
+                                errorNum = error_codes.\
+                                    BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT  # 右下に左下zh用新
                         elif t.end_type == 23:
                             if 0 == xDif == yDif:
                                 errorNum = _NO_ERROR
                             elif -6 <= yDif <= 4:
-                                errorNum = error_codes.DISCONNECTED_BOTTOMRIGHT  # 右下近い
+                                errorNum = error_codes.\
+                                    DISCONNECTED_BOTTOMRIGHT  # 右下近い
                         elif t.end_type == 24:
                             if 0 == xDif == yDif:
                                 errorNum = _NO_ERROR
                             elif -6 <= yDif <= 4:
-                                errorNum = error_codes.DISCONNECTED_BOTTOMRIGHTHT  # 右下H/T近い
+                                errorNum = error_codes.\
+                                    DISCONNECTED_BOTTOMRIGHTHT  # 右下H/T近い
                         elif t.end_type == 0:
                             if -19 <= yDif <= -2:
-                                errorNum = error_codes.OPEN_ON_BOTTOMRIGHTHT  # 右下に開放型
+                                # 右下に開放型
+                                errorNum = error_codes.OPEN_ON_BOTTOMRIGHTHT
                         elif t.end_type == 32:
                             if -19 <= yDif <= 0:
-                                errorNum = error_codes.VERTCONN_ON_BOTTOMRIGHTHT  # 右下に接続型
+                                errorNum = error_codes.\
+                                    VERTCONN_ON_BOTTOMRIGHTHT  # 右下に接続型
                     if errorNum is not None:
-                        if y.end_type == 0 and 0 <= xDif and errorNum != error_codes.PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT:
+                        if y.end_type == 0 and 0 <= xDif and \
+                                errorNum != error_codes.\
+                                PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT:
                             # 接続(横)に開放型
                             errorNum = error_codes.OPEN_ON_HORICONN
                         Connection(t, y, 2, 2, errorNum)
 
             for y in yoko_hori:
                 # T
-                tx0_min = y.x0 + 7 if y.start_type != _STYLE_NO_END and y.sttConnect is None else y.x0
-                tx0_max = y.x1 - 9 if y.end_type != _STYLE_NO_END and y.endConnect is None else y.x1
+                tx0_min = y.x0 + 7 \
+                    if y.start_type != _STYLE_NO_END and y.sttConnect is None \
+                    else y.x0
+                tx0_max = y.x1 - 9 \
+                    if y.end_type != _STYLE_NO_END and y.endConnect is None \
+                    else y.x1
                 if (t.sttConnect is None or t.sttConnect.yoko != y) and \
                         t.start_type != _STYLE_NO_END and \
-                        y.y0 - 5 <= t.y0 <= y.y0 + 5 and tx0_min < t.x0 < tx0_max:
+                        y.y0 - 5 <= t.y0 <= y.y0 + 5 and \
+                        tx0_min < t.x0 < tx0_max:
                     errorNum = None
                     if y.y0 == t.y0:
                         errorNum = _NO_ERROR
                     elif t.start_type != 0:
                         errorNum = error_codes.DISCONNECTED_VERTCONN  # 接続(縦)近い
-                    if t.start_type is not None and t.start_type in TATE_CORNER_STYLES:
+                    if t.start_type is not None and \
+                            t.start_type in TATE_CORNER_STYLES:
+                        # 接続(縦)にカド型
                         errorNum = "9{:x}".format(
-                            TATE_CORNER_STYLES.index(t.start_type))  # 接続(縦)にカド型
+                            TATE_CORNER_STYLES.index(t.start_type))
                     elif t.start_type == 0 and t.y0 <= y.y0 - 2:
                         errorNum = error_codes.OPEN_ON_VERTCONN  # 接続(縦)に開放型
                     if errorNum is not None:
                         Connection(t, y, 0, 1, errorNum)
 
                 # ⊥
-                tx1_min = y.x0 + 8 if y.start_type != _STYLE_NO_END and y.sttConnect is None else y.x0
-                tx1_max = y.x1 - 8 if y.end_type != _STYLE_NO_END and y.endConnect is None else y.x1
+                tx1_min = y.x0 + 8 \
+                    if y.start_type != _STYLE_NO_END and y.sttConnect is None \
+                    else y.x0
+                tx1_max = y.x1 - 8 \
+                    if y.end_type != _STYLE_NO_END and y.endConnect is None \
+                    else y.x1
                 if (t.endConnect is None or t.endConnect.yoko != y) and \
                         t.end_type != _STYLE_NO_END and \
-                        y.y0 - 5 <= t.y1 <= y.y0 + 5 and tx1_min < t.x1 < tx1_max:
+                        y.y0 - 5 <= t.y1 <= y.y0 + 5 and \
+                        tx1_min < t.x1 < tx1_max:
                     if y.y0 == t.y1:
                         errorNum = _NO_ERROR
                     else:
                         errorNum = error_codes.DISCONNECTED_VERTCONN  # 接続(縦)近い
-                    if t.end_type is not None and t.end_type in TATE_CORNER_STYLES:
+                    if t.end_type is not None and \
+                            t.end_type in TATE_CORNER_STYLES:
                         errorNum = "9{:x}".format(
                             TATE_CORNER_STYLES.index(t.end_type))  # 接続(縦)にカド型
                     elif t.end_type == 0:
@@ -551,11 +604,16 @@ class CornerValidator(Validator):
                 continue
             for t in tate_vert:
                 # |-
-                yy0_min = t.y0 + 6 if t.start_type != _STYLE_NO_END and t.sttConnect is None else t.y0
-                yy0_max = t.y1 - 19 if t.end_type != _STYLE_NO_END and t.endConnect is None else t.y1
+                yy0_min = t.y0 + 6 \
+                    if t.start_type != _STYLE_NO_END and t.sttConnect is None \
+                    else t.y0
+                yy0_max = t.y1 - 19 \
+                    if t.end_type != _STYLE_NO_END and t.endConnect is None \
+                    else t.y1
                 if (y.sttConnect is None or y.sttConnect.tate != t) and \
                         y.start_type != _STYLE_NO_END and \
-                        t.x0 - 7 <= y.x0 <= t.x0 + 7 and yy0_min < y.y0 < yy0_max:
+                        t.x0 - 7 <= y.x0 <= t.x0 + 7 and \
+                        yy0_min < y.y0 < yy0_max:
                     if t.x0 == y.x0:
                         # 頭形状「開放」と「接続(横)」は同一視する
                         errorNum = _NO_ERROR
@@ -564,11 +622,16 @@ class CornerValidator(Validator):
                     Connection(t, y, 1, 0, errorNum)
 
                 # -|
-                yy1_min = t.y0 + 6 if t.start_type != _STYLE_NO_END and t.sttConnect is None else t.y0
-                yy1_max = t.y1 - 19 if t.end_type != _STYLE_NO_END and t.endConnect is None else t.y1
+                yy1_min = t.y0 + 6 \
+                    if t.start_type != _STYLE_NO_END and t.sttConnect is None \
+                    else t.y0
+                yy1_max = t.y1 - 19 \
+                    if t.end_type != _STYLE_NO_END and t.endConnect is None \
+                    else t.y1
                 if (y.endConnect is None or y.endConnect.tate != t) and \
                         y.end_type != _STYLE_NO_END and \
-                        t.x0 - 7 <= y.x1 <= t.x0 + 7 and yy1_min < y.y1 < yy1_max:
+                        t.x0 - 7 <= y.x1 <= t.x0 + 7 and \
+                        yy1_min < y.y1 < yy1_max:
                     errorNum = None
                     if t.x0 == y.x1:
                         errorNum = _NO_ERROR
@@ -604,11 +667,15 @@ class CornerValidator(Validator):
                 isZH = is_ZH_corner(t, tate, yoko)
                 errorNum = None
                 if not isZH and t.end_type == 313:
-                    errorNum = error_codes.BOTTOMLEFTZHOLD_ON_BOTTOMLEFT  # 左下に左下zh用旧型
+                    # 左下に左下zh用旧型
+                    errorNum = error_codes.BOTTOMLEFTZHOLD_ON_BOTTOMLEFT
                 if not isZH and t.end_type == 413:
-                    errorNum = error_codes.BOTTOMLEFTZHNEW_ON_BOTTOMLEFT  # 左下に左下zh用新型
+                    # 左下に左下zh用新型
+                    errorNum = error_codes.BOTTOMLEFTZHNEW_ON_BOTTOMLEFT
                 if isZH and t.end_type == 13:
-                    errorNum = error_codes.BOTTOMLEFT_ON_BOTTOMLEFTZHNEW if isGdesign else error_codes.BOTTOMLEFT_ON_BOTTOMLEFTZHOLD  # 左下zh用に左下型
+                    errorNum = error_codes.BOTTOMLEFT_ON_BOTTOMLEFTZHNEW \
+                        if isGdesign else \
+                        error_codes.BOTTOMLEFT_ON_BOTTOMLEFTZHOLD  # 左下zh用に左下型
                 if errorNum is not None:
                     results.append([errorNum,
                                     t.stroke.line.line_number,
@@ -625,7 +692,11 @@ class CornerValidator(Validator):
                 ) else 100
             )
             glines = gdata.split("$")
-            return [result[0], [result[1], glines[result[1]]], [result[2], glines[result[2]]]]
+            return [
+                result[0],
+                [result[1], glines[result[1]]],
+                [result[2], glines[result[2]]],
+            ]
 
         return False
 

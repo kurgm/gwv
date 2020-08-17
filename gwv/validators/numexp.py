@@ -41,7 +41,8 @@ class NumexpValidator(Validator):
                     return [error_codes.NOT_AN_INT, [i, line]]  # 整数として解釈できない
                 if str(numdata) != col:
                     # 不正な数値の表現
-                    return [error_codes.NONNORMALIZED_NUMBER_EXPRESSION, [i, line]]
+                    return [
+                        error_codes.NONNORMALIZED_NUMBER_EXPRESSION, [i, line]]
         return False
 
 
