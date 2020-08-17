@@ -1,21 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import json
 import logging
 import os.path
+from urllib.request import urlretrieve
 from xml.etree.ElementTree import iterparse
 import zipfile
-
-try:
-    from urllib import urlretrieve
-except ImportError:
-    from urllib.request import urlretrieve
 
 logging.basicConfig()
 log = logging.getLogger(__name__)

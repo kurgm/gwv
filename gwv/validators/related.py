@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from gwv.helper import cjk_sources
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji

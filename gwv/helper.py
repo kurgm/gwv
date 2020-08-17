@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import json
 import re
 
@@ -83,12 +76,8 @@ _re_gwlink = re.compile(r"\[\[(?:[^]]+\s)?([0-9a-z_-]+(?:@\d+)?)\]\]")
 
 
 def getGlyphsInGroup(groupname):
-    try:
-        from urllib import quote
-        from urllib2 import urlopen
-    except ImportError:
-        from urllib.parse import quote
-        from urllib.request import urlopen
+    from urllib.parse import quote
+    from urllib.request import urlopen
     url = "http://glyphwiki.org/wiki/Group:{}?action=edit".format(
         quote(groupname.encode("utf-8")))
     f = urlopen(url, timeout=60)
