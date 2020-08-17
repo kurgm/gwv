@@ -163,7 +163,7 @@ class CJKSources(object):
         self.data = None
 
     def load(self):
-        self.data = load_package_data("data/cjksrc.json")
+        self.data = load_package_data("data/3rd/cjksrc.json")
 
     def get(self, ucs, column):
         if self.data is None:

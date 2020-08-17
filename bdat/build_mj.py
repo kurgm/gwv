@@ -2,7 +2,7 @@
 
 import json
 import logging
-import os.path
+import os
 from urllib.request import urlretrieve
 from xml.etree.ElementTree import iterparse
 import zipfile
@@ -97,8 +97,9 @@ def parseMjxml(mjxml):
     return mjdat
 
 
-mjjson_path = os.path.join(os.path.dirname(__file__),
-                           "..", "gwv", "data", MJ_JSON_FILENAME)
+mjjson_path = os.path.join(
+    os.path.dirname(__file__),
+    "..", "gwv", "data", "3rd", MJ_JSON_FILENAME)
 mjjson_path = os.path.normpath(mjjson_path)
 
 
@@ -106,6 +107,7 @@ def main(mjjson_path=mjjson_path):
 
     if os.path.exists(mjjson_path):
         return
+    os.makedirs(os.path.dirname(mjjson_path), exist_ok=True)
 
     log.info("Downloading {}...".format(MJ_ZIP_URL))
     filename, _headers = urlretrieve(MJ_ZIP_URL)

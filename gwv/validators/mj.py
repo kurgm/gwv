@@ -151,7 +151,7 @@ class MJTable(object):
         return self._key2indices[field].get(key.lower(), [])
 
     def __init__(self):
-        self._table = load_package_data("data/mj.json")
+        self._table = load_package_data("data/3rd/mj.json")
 
         self._key2indices = [{} for _ in range(MJTable.n_fields)]
         for mjIdx, row in enumerate(self._table):

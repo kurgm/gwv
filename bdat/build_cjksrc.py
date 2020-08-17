@@ -3,7 +3,7 @@
 import codecs
 import json
 import logging
-import os.path
+import os
 from urllib.request import urlretrieve
 import zipfile
 
@@ -67,8 +67,9 @@ def parseCJKSrc(cjksrctxt):
     return result
 
 
-cjksrcjson_path = os.path.join(os.path.dirname(__file__),
-                               "..", "gwv", "data", CJKSRC_JSON_FILENAME)
+cjksrcjson_path = os.path.join(
+    os.path.dirname(__file__),
+    "..", "gwv", "data", "3rd", CJKSRC_JSON_FILENAME)
 cjksrcjson_path = os.path.normpath(cjksrcjson_path)
 
 
@@ -76,6 +77,7 @@ def main(cjksrcjson_path=cjksrcjson_path):
 
     if os.path.exists(cjksrcjson_path):
         return
+    os.makedirs(os.path.dirname(cjksrcjson_path), exist_ok=True)
 
     cjksrc = get_unihan_CJKSrc()
 

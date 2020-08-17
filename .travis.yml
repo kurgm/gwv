@@ -4,7 +4,6 @@ python:
   - "3.8"
 
 install:
-  - if [ -d gwv_data_cache ] && [ -n "$(ls -A gwv_data_cache)" ]; then ls gwv_data_cache/; mv gwv_data_cache/* gwv/data/; fi
   - python -m bdat
   - pip install coverage
   - pip install codecov
@@ -17,8 +16,4 @@ after_success:
 
 cache:
   - directories:
-    - gwv_data_cache
-
-before_cache:
-  - if [ ! -d gwv_data_cache ]; then mkdir gwv_data_cache; fi
-  - mv gwv/data/cjksrc.json gwv/data/mj.json gwv_data_cache/
+    - gwv/data/3rd
