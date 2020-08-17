@@ -43,7 +43,7 @@ class JValidator(Validator):
         self.jv_no_apply_parts = set()
 
     def setup(self, dump):
-        jv_data = load_package_data("data/jv.json")
+        jv_data = load_package_data("data/jv.yaml")
         self.jv_no_use_part_replacement = {
             no_use_alias: use
             for use, no_uses in jv_data["no-use-part"].items()

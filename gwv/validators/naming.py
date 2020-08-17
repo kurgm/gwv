@@ -34,7 +34,7 @@ class NamingRules(object):
 
 
 def get_naming_rules():
-    naming_data = load_package_data("data/naming.json")
+    naming_data = load_package_data("data/naming.yaml")
     return {
         key: NamingRules(value) for key, value in naming_data.items()
     }
