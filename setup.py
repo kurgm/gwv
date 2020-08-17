@@ -33,7 +33,7 @@ setup(
     },
     cmdclass={'build': my_build},
     package_data={
-        "gwv": ["data/*"],
+        "gwv": ["data/*", "data/3rd/*"],
     },
     test_suite="tests",
 )
