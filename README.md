@@ -9,7 +9,7 @@ GlyphWiki data validator - https://kurgm.github.io/gwv-view/
 ## Installation
 
 ```sh
-pip install .
+pip3 install .
 ```
 
 
@@ -20,13 +20,6 @@ gwv /path/to/dump_newest_only.txt
 ```
 
 （↑を実行すると `dump_newest_only.txt` と同じディレクトリに `gwv_result.json` が生成される（フォーマットは今後大きく変更する可能性がある））
-
-
-## Test
-
-```sh
-python setup.py test
-```
 
 
 ## License
