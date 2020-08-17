@@ -1,6 +1,8 @@
 import json
+import os.path
 import re
 
+import yaml
 import pkg_resources
 
 from gwv.kagedata import KageData
@@ -126,8 +128,15 @@ class GWGroupLazyLoader(object):
 
 def load_package_data(name):
     with pkg_resources.resource_stream("gwv", name) as f:
-        dat = json.load(f)
-    return dat
+        ext = os.path.splitext(name)[1]
+        if ext == ".json":
+            return json.load(f)
+        if ext in (".yaml", ".yml"):
+            return yaml.safe_load(f)
+        if ext == ".txt":
+            return f.read()
+
+        raise ValueError("Unknown data file extension: {!r}".format(ext))
 
 
 class CJKSources(object):
