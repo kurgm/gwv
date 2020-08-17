@@ -4,7 +4,7 @@ python:
   - "3.8"
 
 install:
-  - pip install yaml
+  - pip install pyyaml
   - python -m bdat
   - pip install coverage
   - pip install codecov
