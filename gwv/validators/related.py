@@ -36,7 +36,7 @@ class RelatedValidator(Validator):
             # 間違った関連字
             return [error_codes.WRONG_RELATED, related, expected_related]
 
-        if kage.isAlias():
+        if kage.is_alias:
             entity_name = gdata[19:]
             entity_header = entity_name.split("-")[0]
             if isTogoKanji(entity_header):

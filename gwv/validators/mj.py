@@ -191,7 +191,7 @@ class MjValidator(Validator):
                 return [error_codes.UNDEFINED_MJ]  # 欠番のMJ
             return False
 
-        if kage.isAlias() and not re.compile(r"-itaiji-\d{3}$").search(name):
+        if kage.is_alias and not re.compile(r"-itaiji-\d{3}$").search(name):
             entity_name = gdata[19:]
             e_field, e_key = mjtable.glyphname_to_field_key(entity_name)
             if e_field is not None and e_field != field:
@@ -226,7 +226,7 @@ class MjValidator(Validator):
                     ucs_expected.add(ucs)
 
         if ucs_expected:
-            if related == "u3013" and kage.isAlias():
+            if related == "u3013" and kage.is_alias:
                 related = dump.get(gdata[19:], ("u3013", ))[0]
             if related == "u3013":
                 # 関連字未設定であるが ucs_expected である

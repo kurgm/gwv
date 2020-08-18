@@ -31,10 +31,10 @@ class KosekitokiValidator(Validator):
         koseki_gdata = dump.get(koseki_name, (None, None))[1]
         if koseki_gdata is not None:
             koseki_kage = KageData(koseki_gdata)
-            if koseki_kage.isAlias():
+            if koseki_kage.is_alias:
                 koseki_entity = koseki_kage.lines[0].data[7]
 
-        if not kage.isAlias():
+        if not kage.is_alias:
             entity = name
             if entity != koseki_entity:
                 # エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）

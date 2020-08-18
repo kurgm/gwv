@@ -73,7 +73,7 @@ def _categorize(glyphname):
 
 
 filter_funcs = {
-    "alias": lambda glyphname, related, kage, data: kage.isAlias(),
+    "alias": lambda glyphname, related, kage, data: kage.is_alias,
     "category": lambda glyphname, related, kage, data: _categorize(glyphname),
     "transform": lambda glyphname, related, kage, data: kage.has_transform,
 }

@@ -29,28 +29,21 @@ def kageIntSuppressError(s):
         return None
 
 
-_cachelambdas = {
-    True: lambda: True,
-    False: lambda: False
-}
-
-
 class KageData:
 
     def __init__(self, data):
         self.lines = tuple([KageLine(i, l)
                             for i, l in enumerate(data.split("$"))])
         self.len = len(self.lines)
-        self.isAlias = _cachelambdas[
-            self.len == 1 and
-            self.lines[0].strdata.startswith("99:0:0:0:0:200:200:")]
+        self.is_alias = self.len == 1 and \
+            self.lines[0].strdata.startswith("99:0:0:0:0:200:200:")
         self.has_transform = any(
             len(line.data) >= 2 and
             line.data[0] == 0 and line.data[1] in (97, 98, 99)
             for line in self.lines)
 
     def get_entity(self, dump):
-        if self.isAlias():
+        if self.is_alias:
             entity_name = self.lines[0].data[7]
             if entity_name in dump:
                 return KageData(dump[entity_name][1])

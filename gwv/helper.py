@@ -194,7 +194,7 @@ def get_alias_of(dump, name):
         if gname in get_alias_of.dic:
             continue
         kage = KageData(dump[gname][1])
-        if not kage.isAlias():
+        if not kage.is_alias:
             continue
         entity_name = kage.lines[0].data[7]
         entry = get_alias_of.dic.setdefault(entity_name, [entity_name])

@@ -133,7 +133,7 @@ class JValidator(Validator):
         if region not in ("j", "ja", "jv"):
             return False
 
-        if kage.isAlias():
+        if kage.is_alias:
             entity_name = kage.lines[0].data[7]
         else:
             entity_name = name
@@ -141,7 +141,7 @@ class JValidator(Validator):
         if ucs not in dump:
             return False  # 無印が見つからない
         nomark_kage = KageData(dump[ucs][1])
-        if nomark_kage.isAlias():
+        if nomark_kage.is_alias:
             nomark_entity_name = nomark_kage.lines[0].data[7]
         else:
             nomark_entity_name = ucs
