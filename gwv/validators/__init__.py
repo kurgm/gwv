@@ -1,3 +1,4 @@
+import abc
 import logging
 import re
 
@@ -78,13 +79,22 @@ filter_funcs = {
 }
 
 
-class Validator(object):
+class Validator(metaclass=abc.ABCMeta):
+
+    @property
+    @abc.abstractmethod
+    def name(self) -> str:
+        raise NotImplementedError
 
     def __init__(self):
         self.results = {}
 
     def setup(self, dump):
         pass
+
+    @abc.abstractmethod
+    def is_invalid(self, name, related, kage, gdata, dump):
+        raise NotImplementedError
 
     def validate(self, glyphname, related, kage, gdata, dump):
         try:
@@ -108,7 +118,7 @@ class Validator(object):
         return self.results
 
 
-class ErrorCodes(object):
+class ErrorCodes:
 
     def __init__(self, **namemap):
         self._map = namemap

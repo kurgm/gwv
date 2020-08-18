@@ -22,7 +22,7 @@ filters = {
 }
 
 
-class NamingRules(object):
+class NamingRules:
 
     def __init__(self, data):
         self.regex = [re.compile(regex) for regex in data.get("regex", [])]

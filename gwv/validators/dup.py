@@ -24,7 +24,7 @@ filters = {
 _d45 = math.pi / 4.0
 
 
-class LineSegment(object):
+class LineSegment:
 
     def __init__(self, line, dist, angle, t0, t1):
         self.line = line

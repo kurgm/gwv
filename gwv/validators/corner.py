@@ -62,7 +62,7 @@ error_codes = ErrorCodes(
 )
 
 
-class Stroke(object):
+class Stroke:
 
     def __init__(self, line):
         self.line = line
@@ -135,7 +135,7 @@ class Stroke(object):
                 yoko.append(seg)
 
 
-class Segment(object):
+class Segment:
 
     def __init__(self, stroke, start_type, end_type, x0, y0, x1, y1):
         self.stroke = stroke
@@ -179,7 +179,7 @@ class Segment(object):
             -_d45 < self.getTheta() < _d45)
 
 
-class Connection(object):
+class Connection:
 
     def __init__(self, tate, yoko, tate_pos, yoko_pos, errorNum):
         self.tate = tate

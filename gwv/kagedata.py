@@ -35,7 +35,7 @@ _cachelambdas = {
 }
 
 
-class KageData(object):
+class KageData:
 
     def __init__(self, data):
         self.lines = tuple([KageLine(i, l)
@@ -57,7 +57,7 @@ class KageData(object):
         return self
 
 
-class KageLine(object):
+class KageLine:
 
     def __init__(self, line_number, data):
         self.line_number = line_number

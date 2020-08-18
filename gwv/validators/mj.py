@@ -33,7 +33,7 @@ def gl2kuten(gl):
     return (gl >> 8) - 32, (gl & 0xFF) - 32
 
 
-class MJTable(object):
+class MJTable:
 
     FIELD_JMJ = 0
     FIELD_KOSEKI = 1

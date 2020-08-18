@@ -106,7 +106,7 @@ def getGlyphsInGroup(groupname):
     return [m.group(1) for m in _re_gwlink.finditer(s)]
 
 
-class GWGroupLazyLoader(object):
+class GWGroupLazyLoader:
 
     def __init__(self, groupname, isset=False):
         self.groupname = groupname
@@ -139,7 +139,7 @@ def load_package_data(name):
         raise ValueError("Unknown data file extension: {!r}".format(ext))
 
 
-class CJKSources(object):
+class CJKSources:
 
     COLUMN_G = 0
     COLUMN_T = 1
