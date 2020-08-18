@@ -699,6 +699,3 @@ class CornerValidator(Validator):
             ]
 
         return False
-
-
-validator_class = CornerValidator

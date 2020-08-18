@@ -179,6 +179,3 @@ class DupValidator(Validator):
                 ]  # 部品位置
 
         return False
-
-
-validator_class = DupValidator

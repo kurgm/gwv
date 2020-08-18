@@ -59,6 +59,3 @@ class OrderValidator(Validator):
                     return [error_codes.OUTER_PART_LAST, lG]  # 囲み外側部品が最初
 
         return False
-
-
-validator_class = OrderValidator

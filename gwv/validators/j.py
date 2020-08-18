@@ -159,6 +159,3 @@ class JValidator(Validator):
         if ucs not in self.jv_no_apply_parts:
             return self.checkJV(kage.get_entity(dump))
         return False
-
-
-validator_class = JValidator

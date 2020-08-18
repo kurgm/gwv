@@ -208,6 +208,3 @@ class IllegalValidator(Validator):
         for val in self.results.values():
             val.sort(key=lambda r: r[1])
         return super(IllegalValidator, self).get_result()
-
-
-validator_class = IllegalValidator

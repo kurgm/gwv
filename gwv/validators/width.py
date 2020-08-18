@@ -135,6 +135,3 @@ class WidthValidator(Validator):
         if (maxX <= 110 and minX < 90) is not (gWidth != 2):
             return [str(gWidth)]
         return False
-
-
-validator_class = WidthValidator

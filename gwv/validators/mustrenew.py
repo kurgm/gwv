@@ -49,6 +49,3 @@ class MustrenewValidator(Validator):
             key: [[quoted] + val[quoted] for quoted in sorted(val.keys())]
             for key, val in self.results.items()
         }
-
-
-validator_class = MustrenewValidator

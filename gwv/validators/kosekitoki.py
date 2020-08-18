@@ -48,6 +48,3 @@ class KosekitokiValidator(Validator):
                     error_codes.NOT_ALIAS_OF_ENTITY_OF_KOSEKI,
                     entity, koseki_entity]
         return False
-
-
-validator_class = KosekitokiValidator

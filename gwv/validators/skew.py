@@ -107,6 +107,3 @@ class SkewValidator(Validator):
                 # 歪み角度が大きい順にソート
                 val.sort(key=lambda r: r[2], reverse=True)
         return super(SkewValidator, self).get_result()
-
-
-validator_class = SkewValidator

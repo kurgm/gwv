@@ -60,6 +60,3 @@ class RelatedValidator(Validator):
             return [error_codes.MISSING_RELATED, expected_related]  # 関連字なし
 
         return False
-
-
-validator_class = RelatedValidator

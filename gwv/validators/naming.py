@@ -138,6 +138,3 @@ class NamingValidator(Validator):
             return [error_codes.DEPRECATED_NAMING_RULE]  # 廃止予定の命名規則
 
         return [error_codes.NAMING_RULE_VIOLATION]  # 命名規則違反
-
-
-validator_class = NamingValidator

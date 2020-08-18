@@ -234,6 +234,3 @@ class MjValidator(Validator):
                 # 関連字に related が設定されているが ucs_expected の間違い
                 return [error_codes.WRONG_RELATED, related, list(ucs_expected)]
         return False
-
-
-validator_class = MjValidator

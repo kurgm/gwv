@@ -17,6 +17,3 @@ class DelquoteValidator(Validator):
                 # 無い部品を引用している
                 return [error_codes.PART_NOT_FOUND, line.data[7]]
         return False
-
-
-validator_class = DelquoteValidator

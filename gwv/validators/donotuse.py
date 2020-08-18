@@ -26,6 +26,3 @@ class DonotuseValidator(Validator):
         if quotings:
             return [error_codes.DO_NOT_USE] + quotings
         return False
-
-
-validator_class = DonotuseValidator

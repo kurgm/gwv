@@ -73,6 +73,3 @@ class UcsaliasValidator(Validator):
                 # uxxxx が uxxxx-itaiji-xxx の別名
                 return [error_codes.UCS_IS_ALIAS_OF_ITAIJI, entity]
         return False
-
-
-validator_class = UcsaliasValidator

@@ -144,6 +144,3 @@ class IdsValidator(Validator):
             return [error_codes.UNKNOWN_IDC, sname[0]]  # 未定義のIDC
 
         return False
-
-
-validator_class = IdsValidator

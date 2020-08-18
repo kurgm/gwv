@@ -38,6 +38,3 @@ class NumexpValidator(Validator):
                     return [
                         error_codes.NONNORMALIZED_NUMBER_EXPRESSION, [i, line]]
         return False
-
-
-validator_class = NumexpValidator

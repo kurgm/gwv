@@ -33,6 +33,3 @@ class DelvarValidator(Validator):
             if prefix not in dump:
                 return [error_codes.BASE_NOT_FOUND, prefix]  # 派生元が無い
         return None
-
-
-validator_class = DelvarValidator
