@@ -23,7 +23,7 @@ def main(args=None):
 
     outpath = opts.out or os.path.join(
         os.path.dirname(opts.dumpfile), "gwv_result.json")
-    dump = Dump(opts.dumpfile)
+    dump = Dump.open(opts.dumpfile)
 
     result = validate(dump, opts.names or None)
 

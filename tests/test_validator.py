@@ -1,3 +1,4 @@
+from gwv.dump import Dump
 import unittest
 
 from gwv import validator
@@ -7,7 +8,7 @@ from gwv import validators
 class TestValidator(unittest.TestCase):
 
     def test_validateEmpty(self):
-        timestamp = 334
+        timestamp = 334.0
         expected_output = {
             name: {
                 "timestamp": timestamp,
@@ -19,7 +20,9 @@ class TestValidator(unittest.TestCase):
             "@": [],
             "0": [],
         }
+
+        dump = Dump({}, timestamp)
         self.assertEqual(
-            validator.validate({}, timestamp=timestamp),
+            validator.validate(dump),
             expected_output
         )

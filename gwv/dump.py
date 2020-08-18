@@ -6,27 +6,9 @@ from gwv.kagedata import KageData
 
 class Dump:
 
-    def __init__(self, filepath: str):
-        self._data: Dict[str, Tuple[str, str]] = {}
-        with open(filepath) as fp:
-            if filepath[-4:] == ".csv":
-                # first line contains the last modified time
-                self.timestamp = float(fp.readline()[:-1])
-                for line in fp:
-                    row = line.rstrip("\n").split(",")
-                    if len(row) != 3:
-                        continue
-                    self._data[row[0]] = (row[1], row[2])
-            else:
-                # dump_newest_only.txt
-                self.timestamp = os.path.getmtime(filepath)
-                line = fp.readline()  # header
-                line = fp.readline()  # ------
-                for line in iter(fp.readline, ""):
-                    row = [x.strip() for x in line.split("|")]
-                    if len(row) != 3:
-                        continue
-                    self._data[row[0]] = (row[1], row[2])
+    def __init__(self, data: Dict[str, Tuple[str, str]], timestamp: float):
+        self._data = data
+        self.timestamp = timestamp
 
     def __getitem__(self, glyphname: str):
         return self._data[glyphname]
@@ -75,3 +57,28 @@ class Dump:
                 entry.append(gname)
                 self._get_alias_of_dic[gname] = entry
         return self._get_alias_of_dic.get(name, [name])
+
+    @classmethod
+    def open(cls, filepath: str):
+        data: Dict[str, Tuple[str, str]] = {}
+        with open(filepath) as fp:
+            if filepath[-4:] == ".csv":
+                # first line contains the last modified time
+                timestamp = float(fp.readline()[:-1])
+                for line in fp:
+                    row = line.rstrip("\n").split(",")
+                    if len(row) != 3:
+                        continue
+                    data[row[0]] = (row[1], row[2])
+            else:
+                # dump_newest_only.txt
+                timestamp = os.path.getmtime(filepath)
+                line = fp.readline()  # header
+                line = fp.readline()  # ------
+                for line in iter(fp.readline, ""):
+                    row = [x.strip() for x in line.split("|")]
+                    if len(row) != 3:
+                        continue
+                    data[row[0]] = (row[1], row[2])
+
+        return cls(data, timestamp)
