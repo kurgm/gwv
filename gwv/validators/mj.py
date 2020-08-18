@@ -1,7 +1,9 @@
 import re
 
+from gwv.dump import Dump
 from gwv.helper import isTogoKanji
 from gwv.helper import load_package_data
+from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -179,7 +181,8 @@ class MjValidator(Validator):
             "other"}
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         field, key = mjtable.glyphname_to_field_key(name)
         if field is None:
             return False

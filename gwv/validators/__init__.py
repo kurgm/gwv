@@ -98,12 +98,12 @@ class Validator(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def is_invalid(self, name: str, related: str, kage: str, gdata: KageData,
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         raise NotImplementedError
 
-    def validate(self, glyphname: str, related: str, kage: str,
-                 gdata: KageData, dump: Dump):
+    def validate(self, glyphname: str, related: str, kage: KageData,
+                 gdata: str, dump: Dump):
         try:
             is_invalid = self.is_invalid(glyphname, related, kage, gdata, dump)
         except Exception:

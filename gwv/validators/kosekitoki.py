@@ -1,3 +1,4 @@
+from gwv.dump import Dump
 from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -18,7 +19,8 @@ class KosekitokiValidator(Validator):
         "category": {"toki"}
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         header = name[:7]
         if header != "toki-00":
             return False

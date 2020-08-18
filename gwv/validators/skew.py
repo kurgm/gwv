@@ -1,6 +1,8 @@
 import math
 
+from gwv.dump import Dump
 from gwv.helper import isYoko
+from gwv.kagedata import KageData
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -27,7 +29,8 @@ class SkewValidator(Validator):
         "category": default_filters["category"] - {"user-owned"}
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         for line in kage.lines:
             data = line.data
             stype = data[0]

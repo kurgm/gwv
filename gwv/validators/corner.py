@@ -1,7 +1,10 @@
 import itertools
 import math
 import re
+from typing import List
 
+from gwv.dump import Dump
+from gwv.kagedata import KageData
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -354,7 +357,7 @@ _d45 = math.pi / 4
 
 _STYLE_NO_END = -1
 
-_NO_ERROR = -2
+_NO_ERROR = "-2"
 
 
 class CornerValidator(Validator):
@@ -368,12 +371,13 @@ class CornerValidator(Validator):
         "transform": {False},
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         strokes = []
-        tate = []
-        yoko = []
-        tate_vert = []
-        yoko_hori = []
+        tate: List[Segment] = []
+        yoko: List[Segment] = []
+        tate_vert: List[Segment] = []
+        yoko_hori: List[Segment] = []
         isGdesign = _re_gdesign.match(name)
         isTdesign = _re_tdesign.match(name)
 

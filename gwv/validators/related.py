@@ -1,6 +1,8 @@
+from gwv.dump import Dump
 from gwv.helper import cjk_sources
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
+from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -22,7 +24,8 @@ class RelatedValidator(Validator):
         "category": {"togo", "togo-var", "gokan", "gokan-var"}
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         expected_related = name.split("-")[0]
         if isGokanKanji(expected_related):
             u = cjk_sources.get(

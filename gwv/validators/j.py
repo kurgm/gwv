@@ -1,5 +1,6 @@
 import re
 
+from gwv.dump import Dump
 from gwv.helper import cjk_sources
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
@@ -70,7 +71,8 @@ class JValidator(Validator):
                 ]
         return False
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         splitname = name.split("-")
 
         if len(splitname) == 3 and splitname[:2] == ["unstable", "bsh"]:

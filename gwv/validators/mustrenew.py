@@ -1,3 +1,5 @@
+from gwv.dump import Dump
+from gwv.kagedata import KageData
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -23,12 +25,13 @@ class MustrenewValidator(Validator):
         self.results["0"] = {}
         self.results["@"] = {}
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         quotings = set()
         quotings_old = set()  # 最新版が旧部品を引用している部品の旧版
         for line in kage.lines:
             if line.data[0] == 99 and "@" in line.data[7]:
-                quoted = line.data[7].split("@")[0]
+                quoted: str = line.data[7].split("@")[0]
                 if quoted in dump and "@" in dump[quoted][1]:
                     quotings_old.add(line.data[7])
                 else:

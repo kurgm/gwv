@@ -1,5 +1,8 @@
+from typing import Tuple
+from gwv.dump import Dump
 from gwv.helper import isKanji
 from gwv.helper import isYoko
+from gwv.kagedata import KageData
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -83,13 +86,14 @@ class IllegalValidator(Validator):
         "category": default_filters["category"] - {"user-owned"}
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         isKanjiGlyph = isKanji(name)
         for line in kage.lines:
             lendata = len(line.data)
-            stype = line.data[0]
-            sttType = line.data[1] if lendata >= 2 else 0
-            endType = line.data[2] if lendata >= 3 else 0
+            stype: int = line.data[0]
+            sttType: int = line.data[1] if lendata >= 2 else 0
+            endType: int = line.data[2] if lendata >= 3 else 0
             if not isKanjiGlyph:
                 stype = stype % 100 if stype >= 0 else stype
                 sttType = sttType % 100 if sttType >= 0 else sttType
@@ -183,7 +187,7 @@ class IllegalValidator(Validator):
                         error_codes.LEFTWARD_OTSU_LAST,
                         [line.line_number, line.strdata]]
             if stype != 99:
-                strokeKeijo = tuple(line.data[0:3])
+                strokeKeijo: Tuple[int, int, int] = tuple(line.data[0:3])
                 if not isKanjiGlyph:
                     strokeKeijo = tuple(
                         x % 100 if x >= 0 else x for x in strokeKeijo)

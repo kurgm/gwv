@@ -1,6 +1,8 @@
 import re
 
+from gwv.dump import Dump
 from gwv.helper import RE_REGIONS
+from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -25,7 +27,8 @@ class DelvarValidator(Validator):
             "ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         m = _re_var_nnn_henka.match(name) or _re_var_src_henka.match(name) or \
             _re_var_other.match(name)
         if m:

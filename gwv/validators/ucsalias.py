@@ -1,6 +1,8 @@
 import re
 
+from gwv.dump import Dump
 from gwv.helper import RE_REGIONS
+from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -30,7 +32,8 @@ class UcsaliasValidator(Validator):
             "ucs-hikanji-var"}
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         entity = gdata[19:]
         if "-" in name:
             sname = name.split("-")

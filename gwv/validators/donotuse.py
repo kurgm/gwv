@@ -1,3 +1,5 @@
+from gwv.dump import Dump
+from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -15,7 +17,8 @@ class DonotuseValidator(Validator):
         "alias": {False},
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         quotings = []
         for line in kage.lines:
             if line.data[0] != 99:

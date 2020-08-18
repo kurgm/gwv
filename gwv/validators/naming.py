@@ -1,7 +1,9 @@
 import re
 
+from gwv.dump import Dump
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
+from gwv.kagedata import KageData
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -74,7 +76,8 @@ class NamingValidator(Validator):
         "category": default_filters["category"] - {"user-owned"}
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         isHenka = False
         isVar = False
         if _re_var.search(name):

@@ -1,6 +1,8 @@
 import re
 
+from gwv.dump import Dump
 from gwv.helper import RE_REGIONS
+from gwv.kagedata import KageData
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -30,13 +32,14 @@ class OrderValidator(Validator):
         "transform": {False},
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         if kage.len == 1:
             return False
         first = kage.lines[0]
         last = kage.lines[-1]
         if first.data[0] == 99:
-            fG = first.data[7]
+            fG: str = first.data[7]
             m = _re_vars.search(fG)
             if m:
                 henka = m.group(1)
@@ -47,7 +50,7 @@ class OrderValidator(Validator):
                 if henka == "06":
                     return [error_codes.INNER_PART_FIRST, fG]  # 囲み内側部品が最初
         if last.data[0] == 99:
-            lG = last.data[7]
+            lG: str = last.data[7]
             m = _re_vars.search(lG)
             if m:
                 henka = m.group(1)

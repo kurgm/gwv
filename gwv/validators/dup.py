@@ -1,5 +1,8 @@
 import math
+from typing import List
 
+from gwv.dump import Dump
+from gwv.kagedata import KageData
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -74,10 +77,11 @@ class DupValidator(Validator):
         "transform": {False},
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
-        tate = []
-        yoko = []
-        curve = []
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
+        tate: List[LineSegment] = []
+        yoko: List[LineSegment] = []
+        curve: List[list] = []
         curve2 = []
         buhin = []
         buhinIchi = []

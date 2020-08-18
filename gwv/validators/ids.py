@@ -1,5 +1,7 @@
 import re
+from typing import List, Optional
 
+from gwv.dump import Dump
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
 from gwv.validators import Validator
@@ -48,7 +50,8 @@ class IdsValidator(Validator):
         "category": {"ids"}
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
         # Replace with the entity if the glyph is an alias
         if kage.is_alias:
             gdata = dump.get(gdata[19:].split("@")[0])[1]
@@ -57,7 +60,7 @@ class IdsValidator(Validator):
 
         if not (kage.lines[0].data[0] == 99 and kage.len > 1):
             return False
-        fData = kage.lines[0].data
+        fData: List[int] = kage.lines[0].data
         if fData[4] == fData[6]:
             aspect = float("inf")
         else:
@@ -75,7 +78,7 @@ class IdsValidator(Validator):
 
         m = _re_vars.search(fData[7])
         if m:
-            firstBuhinType = m.group(1)  # 偏化変形接尾コード
+            firstBuhinType: Optional[str] = m.group(1)  # 偏化変形接尾コード
         else:
             firstBuhinType = None
         if sname[0] in ("u2ff0", "u2ff2"):

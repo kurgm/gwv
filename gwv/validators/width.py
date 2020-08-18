@@ -1,7 +1,11 @@
+from numbers import Real
 import re
+from typing import List
 
+from gwv.dump import Dump
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import RE_REGIONS
+from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -81,7 +85,10 @@ class WidthValidator(Validator):
         "transform": {False},
     }
 
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
+                   dump: Dump):
+        minX: Real
+        maxX: Real
         if _re_fullWidth.search(name):
             minX = 0
             maxX = 200
@@ -98,19 +105,20 @@ class WidthValidator(Validator):
                 if line.data[0] == 0:
                     continue
                 if line.data[0] != 99:
-                    xs = [x for x in line.data[3::2] if x is not None]
+                    xs: List[int] = [
+                        x for x in line.data[3::2] if x is not None]
                     if xs:
                         minX = min(minX, *xs)
                         maxX = max(maxX, *xs)
                 else:
-                    xL = line.data[3]
-                    xR = line.data[5]
+                    xL: int = line.data[3]
+                    xR: int = line.data[5]
                     w = xR - xL
-                    gn = line.data[7].split("@")[0]
+                    gn: str = line.data[7].split("@")[0]
                     if gn in buhinWidths:
                         bb = buhinWidths[gn]
-                        bL = xL + w * bb[0] / 200.0
-                        bR = xL + w * bb[1] / 200.0
+                        bL: Real = xL + w * bb[0] / 200.0
+                        bR: Real = xL + w * bb[1] / 200.0
                     else:
                         bgW = getDWidth(gn)
                         if bgW == 0:
