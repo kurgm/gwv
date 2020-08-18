@@ -664,7 +664,7 @@ class CornerValidator(Validator):
                         t.end_type not in (13, 313, 413):
                     continue
                 y = t.endConnect.yoko
-                isZH = is_ZH_corner(t, tate, yoko)
+                isZH = is_ZH_corner(t, yoko, tate)
                 errorNum = None
                 if not isZH and t.end_type == 313:
                     # 左下に左下zh用旧型
