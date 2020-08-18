@@ -76,7 +76,6 @@ class WidthValidator(Validator):
     name = "width"
 
     filters = {
-        "alias": {True, False},
         "category": {
             "user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"},
         "transform": {False},

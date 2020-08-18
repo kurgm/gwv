@@ -1,4 +1,3 @@
-from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -14,7 +13,6 @@ class DonotuseValidator(Validator):
 
     filters = {
         "alias": {False},
-        "category": default_filters["category"]
     }
 
     def is_invalid(self, name, related, kage, gdata, dump):

@@ -21,7 +21,6 @@ class DelvarValidator(Validator):
     name = "delvar"
 
     filters = {
-        "alias": {True, False},
         "category": {
             "ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}
     }

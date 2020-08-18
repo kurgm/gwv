@@ -1,6 +1,5 @@
 import re
 
-from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -19,11 +18,6 @@ _re_valid_chars = re.compile(r"^[\da-z_\:@-]+$")
 class NumexpValidator(Validator):
 
     name = "numexp"
-
-    filters = {
-        "alias": {True, False},
-        "category": default_filters["category"]
-    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         for i, line in enumerate(gdata.split("$")):

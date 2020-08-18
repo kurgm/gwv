@@ -173,7 +173,6 @@ class MjValidator(Validator):
     name = "mj"
 
     filters = {
-        "alias": {True, False},
         "category": {
             "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
             "ucs-hikanji-var", "koseki-kanji", "koseki-hikanji", "toki",

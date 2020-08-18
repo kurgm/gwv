@@ -45,7 +45,6 @@ class IdsValidator(Validator):
     name = "ids"
 
     filters = {
-        "alias": {True, False},
         "category": {"ids"}
     }
 

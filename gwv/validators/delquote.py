@@ -1,4 +1,3 @@
-from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -11,11 +10,6 @@ error_codes = ErrorCodes(
 class DelquoteValidator(Validator):
 
     name = "delquote"
-
-    filters = {
-        "alias": {True, False},
-        "category": default_filters["category"]
-    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         for line in kage.lines:

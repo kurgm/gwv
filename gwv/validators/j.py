@@ -32,7 +32,6 @@ class JValidator(Validator):
     name = "j"
 
     filters = {
-        "alias": {True, False},
         "category": {"togo", "togo-var", "gokan-var", "ext", "bsh"}
     }
 

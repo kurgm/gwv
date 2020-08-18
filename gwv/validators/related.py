@@ -19,7 +19,6 @@ class RelatedValidator(Validator):
     name = "related"
 
     filters = {
-        "alias": {True, False},
         "category": {"togo", "togo-var", "gokan", "gokan-var"}
     }
 

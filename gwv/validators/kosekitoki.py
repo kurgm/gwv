@@ -15,7 +15,6 @@ class KosekitokiValidator(Validator):
     name = "kosekitoki"
 
     filters = {
-        "alias": {True, False},
         "category": {"toki"}
     }
 

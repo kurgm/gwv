@@ -80,7 +80,6 @@ class IllegalValidator(Validator):
     name = "illegal"
 
     filters = {
-        "alias": {True, False},
         "category": default_filters["category"] - {"user-owned"}
     }
 

@@ -71,7 +71,6 @@ class NamingValidator(Validator):
     name = "naming"
 
     filters = {
-        "alias": {True, False},
         "category": default_filters["category"] - {"user-owned"}
     }
 
