@@ -1,9 +1,9 @@
 import itertools
-import math
 import re
 from typing import List, Optional
 
 from gwv.dump import Dump
+from gwv.helper import isYoko
 from gwv.kagedata import KageData, KageLine
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
@@ -177,14 +177,8 @@ class Segment:
     def isHori(self):
         return self.y0 == self.y1
 
-    def getTheta(self):
-        if self.x0 == self.x1 and self.y0 == self.y1:
-            return math.pi / 2
-        return math.atan2(self.y1 - self.y0, self.x1 - self.x0)
-
     def isYoko(self):
-        return (self.y0 == self.y1 and self.x0 != self.x1) or (
-            -_d45 < self.getTheta() < _d45)
+        return isYoko(self.x0, self.y0, self.x1, self.y1)
 
 
 class Connection:
@@ -358,8 +352,6 @@ TATE_CORNER_STYLES = (12, 13, 22, 23, 313, None, 413, None, None, None, 24)
 _re_gdesign = re.compile(r"^(u[0-9a-f]+-[gi](\d{2})?|zihai-\d{6})$")
 _re_tdesign = re.compile(
     r"^(u[0-9a-f]+-[th](\d{2})?|twedu-.+|lgccc-.+|hka-.+)$")
-
-_d45 = math.pi / 4
 
 _STYLE_NO_END = -1
 
