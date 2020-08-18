@@ -16,12 +16,6 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {True, False},
-    "category": default_filters["category"] - {"user-owned"}
-}
-
-
 class NamingRules:
 
     def __init__(self, data):
@@ -75,6 +69,11 @@ _re_ucs = re.compile(r"(^|-)(u[23]?[\da-f]{4})(?=-|$)")
 class NamingValidator(Validator):
 
     name = "naming"
+
+    filters = {
+        "alias": {True, False},
+        "category": default_filters["category"] - {"user-owned"}
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         isHenka = False

@@ -13,17 +13,17 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {True, False},
-    "category": default_filters["category"]
-}
-
 _re_valid_chars = re.compile(r"^[\da-z_\:@-]+$")
 
 
 class NumexpValidator(Validator):
 
     name = "numexp"
+
+    filters = {
+        "alias": {True, False},
+        "category": default_filters["category"]
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         for i, line in enumerate(gdata.split("$")):

@@ -22,12 +22,6 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {True, False},
-    "category": {"togo", "togo-var", "gokan-var", "ext", "bsh"}
-}
-
-
 source_separation = GWGroupLazyLoader("原規格分離", isset=True)
 
 _re_region_opthenka = re.compile(r"^(" + RE_REGIONS + r")(\d{2})?$")
@@ -36,6 +30,11 @@ _re_region_opthenka = re.compile(r"^(" + RE_REGIONS + r")(\d{2})?$")
 class JValidator(Validator):
 
     name = "j"
+
+    filters = {
+        "alias": {True, False},
+        "category": {"togo", "togo-var", "gokan-var", "ext", "bsh"}
+    }
 
     def __init__(self):
         Validator.__init__(self)

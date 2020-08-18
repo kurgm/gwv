@@ -15,12 +15,6 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {False},
-    "category": default_filters["category"] - {"user-owned"},
-    "transform": {False},
-}
-
 _d45 = math.pi / 4.0
 
 
@@ -73,6 +67,12 @@ def ineighbors(iterable):
 class DupValidator(Validator):
 
     name = "dup"
+
+    filters = {
+        "alias": {False},
+        "category": default_filters["category"] - {"user-owned"},
+        "transform": {False},
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         tate = []

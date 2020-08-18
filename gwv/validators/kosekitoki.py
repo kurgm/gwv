@@ -10,15 +10,14 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {True, False},
-    "category": {"toki"}
-}
-
-
 class KosekitokiValidator(Validator):
 
     name = "kosekitoki"
+
+    filters = {
+        "alias": {True, False},
+        "category": {"toki"}
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         header = name[:7]

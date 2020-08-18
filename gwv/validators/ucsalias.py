@@ -14,12 +14,6 @@ error_codes = ErrorCodes(
     UCS_IS_ALIAS_OF_ITAIJI="21",  # uxxxx が uxxxx-itaiji-xxx の別名
 )
 
-filters = {
-    "alias": {True},
-    "category": {"togo", "togo-var", "gokan", "gokan-var",
-                 "ucs-hikanji", "ucs-hikanji-var"}
-}
-
 _re_sources = re.compile(r"^" + RE_REGIONS + r"$")
 _re_ucs_ = re.compile(r"^u[\da-f]+(-|$)")
 _re_ids = re.compile(r"^u2ff.-")
@@ -28,6 +22,13 @@ _re_ids = re.compile(r"^u2ff.-")
 class UcsaliasValidator(Validator):
 
     name = "ucsalias"
+
+    filters = {
+        "alias": {True},
+        "category": {
+            "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
+            "ucs-hikanji-var"}
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         entity = gdata[19:]

@@ -20,12 +20,6 @@ error_codes = ErrorCodes(
     UNKNOWN_IDC="90",  # 未定義のIDC
 )
 
-filters = {
-    "alias": {True, False},
-    "category": {"ids"}
-}
-
-
 _re_idc = re.compile(r"^u2ff[\dab]$")
 _re_vars = re.compile(
     r"-" + RE_REGIONS + r"?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
@@ -49,6 +43,11 @@ def indexOfFirstKanjiBuhinLine(sname, kage):
 class IdsValidator(Validator):
 
     name = "ids"
+
+    filters = {
+        "alias": {True, False},
+        "category": {"ids"}
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         # Replace with the entity if the glyph is an alias

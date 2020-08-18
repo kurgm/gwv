@@ -1,16 +1,27 @@
 import itertools
+from typing import Type
 
 from gwv.kagedata import KageData
 from gwv import validators
 
 
+def get_validator_name(name: str) -> str:
+    return name.title() + "Validator"
+
+
+def get_validator_class(name: str) -> Type[validators.Validator]:
+    __import__("gwv.validators." + name)
+    validator_module = getattr(validators, name)
+    validator_class = getattr(validator_module, get_validator_name(name))
+    return validator_class
+
+
 def validate(dump, validator_names=None, timestamp=None):
     if validator_names is None:
         validator_names = validators.all_validator_names
-    for name in validator_names:
-        __import__("gwv.validators." + name)
-    validator_modules = [getattr(validators, name) for name in validator_names]
-    validator_instances = [mod.validator_class() for mod in validator_modules]
+
+    validator_instances = [
+        get_validator_class(name)() for name in validator_names]
 
     filternames = validators.filters.keys()
 
@@ -18,9 +29,9 @@ def validate(dump, validator_names=None, timestamp=None):
         k: [] for k in itertools.product(*[
             validators.filters[filtername] for filtername in filternames])
     }
-    for mod, val in zip(validator_modules, validator_instances):
+    for val in validator_instances:
         for k in itertools.product(*[
-                mod.filters.get(filtername, validators.filters[filtername])
+                val.filters.get(filtername, validators.filters[filtername])
                 for filtername in filternames]):
             filtered_validators[k].append(val)
 

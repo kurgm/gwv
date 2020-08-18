@@ -18,15 +18,14 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {False},
-    "category": default_filters["category"] - {"user-owned"}
-}
-
-
 class SkewValidator(Validator):
 
     name = "skew"
+
+    filters = {
+        "alias": {False},
+        "category": default_filters["category"] - {"user-owned"}
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         for line in kage.lines:

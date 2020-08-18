@@ -13,15 +13,15 @@ error_codes = ErrorCodes(
     MISSING_ENTITY_RELATED="11",  # 実体が関連字なし
 )
 
-filters = {
-    "alias": {True, False},
-    "category": {"togo", "togo-var", "gokan", "gokan-var"}
-}
-
 
 class RelatedValidator(Validator):
 
     name = "related"
+
+    filters = {
+        "alias": {True, False},
+        "category": {"togo", "togo-var", "gokan", "gokan-var"}
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         expected_related = name.split("-")[0]

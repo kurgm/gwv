@@ -16,13 +16,6 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {False},
-    "category": default_filters["category"] - {"user-owned"},
-    "transform": {False},
-}
-
-
 _re_vars = re.compile(
     r"-" + RE_REGIONS + r"?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
 
@@ -30,6 +23,12 @@ _re_vars = re.compile(
 class OrderValidator(Validator):
 
     name = "order"
+
+    filters = {
+        "alias": {False},
+        "category": default_filters["category"] - {"user-owned"},
+        "transform": {False},
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         if kage.len == 1:

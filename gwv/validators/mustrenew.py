@@ -9,15 +9,14 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {False},
-    "category": default_filters["category"] - {"user-owned"}
-}
-
-
 class MustrenewValidator(Validator):
 
     name = "mustrenew"
+
+    filters = {
+        "alias": {False},
+        "category": default_filters["category"] - {"user-owned"}
+    }
 
     def __init__(self, *args, **kwargs):
         super(MustrenewValidator, self).__init__(*args, **kwargs)

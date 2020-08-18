@@ -1,6 +1,7 @@
 import abc
 import logging
 import re
+from typing import Dict
 
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
@@ -30,7 +31,7 @@ all_validator_names = [
     "width",
 ]
 
-filters = {
+filters: Dict[str, set] = {
     "alias": {True, False},
     "category": {"user-owned", "ids", "togo", "togo-var", "gokan", "gokan-var",
                  "ucs-hikanji", "ucs-hikanji-var", "cdp", "koseki-kanji",
@@ -85,6 +86,8 @@ class Validator(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def name(self) -> str:
         raise NotImplementedError
+
+    filters: Dict[str, set] = {}
 
     def __init__(self):
         self.results = {}

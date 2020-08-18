@@ -8,15 +8,14 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {True, False},
-    "category": default_filters["category"]
-}
-
-
 class DelquoteValidator(Validator):
 
     name = "delquote"
+
+    filters = {
+        "alias": {True, False},
+        "category": default_filters["category"]
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         for line in kage.lines:

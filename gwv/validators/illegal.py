@@ -24,11 +24,6 @@ error_codes = ErrorCodes(
     BUHIN_ICHI="9",  # 部品位置
 )
 
-filters = {
-    "alias": {True, False},
-    "category": default_filters["category"] - {"user-owned"}
-}
-
 
 keijoKumiawase = {
     tuple([int(x) for x in keijoStr.split(":")])
@@ -83,6 +78,11 @@ datalens = {
 class IllegalValidator(Validator):
 
     name = "illegal"
+
+    filters = {
+        "alias": {True, False},
+        "category": default_filters["category"] - {"user-owned"}
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         isKanjiGlyph = isKanji(name)

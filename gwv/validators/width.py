@@ -16,13 +16,6 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {True, False},
-    "category": {
-        "user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"},
-    "transform": {False},
-}
-
 _re_halfWidth = re.compile(
     r"-halfwidth$|^uff(6[1-9a-f]|[7-9a-d][0-9a-f]|e[8-e])$")
 _re_fullWidth = re.compile(r"-fullwidth$|^uff([0-5][0-9a-f]|60|e[0-6])$")
@@ -81,6 +74,13 @@ buhinWidths = {
 class WidthValidator(Validator):
 
     name = "width"
+
+    filters = {
+        "alias": {True, False},
+        "category": {
+            "user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"},
+        "transform": {False},
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         if _re_fullWidth.search(name):

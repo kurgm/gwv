@@ -356,17 +356,17 @@ _STYLE_NO_END = -1
 
 _NO_ERROR = -2
 
-filters = {
-    "alias": {False},
-    "category": default_filters["category"] - {
-        "user-owned", "ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji"},
-    "transform": {False},
-}
-
 
 class CornerValidator(Validator):
 
     name = "corner"
+
+    filters = {
+        "alias": {False},
+        "category": default_filters["category"] - {
+            "user-owned", "ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji"},
+        "transform": {False},
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         strokes = []

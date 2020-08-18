@@ -10,12 +10,6 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {True, False},
-    "category": {
-        "ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}
-}
-
 _re_var_nnn_henka = re.compile(r"^(.+)-((var|itaiji)-\d{3}|\d{2})$")
 _re_var_src_henka = re.compile(
     r"^(u[0-9a-f]{4,5}-" + RE_REGIONS + r")(\d{2})$")
@@ -25,6 +19,12 @@ _re_var_other = re.compile(r"^(u[0-9a-f]{4,5}|cdp[on]?-[0-9a-f]{4})-")
 class DelvarValidator(Validator):
 
     name = "delvar"
+
+    filters = {
+        "alias": {True, False},
+        "category": {
+            "ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         m = _re_var_nnn_henka.match(name) or _re_var_src_henka.match(name) or \

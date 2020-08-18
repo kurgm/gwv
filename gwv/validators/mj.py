@@ -14,14 +14,6 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {True, False},
-    "category": {"togo", "togo-var", "gokan", "gokan-var",
-                 "ucs-hikanji", "ucs-hikanji-var",
-                 "koseki-kanji", "koseki-hikanji", "toki", "other"}
-}
-
-
 def kuten2gl(ku, ten):
     """句点コードをGL領域の番号に変換する"""
     return "{:02x}{:02x}".format(ku + 32, ten + 32)
@@ -179,6 +171,14 @@ def get_base(name, field):
 class MjValidator(Validator):
 
     name = "mj"
+
+    filters = {
+        "alias": {True, False},
+        "category": {
+            "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
+            "ucs-hikanji-var", "koseki-kanji", "koseki-hikanji", "toki",
+            "other"}
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         field, key = mjtable.glyphname_to_field_key(name)

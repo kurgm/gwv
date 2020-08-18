@@ -8,15 +8,14 @@ error_codes = ErrorCodes(
 )
 
 
-filters = {
-    "alias": {False},
-    "category": default_filters["category"]
-}
-
-
 class DonotuseValidator(Validator):
 
     name = "donotuse"
+
+    filters = {
+        "alias": {False},
+        "category": default_filters["category"]
+    }
 
     def is_invalid(self, name, related, kage, gdata, dump):
         quotings = []
