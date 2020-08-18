@@ -1,6 +1,5 @@
-from numbers import Real
 import re
-from typing import List
+from typing import List, Union
 
 from gwv.dump import Dump
 from gwv.helper import GWGroupLazyLoader
@@ -87,8 +86,8 @@ class WidthValidator(Validator):
 
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
-        minX: Real
-        maxX: Real
+        minX: Union[int, float]
+        maxX: Union[int, float]
         if _re_fullWidth.search(name):
             minX = 0
             maxX = 200
@@ -117,8 +116,8 @@ class WidthValidator(Validator):
                     gn: str = line.data[7].split("@")[0]
                     if gn in buhinWidths:
                         bb = buhinWidths[gn]
-                        bL: Real = xL + w * bb[0] / 200.0
-                        bR: Real = xL + w * bb[1] / 200.0
+                        bL = xL + w * bb[0] / 200.0
+                        bR = xL + w * bb[1] / 200.0
                     else:
                         bgW = getDWidth(gn)
                         if bgW == 0:

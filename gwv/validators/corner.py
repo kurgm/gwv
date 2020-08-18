@@ -1,7 +1,7 @@
 import itertools
 import math
 import re
-from typing import List
+from typing import List, Optional
 
 from gwv.dump import Dump
 from gwv.kagedata import KageData
@@ -148,9 +148,9 @@ class Segment:
         self.y0 = y0
         self.x1 = x1
         self.y1 = y1
-        self.sttConnect = None
+        self.sttConnect: Optional[Connection] = None
         self.midConnect = []
-        self.endConnect = None
+        self.endConnect: Optional[Connection] = None
 
     def reverse(self):
         self.start_type, self.end_type = self.end_type, self.start_type

@@ -1,8 +1,7 @@
 import json
-from numbers import Real
 import os.path
 import re
-from typing import Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional, Set, Union
 from urllib.parse import quote
 from urllib.request import urlopen
 
@@ -84,7 +83,7 @@ def isUcs(name: str):
     return _re_ucs.match(name)
 
 
-def isYoko(x0: Real, y0: Real, x1: Real, y1: Real) -> bool:
+def isYoko(x0: int, y0: int, x1: int, y1: int) -> bool:
     if y0 == y1 and x0 != x1:
         return True
     dx = x1 - x0
@@ -126,7 +125,7 @@ class GWGroupLazyLoader:
         return self.data
 
 
-def load_package_data(name: str):
+def load_package_data(name: str) -> Any:
     with pkg_resources.resource_stream("gwv", name) as f:
         ext = os.path.splitext(name)[1]
         if ext == ".json":
