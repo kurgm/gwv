@@ -109,7 +109,7 @@ def main(mjjson_path=mjjson_path):
         return
     os.makedirs(os.path.dirname(mjjson_path), exist_ok=True)
 
-    log.info("Downloading {}...".format(MJ_ZIP_URL))
+    log.info("Downloading %s", MJ_ZIP_URL)
     filename, _headers = urlretrieve(MJ_ZIP_URL)
     log.info("Download completed")
 

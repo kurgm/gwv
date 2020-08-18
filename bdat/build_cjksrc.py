@@ -17,7 +17,7 @@ CJKSRC_JSON_FILENAME = "cjksrc.json"
 
 
 def get_iso_CJKSrc(url=CJKSRC_URL):
-    log.info("Downloading {}...".format(url))
+    log.info("Downloading %s", url)
     filename, _headers = urlretrieve(url)
     log.info("Download completed")
 
@@ -26,7 +26,7 @@ def get_iso_CJKSrc(url=CJKSRC_URL):
 
 
 def get_unihan_CJKSrc(url=UNIHAN_ZIP_URL):
-    log.info("Downloading {}...".format(url))
+    log.info("Downloading %s", url)
     filename, _headers = urlretrieve(url)
     log.info("Download completed")
 

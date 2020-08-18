@@ -90,8 +90,9 @@ class Validator(object):
         try:
             is_invalid = self.is_invalid(glyphname, related, kage, gdata, dump)
         except Exception:
-            log.exception("Exception while {} is validating {}".format(
-                self.name, glyphname))
+            log.exception(
+                "Exception while %s is validating %s",
+                self.name, glyphname)
             return
 
         if is_invalid:
