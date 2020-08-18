@@ -220,13 +220,13 @@ class MjValidator(Validator):
             for ucs in mjtable.get(idx, MJTable.FIELD_UCS):
                 if not isTogoKanji(ucs):
                     # グリフウィキの互換漢字には適切な関連字が設定されていると仮定する
-                    ucs = dump.get(ucs, ("u3013", ))[0]
+                    ucs = dump.get(ucs)[0] or "u3013"
                 if ucs != "u3013":
                     ucs_expected.add(ucs)
 
         if ucs_expected:
             if related == "u3013" and kage.is_alias:
-                related = dump.get(gdata[19:], ("u3013", ))[0]
+                related = dump.get(gdata[19:])[0] or "u3013"
             if related == "u3013":
                 # 関連字未設定であるが ucs_expected である
                 return [error_codes.RELATED_UNSET, None, list(ucs_expected)]

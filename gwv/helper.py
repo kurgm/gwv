@@ -2,14 +2,12 @@ import json
 from numbers import Real
 import os.path
 import re
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Union
 from urllib.parse import quote
 from urllib.request import urlopen
 
 import yaml
 import pkg_resources
-
-from gwv.kagedata import KageData
 
 
 _re_ids = re.compile(r"u2ff[\dab]-")
@@ -186,26 +184,3 @@ class CJKSources:
 
 
 cjk_sources = CJKSources()
-
-
-Dump = Dict[str, Tuple[str, str]]
-
-
-_get_alias_of_dic: Optional[Dict[str, List[str]]] = None
-
-
-def get_alias_of(dump: Dump, name: str):
-    global _get_alias_of_dic
-    if _get_alias_of_dic is None:
-        _get_alias_of_dic = {}
-        for gname in dump:
-            if gname in _get_alias_of_dic:
-                continue
-            kage = KageData(dump[gname][1])
-            if not kage.is_alias:
-                continue
-            entity_name: str = kage.lines[0].data[7]
-            entry = _get_alias_of_dic.setdefault(entity_name, [entity_name])
-            entry.append(gname)
-            _get_alias_of_dic[gname] = entry
-    return _get_alias_of_dic.get(name, [name])

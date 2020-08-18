@@ -26,7 +26,7 @@ class KosekitokiValidator(Validator):
         koseki_name = "koseki-" + name[7:]
         koseki_entity = koseki_name
 
-        koseki_gdata = dump.get(koseki_name, (None, None))[1]
+        koseki_gdata = dump.get(koseki_name)[1]
         if koseki_gdata is not None:
             koseki_kage = KageData(koseki_gdata)
             if koseki_kage.is_alias:

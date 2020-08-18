@@ -5,35 +5,9 @@ import json
 import os
 import sys
 
-from gwv.helper import Dump
+from gwv.dump import Dump
 from gwv.validator import validate
 from gwv import version
-
-
-def open_dump(filename: str):
-    dump: Dump = {}
-    with open(filename) as f:
-        if filename[-4:] == ".csv":
-            # first line contains the last modified time
-            timestamp = float(f.readline()[:-1])
-            for l in f:
-                row = l.rstrip("\n").split(",")
-                if len(row) != 3:
-                    continue
-                dump[row[0]] = (row[1], row[2])
-        else:
-            # dump_newest_only.txt
-            timestamp = os.path.getmtime(filename)
-            line = f.readline()  # header
-            line = f.readline()  # ------
-            while line:
-                row = [x.strip() for x in line.split("|")]
-                if len(row) != 3:
-                    line = f.readline()
-                    continue
-                dump[row[0]] = (row[1], row[2])
-                line = f.readline()
-    return dump, timestamp
 
 
 def main(args=None):
@@ -49,9 +23,9 @@ def main(args=None):
 
     outpath = opts.out or os.path.join(
         os.path.dirname(opts.dumpfile), "gwv_result.json")
-    dump, timestamp = open_dump(opts.dumpfile)
+    dump = Dump(opts.dumpfile)
 
-    result = validate(dump, opts.names or None, timestamp)
+    result = validate(dump, opts.names or None)
 
     with open(outpath, "w") as outfile:
         json.dump(result, outfile, separators=(",", ":"), sort_keys=True)

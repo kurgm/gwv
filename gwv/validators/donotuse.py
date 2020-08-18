@@ -20,8 +20,8 @@ class DonotuseValidator(Validator):
         for line in kage.lines:
             if line.data[0] != 99:
                 continue
-            r = dump.get(line.data[7].split("@")[0])
-            if r and "do-not-use" in r[1]:
+            part_data = dump.get(line.data[7].split("@")[0])[1]
+            if part_data and "do-not-use" in part_data:
                 quotings.append(line.data[7])
         if quotings:
             return [error_codes.DO_NOT_USE] + quotings

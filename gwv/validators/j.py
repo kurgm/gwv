@@ -1,7 +1,6 @@
 import re
 
 from gwv.helper import cjk_sources
-from gwv.helper import get_alias_of
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
 from gwv.helper import RE_REGIONS
@@ -46,7 +45,7 @@ class JValidator(Validator):
             no_use_alias: use
             for use, no_uses in jv_data["no-use-part"].items()
             for no_use in no_uses
-            for no_use_alias in get_alias_of(dump, no_use)
+            for no_use_alias in dump.get_alias_of(no_use)
         }
         re_no_apply_jv = re.compile(
             r"(" + r"|".join(jv_data["no-apply-jv"]) +
@@ -54,7 +53,7 @@ class JValidator(Validator):
         self.jv_no_apply_parts = {
             part_alias
             for part in dump if re_no_apply_jv.match(part)
-            for part_alias in get_alias_of(dump, part)
+            for part_alias in dump.get_alias_of(part)
         }
 
     def checkJV(self, kage):

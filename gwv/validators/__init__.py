@@ -1,8 +1,10 @@
 import abc
+from gwv.kagedata import KageData
 import logging
 import re
 from typing import Dict
 
+from gwv.dump import Dump
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
 from gwv.helper import isUcs
@@ -92,14 +94,16 @@ class Validator(metaclass=abc.ABCMeta):
     def __init__(self):
         self.results = {}
 
-    def setup(self, dump):
+    def setup(self, dump: Dump):
         pass
 
     @abc.abstractmethod
-    def is_invalid(self, name, related, kage, gdata, dump):
+    def is_invalid(self, name: str, related: str, kage: str, gdata: KageData,
+                   dump: Dump):
         raise NotImplementedError
 
-    def validate(self, glyphname, related, kage, gdata, dump):
+    def validate(self, glyphname: str, related: str, kage: str,
+                 gdata: KageData, dump: Dump):
         try:
             is_invalid = self.is_invalid(glyphname, related, kage, gdata, dump)
         except Exception:
@@ -111,7 +115,7 @@ class Validator(metaclass=abc.ABCMeta):
         if is_invalid:
             self.record(glyphname, is_invalid)
 
-    def record(self, glyphname, error):
+    def record(self, glyphname: str, error):
         key = str(error[0])
         if key not in self.results:
             self.results[key] = []
