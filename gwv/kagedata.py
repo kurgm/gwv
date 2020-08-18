@@ -1,7 +1,8 @@
 import math
+from typing import Optional
 
 
-def kageInt(s):
+def kageInt(s: str) -> int:
     """Imitates Math.floor(+s) in ECMAScript (returns an int).
 
     KAGE Engine uses Math.floor to parse numbers in KAGE data.
@@ -21,7 +22,7 @@ def kageInt(s):
             return int(math.floor(float(s)))
 
 
-def kageIntSuppressError(s):
+def kageIntSuppressError(s: str) -> Optional[int]:
     """The same as kageInt except that it returns None when s is invalid"""
     try:
         return kageInt(s)
@@ -31,7 +32,7 @@ def kageIntSuppressError(s):
 
 class KageData:
 
-    def __init__(self, data):
+    def __init__(self, data: str):
         self.lines = tuple([KageLine(i, l)
                             for i, l in enumerate(data.split("$"))])
         self.len = len(self.lines)
@@ -52,13 +53,13 @@ class KageData:
 
 class KageLine:
 
-    def __init__(self, line_number, data):
+    def __init__(self, line_number: int, data: str):
         self.line_number = line_number
         self.strdata = data
         sdata = data.split(":")
-        if kageIntSuppressError(sdata[0]) != 99:
-            self.data = tuple([kageIntSuppressError(x) for x in sdata])
-        else:
+        if kageIntSuppressError(sdata[0]) == 99:
             self.data = tuple([
                 kageIntSuppressError(x) if i != 7 else x
                 for i, x in enumerate(sdata)])
+        else:
+            self.data = tuple([kageIntSuppressError(x) for x in sdata])

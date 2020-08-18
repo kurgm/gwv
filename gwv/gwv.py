@@ -5,16 +5,17 @@ import json
 import os
 import sys
 
+from gwv.helper import Dump
 from gwv.validator import validate
 from gwv import version
 
 
-def open_dump(filename):
-    dump = {}
+def open_dump(filename: str):
+    dump: Dump = {}
     with open(filename) as f:
         if filename[-4:] == ".csv":
             # first line contains the last modified time
-            timestamp = int(f.readline()[:-1])
+            timestamp = float(f.readline()[:-1])
             for l in f:
                 row = l.rstrip("\n").split(",")
                 if len(row) != 3:
