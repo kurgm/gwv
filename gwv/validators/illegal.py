@@ -96,7 +96,7 @@ class IllegalValidator(Validator):
                 sttType = sttType % 100 if sttType >= 0 else sttType
                 endType = endType % 100 if endType >= 0 else endType
             if stype == 99:
-                if lendata != 8 and lendata != 11:
+                if lendata not in (8, 11):
                     # 列数異常（99）
                     return [
                         error_codes.WRONG_NUMBER_OF_COLUMNS,
@@ -107,7 +107,7 @@ class IllegalValidator(Validator):
                         error_codes.ALIAS_11_COLUMNS,
                         [line.line_number, line.strdata]]
             elif stype == 0:
-                if lendata != 4 and lendata != 7:
+                if lendata not in (4, 7):
                     # 列数異常（0）
                     return [
                         error_codes.WRONG_NUMBER_OF_COLUMNS,
