@@ -1,5 +1,5 @@
 import math
-from typing import Optional
+from typing import List, Optional, Tuple
 
 
 def kageInt(s: str) -> int:
@@ -40,12 +40,12 @@ class KageData:
             self.lines[0].strdata.startswith("99:0:0:0:0:200:200:")
         self.has_transform = any(
             len(line.data) >= 2 and
-            line.data[0] == 0 and line.data[1] in (97, 98, 99)
+            line.stroke_type == 0 and line.head_type in (97, 98, 99)
             for line in self.lines)
 
     def get_entity(self, dump):
         if self.is_alias:
-            entity_name = self.lines[0].data[7]
+            entity_name = self.lines[0].part_name
             if entity_name in dump:
                 return KageData(dump[entity_name][1])
         return self
@@ -63,3 +63,28 @@ class KageLine:
                 for i, x in enumerate(sdata)])
         else:
             self.data = tuple([kageIntSuppressError(x) for x in sdata])
+
+    @property
+    def stroke_type(self) -> int:
+        return self.data[0]
+
+    @property
+    def head_type(self) -> int:
+        return self.data[1]
+
+    @property
+    def tail_type(self) -> int:
+        return self.data[2]
+
+    @property
+    def part_name(self) -> str:
+        if self.stroke_type != 99:
+            raise ValueError("tried to get part name of non-part KageLine")
+        return self.data[7]
+
+    @property
+    def coords(self) -> List[Tuple[int, int]]:
+        if self.stroke_type == 99:
+            return [(self.data[3], self.data[4]), (self.data[5], self.data[6])]
+
+        return list(zip(self.data[3::2], self.data[4::2]))

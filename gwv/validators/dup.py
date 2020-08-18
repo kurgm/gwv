@@ -1,8 +1,8 @@
 import math
-from typing import List
+from typing import List, Tuple
 
 from gwv.dump import Dump
-from gwv.kagedata import KageData
+from gwv.kagedata import KageData, KageLine
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -23,7 +23,8 @@ _d45 = math.pi / 4.0
 
 class LineSegment:
 
-    def __init__(self, line, dist, angle, t0, t1):
+    def __init__(self, line: KageLine, dist: float, angle: float,
+                 t0: int, t1: int):
         self.line = line
         self.dist = dist  # (0, 0)と直線との距離
         self.angle = angle  # yoko: -pi/4 < theta < pi/4; tate: 0 < theta < pi
@@ -31,7 +32,8 @@ class LineSegment:
         self.t1 = t1
 
 
-def addLine(line, tate, yoko, x0, y0, x1, y1):
+def addLine(line: KageLine, tate: List[LineSegment], yoko: List[LineSegment],
+            x0: int, y0: int, x1: int, y1: int):
     if y0 == y1:
         if x0 < x1:
             yoko.append(LineSegment(line, -y0, 0.0, x0, x1))
@@ -81,27 +83,28 @@ class DupValidator(Validator):
                    dump: Dump):
         tate: List[LineSegment] = []
         yoko: List[LineSegment] = []
-        curve: List[list] = []
-        curve2 = []
-        buhin = []
-        buhinIchi = []
+        curve: List[Tuple[KageLine, List[int]]] = []
+        curve2: List[KageLine] = []
+        buhin: List[KageLine] = []
+        buhinIchi: List[KageLine] = []
 
         for line in kage.lines:
-            stype = line.data[0]
+            stype = line.stroke_type
+            coords = line.coords
             if stype == 0:
                 pass
             elif stype == 1:
-                addLine(line, tate, yoko, *line.data[3:7])
+                addLine(line, tate, yoko, *coords[0], *coords[1])
             elif stype == 2:
-                curve.append([line, line.data[3:9]])
+                curve.append((line, [*coords[0], *coords[1], *coords[2]]))
             elif stype in (3, 4):
-                addLine(line, tate, yoko, *line.data[3:7])
-                addLine(line, tate, yoko, *line.data[5:9])
+                addLine(line, tate, yoko, *coords[0], *coords[1])
+                addLine(line, tate, yoko, *coords[1], *coords[2])
             elif stype == 6:
                 curve2.append(line)
             elif stype == 7:
-                addLine(line, tate, yoko, *line.data[3:7])
-                curve.append([line, line.data[5:11]])
+                addLine(line, tate, yoko, *coords[0], *coords[1])
+                curve.append((line, [*coords[1], *coords[2], *coords[3]]))
             elif stype == 9:
                 buhinIchi.append(line)
             elif stype == 99:
@@ -150,7 +153,7 @@ class DupValidator(Validator):
                     [curve_2.line_number, curve_2.strdata]
                 ]  # 曲線
 
-        curve2.sort(key=lambda line: line.data[3])
+        curve2.sort(key=lambda line: line.coords[0][0])
         for curve21, curve22 in ineighbors(curve2):
             if all(-3 <= curve21.data[j] - curve22.data[j] <= 3
                    for j in range(3, 11)):
@@ -160,9 +163,9 @@ class DupValidator(Validator):
                     [curve22.line_number, curve22.strdata]
                 ]  # 複曲線
 
-        buhin.sort(key=lambda line: line.data[3])
+        buhin.sort(key=lambda line: line.coords[0][0])
         for buhin1, buhin2 in ineighbors(buhin):
-            if buhin1.data[7] != buhin2.data[7]:
+            if buhin1.part_name != buhin2.part_name:
                 continue
             if all(-3 <= buhin1.data[j] - buhin2.data[j] <= 3
                    for j in range(3, 7)):
@@ -172,7 +175,7 @@ class DupValidator(Validator):
                     [buhin2.line_number, buhin2.strdata]
                 ]  # 部品
 
-        buhinIchi.sort(key=lambda line: line.data[3])
+        buhinIchi.sort(key=lambda line: line.coords[0][0])
         for buhinIchi1, buhinIchi2 in ineighbors(buhinIchi):
             if all(-3 <= buhinIchi1.data[j] - buhinIchi2.data[j] <= 3
                    for j in range(3, 7)):

@@ -1,4 +1,3 @@
-from typing import Tuple
 from gwv.dump import Dump
 from gwv.helper import isKanji
 from gwv.helper import isYoko
@@ -92,13 +91,22 @@ class IllegalValidator(Validator):
         isKanjiGlyph = isKanji(name)
         for line in kage.lines:
             lendata = len(line.data)
-            stype: int = line.data[0]
-            sttType: int = line.data[1] if lendata >= 2 else 0
-            endType: int = line.data[2] if lendata >= 3 else 0
+            stype = line.stroke_type
+            try:
+                sttType = line.head_type
+            except IndexError:
+                sttType = 0
+            try:
+                endType = line.tail_type
+            except IndexError:
+                endType = 0
+            coords = line.coords
+
             if not isKanjiGlyph:
                 stype = stype % 100 if stype >= 0 else stype
                 sttType = sttType % 100 if sttType >= 0 else sttType
                 endType = endType % 100 if endType >= 0 else endType
+
             if stype == 99:
                 if lendata not in (8, 11):
                     # 列数異常（99）
@@ -148,7 +156,7 @@ class IllegalValidator(Validator):
             elif stype == 1:
                 if sttType in (2, 12, 22, 32) or \
                         endType in (2, 32, 13, 23, 24, 313, 413):
-                    if isYoko(*line.data[3:7]):
+                    if isYoko(*coords[0], *coords[1]):
                         if sttType > 2 or endType > 2:  # not in (0, 2)
                             # 横画に接続(縦)型
                             return [
@@ -166,32 +174,29 @@ class IllegalValidator(Validator):
             elif stype == 2:
                 pass
             elif stype == 3:
-                if isYoko(*line.data[3:7]):
+                if isYoko(*coords[0], *coords[1]):
                     # 折れの前半が横
                     return [
                         error_codes.HORIZONTAL_ORE_FIRST,
                         [line.line_number, line.strdata]]
-                if line.data[2] == 5 and line.data[7] - line.data[5] == 0:
+                if line.tail_type == 5 and coords[2][0] - coords[1][0] == 0:
                     # 折れの後半が縦
                     return [
                         error_codes.VERTICAL_ORE_LAST,
                         [line.line_number, line.strdata]]
             elif stype == 4:
-                if isYoko(*line.data[3:7]):
+                if isYoko(*coords[0], *coords[1]):
                     # 乙の前半が横
                     return [
                         error_codes.HORIZONTAL_OTSU_FIRST,
                         [line.line_number, line.strdata]]
-                if line.data[2] == 5 and line.data[7] - line.data[5] <= 0:
+                if line.tail_type == 5 and coords[2][0] - coords[1][0] <= 0:
                     # 乙の後半が左向き
                     return [
                         error_codes.LEFTWARD_OTSU_LAST,
                         [line.line_number, line.strdata]]
             if stype != 99:
-                strokeKeijo: Tuple[int, int, int] = tuple(line.data[0:3])
-                if not isKanjiGlyph:
-                    strokeKeijo = tuple(
-                        x % 100 if x >= 0 else x for x in strokeKeijo)
+                strokeKeijo = (stype, sttType, endType)
 
                 if strokeKeijo not in keijoKumiawase and (
                         isKanjiGlyph or

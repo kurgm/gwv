@@ -58,8 +58,8 @@ class JValidator(Validator):
         }
 
     def checkJV(self, kage):
-        used_parts = [kageline.data[7].split("@")[0]
-                      for kageline in kage.lines if kageline.data[0] == 99]
+        used_parts = [kageline.part_name.split("@")[0]
+                      for kageline in kage.lines if kageline.stroke_type == 99]
         if any(part in self.jv_no_apply_parts for part in used_parts):
             return False  # 簡体字特有の字形
         for part in used_parts:
@@ -133,7 +133,7 @@ class JValidator(Validator):
             return False
 
         if kage.is_alias:
-            entity_name = kage.lines[0].data[7]
+            entity_name = kage.lines[0].part_name
         else:
             entity_name = name
 
@@ -141,7 +141,7 @@ class JValidator(Validator):
             return False  # 無印が見つからない
         nomark_kage = KageData(dump[ucs][1])
         if nomark_kage.is_alias:
-            nomark_entity_name = nomark_kage.lines[0].data[7]
+            nomark_entity_name = nomark_kage.lines[0].part_name
         else:
             nomark_entity_name = ucs
 

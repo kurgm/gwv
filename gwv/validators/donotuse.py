@@ -21,11 +21,11 @@ class DonotuseValidator(Validator):
                    dump: Dump):
         quotings = []
         for line in kage.lines:
-            if line.data[0] != 99:
+            if line.stroke_type != 99:
                 continue
-            part_data = dump.get(line.data[7].split("@")[0])[1]
+            part_data = dump.get(line.part_name.split("@")[0])[1]
             if part_data and "do-not-use" in part_data:
-                quotings.append(line.data[7])
+                quotings.append(line.part_name)
         if quotings:
             return [error_codes.DO_NOT_USE] + quotings
         return False

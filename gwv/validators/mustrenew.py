@@ -30,12 +30,12 @@ class MustrenewValidator(Validator):
         quotings = set()
         quotings_old = set()  # 最新版が旧部品を引用している部品の旧版
         for line in kage.lines:
-            if line.data[0] == 99 and "@" in line.data[7]:
-                quoted: str = line.data[7].split("@")[0]
+            if line.stroke_type == 99 and "@" in line.part_name:
+                quoted: str = line.part_name.split("@")[0]
                 if quoted in dump and "@" in dump[quoted][1]:
-                    quotings_old.add(line.data[7])
+                    quotings_old.add(line.part_name)
                 else:
-                    quotings.add(line.data[7])
+                    quotings.add(line.part_name)
         return [quotings, quotings_old] if quotings or quotings_old else False
 
     def record(self, glyphname, error):

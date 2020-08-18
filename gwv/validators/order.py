@@ -38,8 +38,8 @@ class OrderValidator(Validator):
             return False
         first = kage.lines[0]
         last = kage.lines[-1]
-        if first.data[0] == 99:
-            fG: str = first.data[7]
+        if first.stroke_type == 99:
+            fG = first.part_name
             m = _re_vars.search(fG)
             if m:
                 henka = m.group(1)
@@ -49,8 +49,8 @@ class OrderValidator(Validator):
                     return [error_codes.BOTTOM_PART_FIRST, fG]  # 下部品が最初
                 if henka == "06":
                     return [error_codes.INNER_PART_FIRST, fG]  # 囲み内側部品が最初
-        if last.data[0] == 99:
-            lG: str = last.data[7]
+        if last.stroke_type == 99:
+            lG = last.part_name
             m = _re_vars.search(lG)
             if m:
                 henka = m.group(1)

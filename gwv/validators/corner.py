@@ -4,7 +4,7 @@ import re
 from typing import List, Optional
 
 from gwv.dump import Dump
-from gwv.kagedata import KageData
+from gwv.kagedata import KageData, KageLine
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -67,24 +67,24 @@ error_codes = ErrorCodes(
 
 class Stroke:
 
-    def __init__(self, line):
+    def __init__(self, line: KageLine):
         self.line = line
-        self.stype = line.data[0]
+        self.stype = line.stroke_type
         self.tate = None
         self.yoko = None
 
     def setSegments(self, tate, tate_vert, yoko, yoko_hori):
-        data = self.line.data
-        if len(data) <= 2:
+        if len(self.line.data) <= 2:
             return
-        strokeType = data[0]
-        sttType = data[1]
-        endType = data[2]
+        sttType = self.line.head_type
+        endType = self.line.tail_type
+        coords = self.line.coords
 
-        if strokeType == 1:
+        if self.stype == 1:
             # 直線
             seg = Segment(self, sttType, endType,
-                          data[3], data[4], data[5], data[6])
+                          coords[0][0], coords[0][1],
+                          coords[1][0], coords[1][1])
             seg.reverseIfNecessary()
             if seg.isYoko():
                 if seg.isHori():
@@ -97,10 +97,10 @@ class Stroke:
                 self.tate = seg
                 tate.append(seg)
 
-        elif strokeType in (2, 6):
+        elif self.stype in (2, 6):
             # 曲線, 複曲線
-            stt = data[3:5]
-            end = data[7:9] if strokeType == 2 else data[9:11]
+            stt = coords[0]
+            end = coords[2] if self.stype == 2 else coords[3]
             if sttType in (12, 22, 32):
                 # 左上カド, 右上カド, 接続
                 seg = Segment(self, sttType, _STYLE_NO_END,
@@ -114,10 +114,11 @@ class Stroke:
                 self.yoko = seg
                 yoko.append(seg)
 
-        elif strokeType in (3, 4, 7):
+        elif self.stype in (3, 4, 7):
             # 折れ, 乙線, 縦払い
             seg = Segment(self, sttType, _STYLE_NO_END,
-                          data[3], data[4], data[5], data[6])
+                          coords[0][0], coords[0][1],
+                          coords[1][0], coords[1][1])
             seg.reverseIfNecessary()
             if seg.isYoko():
                 if seg.isHori():
@@ -130,17 +131,21 @@ class Stroke:
                 self.tate = seg
                 tate.append(seg)
 
-            if strokeType == 7 and endType == 7 and data[5] > data[9]:
+            if self.stype == 7 and endType == 7 and \
+                    coords[1][0] > coords[3][0]:
                 # 左払い(「臼」の左上などを横画と同一視する)
                 seg = Segment(self, 2, _STYLE_NO_END,
-                              data[9], data[10], data[5], data[6])
+                              coords[3][0], coords[3][1],
+                              coords[1][0], coords[1][1])
                 self.yoko = seg
                 yoko.append(seg)
 
 
 class Segment:
 
-    def __init__(self, stroke, start_type, end_type, x0, y0, x1, y1):
+    def __init__(self, stroke: Stroke,
+                 start_type: int, end_type: int,
+                 x0: int, y0: int, x1: int, y1: int):
         self.stroke = stroke
         self.start_type = start_type
         self.end_type = end_type
@@ -149,7 +154,7 @@ class Segment:
         self.x1 = x1
         self.y1 = y1
         self.sttConnect: Optional[Connection] = None
-        self.midConnect = []
+        self.midConnect: List[Connection] = []
         self.endConnect: Optional[Connection] = None
 
     def reverse(self):
@@ -184,7 +189,8 @@ class Segment:
 
 class Connection:
 
-    def __init__(self, tate, yoko, tate_pos, yoko_pos, errorNum):
+    def __init__(self, tate: Segment, yoko: Segment,
+                 tate_pos: int, yoko_pos: int, errorNum: str):
         self.tate = tate
         self.yoko = yoko
         self.tate_pos = tate_pos
@@ -237,7 +243,7 @@ class Connection:
             self.yoko.endConnect = None
 
 
-def is_ZH_corner(t, yoko, tate):
+def is_ZH_corner(t: Segment, yoko: List[Segment], _tate: List[Segment]):
     # 縦画tの終端が左下zh用カドであるべきかどうかを周辺の画の接続関係から推測する
     # 参照: https://twitter.com/kurgm/status/545573760267329537
     y = t.endConnect.yoko

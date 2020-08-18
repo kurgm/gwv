@@ -16,7 +16,8 @@ class DelquoteValidator(Validator):
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         for line in kage.lines:
-            if line.data[0] == 99 and line.data[7].split("@")[0] not in dump:
+            if line.stroke_type == 99 and \
+                    line.part_name.split("@")[0] not in dump:
                 # 無い部品を引用している
-                return [error_codes.PART_NOT_FOUND, line.data[7]]
+                return [error_codes.PART_NOT_FOUND, line.part_name]
         return False

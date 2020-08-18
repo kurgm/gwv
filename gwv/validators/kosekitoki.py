@@ -32,7 +32,7 @@ class KosekitokiValidator(Validator):
         if koseki_gdata is not None:
             koseki_kage = KageData(koseki_gdata)
             if koseki_kage.is_alias:
-                koseki_entity = koseki_kage.lines[0].data[7]
+                koseki_entity = koseki_kage.lines[0].part_name
 
         if not kage.is_alias:
             entity = name
@@ -40,7 +40,7 @@ class KosekitokiValidator(Validator):
                 # エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）
                 return [error_codes.NOT_ALIAS]
         else:
-            entity = kage.lines[0].data[7]
+            entity = kage.lines[0].part_name
             if entity != koseki_entity:
                 if koseki_entity == koseki_name:
                     # koseki-xxxxx0のエイリアスでない

@@ -32,11 +32,11 @@ class SkewValidator(Validator):
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         for line in kage.lines:
-            data = line.data
-            stype = data[0]
+            stype = line.stroke_type
+            coords = line.coords
             if stype == 1:
-                xDif = abs(data[3] - data[5])
-                yDif = abs(data[4] - data[6])
+                xDif = abs(coords[0][0] - coords[1][0])
+                yDif = abs(coords[0][1] - coords[1][1])
                 if xDif <= yDif and xDif != 0 and xDif <= 3:
                     # 歪んだ垂直
                     return [
@@ -50,16 +50,16 @@ class SkewValidator(Validator):
                         [line.line_number, line.strdata],
                         round(math.atan2(yDif, xDif) * 180 / math.pi, 1)]
             elif stype == 3:
-                xDif1 = abs(data[3] - data[5])
-                yDif1 = abs(data[4] - data[6])
+                xDif1 = abs(coords[0][0] - coords[1][0])
+                yDif1 = abs(coords[0][1] - coords[1][1])
                 if xDif1 != 0 and xDif1 <= 3:
                     # 折れの前半が歪んだ垂直
                     return [
                         error_codes.SKEWED_VERT_ORE_FIRST,
                         [line.line_number, line.strdata],
                         round(math.atan2(xDif1, yDif1) * 180 / math.pi, 1)]
-                xDif2 = abs(data[5] - data[7])
-                yDif2 = abs(data[6] - data[8])
+                xDif2 = abs(coords[1][0] - coords[2][0])
+                yDif2 = abs(coords[1][1] - coords[2][1])
                 if yDif2 != 0 and yDif2 <= 3:
                     # 折れの後半が歪んだ水平
                     return [
@@ -67,8 +67,8 @@ class SkewValidator(Validator):
                         [line.line_number, line.strdata],
                         round(math.atan2(yDif2, xDif2) * 180 / math.pi, 1)]
             elif stype == 4:
-                xDif = abs(data[5] - data[7])
-                yDif = abs(data[6] - data[8])
+                xDif = abs(coords[1][0] - coords[2][0])
+                yDif = abs(coords[1][1] - coords[2][1])
                 if yDif != 0 and yDif <= 3:
                     # 乙の後半が歪んだ水平
                     return [
@@ -76,18 +76,18 @@ class SkewValidator(Validator):
                         [line.line_number, line.strdata],
                         round(math.atan2(yDif, xDif) * 180 / math.pi, 1)]
             elif stype == 7:
-                if isYoko(*data[3:7]):
+                if isYoko(*coords[0], *coords[1]):
                     # 縦払いの直線部分が横
                     return [
                         error_codes.HORI_TATEBARAI_FIRST,
                         [line.line_number, line.strdata]]
-                xDif1 = data[5] - data[3]
-                yDif1 = data[6] - data[4]
+                xDif1 = coords[1][0] - coords[0][0]
+                yDif1 = coords[1][1] - coords[0][1]
                 theta1 = math.atan2(yDif1, xDif1)
                 if xDif1 == 0 and yDif1 == 0:
                     theta1 = math.pi / 2
-                xDif2 = data[7] - data[5]
-                yDif2 = data[8] - data[6]
+                xDif2 = coords[2][0] - coords[1][0]
+                yDif2 = coords[2][1] - coords[1][1]
                 theta2 = math.atan2(yDif2, xDif2)
                 if (xDif1 == 0 and xDif2 != 0) or \
                         abs(theta1 - theta2) * 60 > 3:

@@ -1,5 +1,5 @@
 import re
-from typing import List, Union
+from typing import Union
 
 from gwv.dump import Dump
 from gwv.helper import GWGroupLazyLoader
@@ -101,19 +101,17 @@ class WidthValidator(Validator):
             minX = pinf
             maxX = ninf
             for line in kage.lines:
-                if line.data[0] == 0:
+                if line.stroke_type == 0:
                     continue
-                if line.data[0] != 99:
-                    xs: List[int] = [
-                        x for x in line.data[3::2] if x is not None]
+                if line.stroke_type != 99:
+                    xs = [x for x, _y in line.coords if x is not None]
                     if xs:
                         minX = min(minX, *xs)
                         maxX = max(maxX, *xs)
                 else:
-                    xL: int = line.data[3]
-                    xR: int = line.data[5]
+                    (xL, _yL), (xR, _yR) = line.coords
                     w = xR - xL
-                    gn: str = line.data[7].split("@")[0]
+                    gn: str = line.part_name.split("@")[0]
                     if gn in buhinWidths:
                         bb = buhinWidths[gn]
                         bL = xL + w * bb[0] / 200.0
