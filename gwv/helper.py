@@ -1,6 +1,8 @@
 import json
 import os.path
 import re
+from urllib.parse import quote
+from urllib.request import urlopen
 
 import yaml
 import pkg_resources
@@ -95,8 +97,6 @@ _re_gwlink = re.compile(r"\[\[(?:[^]]+\s)?([0-9a-z_-]+(?:@\d+)?)\]\]")
 
 
 def getGlyphsInGroup(groupname):
-    from urllib.parse import quote
-    from urllib.request import urlopen
     url = "http://glyphwiki.org/wiki/Group:{}?action=edit".format(
         quote(groupname.encode("utf-8")))
     f = urlopen(url, timeout=60)

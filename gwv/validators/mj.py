@@ -79,6 +79,8 @@ class MJTable:
         if field == MJTable.FIELD_SDJT:
             return "sdjt-" + key
 
+        raise KeyError(field)
+
     def glyphname_to_field_key(self, glyphname):
         if re.compile(r"^u[0-9a-f]{4,6}-ue01[0-9a-f]{2}$").match(glyphname):
             return MJTable.FIELD_IVS, glyphname
@@ -229,7 +231,7 @@ class MjValidator(Validator):
             if related == "u3013":
                 # 関連字未設定であるが ucs_expected である
                 return [error_codes.RELATED_UNSET, None, list(ucs_expected)]
-            elif related not in ucs_expected:
+            if related not in ucs_expected:
                 # 関連字に related が設定されているが ucs_expected の間違い
                 return [error_codes.WRONG_RELATED, related, list(ucs_expected)]
         return False

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import json
 import os
 import sys
@@ -38,7 +39,6 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
-    import argparse
     parser = argparse.ArgumentParser(description="GlyphWiki data validator")
     parser.add_argument("dumpfile")
     parser.add_argument("-o", "--out", help="File to write the output JSON to")

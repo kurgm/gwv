@@ -23,6 +23,7 @@ class DelquoteValidator(Validator):
             if line.data[0] == 99 and line.data[7].split("@")[0] not in dump:
                 # 無い部品を引用している
                 return [error_codes.PART_NOT_FOUND, line.data[7]]
+        return False
 
 
 validator_class = DelquoteValidator

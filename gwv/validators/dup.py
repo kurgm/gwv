@@ -178,5 +178,7 @@ class DupValidator(Validator):
                     [buhinIchi2.line_number, buhinIchi2.strdata]
                 ]  # 部品位置
 
+        return False
+
 
 validator_class = DupValidator

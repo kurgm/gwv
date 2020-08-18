@@ -45,11 +45,10 @@ class KosekitokiValidator(Validator):
                 if koseki_entity == koseki_name:
                     # koseki-xxxxx0のエイリアスでない
                     return [error_codes.NOT_ALIAS_OF_KOSEKI, entity]
-                else:
-                    # koseki-xxxxx0と異なる実体のエイリアス
-                    return [
-                        error_codes.NOT_ALIAS_OF_ENTITY_OF_KOSEKI,
-                        entity, koseki_entity]
+                # koseki-xxxxx0と異なる実体のエイリアス
+                return [
+                    error_codes.NOT_ALIAS_OF_ENTITY_OF_KOSEKI,
+                    entity, koseki_entity]
         return False
 
 
