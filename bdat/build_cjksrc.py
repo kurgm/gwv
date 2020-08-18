@@ -4,6 +4,7 @@ import codecs
 import json
 import logging
 import os
+from typing import Dict, Iterable, List, Optional
 from urllib.request import urlretrieve
 import zipfile
 
@@ -16,7 +17,7 @@ UNIHAN_ZIP_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
 CJKSRC_JSON_FILENAME = "cjksrc.json"
 
 
-def get_iso_CJKSrc(url=CJKSRC_URL):
+def get_iso_CJKSrc(url: str = CJKSRC_URL):
     log.info("Downloading %s", url)
     filename, _headers = urlretrieve(url)
     log.info("Download completed")
@@ -25,7 +26,7 @@ def get_iso_CJKSrc(url=CJKSRC_URL):
         return parseCJKSrc(cjksrctxt)
 
 
-def get_unihan_CJKSrc(url=UNIHAN_ZIP_URL):
+def get_unihan_CJKSrc(url: str = UNIHAN_ZIP_URL):
     log.info("Downloading %s", url)
     filename, _headers = urlretrieve(url)
     log.info("Download completed")
@@ -35,8 +36,8 @@ def get_unihan_CJKSrc(url=UNIHAN_ZIP_URL):
             return parseCJKSrc(codecs.iterdecode(cjksrctxt, "utf-8"))
 
 
-def parseCJKSrc(cjksrctxt):
-    result = {}
+def parseCJKSrc(cjksrctxt: Iterable[str]):
+    result: Dict[str, List[Optional[str]]] = {}
     taglist = [
         "kIRG_GSource",
         "kIRG_TSource",
@@ -73,7 +74,7 @@ cjksrcjson_path = os.path.join(
 cjksrcjson_path = os.path.normpath(cjksrcjson_path)
 
 
-def main(cjksrcjson_path=cjksrcjson_path):
+def main(cjksrcjson_path: str = cjksrcjson_path):
 
     if os.path.exists(cjksrcjson_path):
         return

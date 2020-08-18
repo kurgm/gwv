@@ -14,7 +14,7 @@ MJ_ZIP_URL = "https://mojikiban.ipa.go.jp/OSCDL/mji.00502.zip"
 MJ_JSON_FILENAME = "mj.json"
 
 
-def kuten2gl(ku, ten):
+def kuten2gl(ku: int, ten: int):
     """句点コードをGL領域の番号に変換する"""
     return "{:02x}{:02x}".format(ku + 32, ten + 32)
 
@@ -103,7 +103,7 @@ mjjson_path = os.path.join(
 mjjson_path = os.path.normpath(mjjson_path)
 
 
-def main(mjjson_path=mjjson_path):
+def main(mjjson_path: str = mjjson_path):
 
     if os.path.exists(mjjson_path):
         return

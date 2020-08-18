@@ -1,5 +1,5 @@
 import re
-from typing import Optional
+from typing import List, Optional
 
 from gwv.dump import Dump
 from gwv.helper import RE_REGIONS
@@ -27,7 +27,7 @@ _re_vars = re.compile(
     r"-" + RE_REGIONS + r"?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
 
 
-def indexOfFirstKanjiBuhinLine(sname, kage):
+def indexOfFirstKanjiBuhinLine(sname: List[str], kage: KageData):
     """IDSの最初の漢字を部品としているKageLine（なければNone）を返す"""
     for i, sname_i in enumerate(sname):
         if _re_idc.match(sname_i):

@@ -1,4 +1,5 @@
 import re
+from typing import Dict, Set
 
 from gwv.dump import Dump
 from gwv.helper import cjk_sources
@@ -37,10 +38,10 @@ class JValidator(Validator):
 
     def __init__(self):
         Validator.__init__(self)
-        self.jv_no_use_part_replacement = {}
-        self.jv_no_apply_parts = set()
+        self.jv_no_use_part_replacement: Dict[str, str] = {}
+        self.jv_no_apply_parts: Set[str] = set()
 
-    def setup(self, dump):
+    def setup(self, dump: Dump):
         jv_data = load_package_data("data/jv.yaml")
         self.jv_no_use_part_replacement = {
             no_use_alias: use
@@ -57,7 +58,7 @@ class JValidator(Validator):
             for part_alias in dump.get_alias_of(part)
         }
 
-    def checkJV(self, kage):
+    def checkJV(self, kage: KageData):
         used_parts = [kageline.part_name.split("@")[0]
                       for kageline in kage.lines if kageline.stroke_type == 99]
         if any(part in self.jv_no_apply_parts for part in used_parts):

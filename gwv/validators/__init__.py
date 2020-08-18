@@ -49,7 +49,7 @@ _re_ext = re.compile(r"^irg201[57]-\d{5}$")
 _re_bsh = re.compile(r"^unstable-bsh-[\da-f]{4}$")
 
 
-def _categorize(glyphname):
+def _categorize(glyphname: str):
     if "_" in glyphname:
         return "user-owned"
     splitname = glyphname.split("-")
@@ -127,13 +127,13 @@ class Validator(metaclass=abc.ABCMeta):
 
 class ErrorCodes:
 
-    def __init__(self, **namemap):
+    def __init__(self, **namemap: str):
         self._map = namemap
         self._invmap = {v: k for k, v in namemap.items()}
         assert len(self._map) == len(self._invmap)
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str):
         return self._map[name]
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str):
         return self._invmap[key]

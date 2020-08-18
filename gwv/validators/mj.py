@@ -1,4 +1,5 @@
 import re
+from typing import Dict, List, Optional, Tuple, Union
 
 from gwv.dump import Dump
 from gwv.helper import isTogoKanji
@@ -16,14 +17,14 @@ error_codes = ErrorCodes(
 )
 
 
-def kuten2gl(ku, ten):
+def kuten2gl(ku: int, ten: int):
     """句点コードをGL領域の番号に変換する"""
     return "{:02x}{:02x}".format(ku + 32, ten + 32)
 
 
-def gl2kuten(gl):
+def gl2kuten(gl_: str):
     """GL領域の番号を句点コードに変換する"""
-    gl = int(gl, 16)
+    gl = int(gl_, 16)
     return (gl >> 8) - 32, (gl & 0xFF) - 32
 
 
@@ -45,7 +46,7 @@ class MJTable:
 
     n_fields = 13
 
-    def key2gw(self, field, key):
+    def key2gw(self, field: int, key: str):
         if field == MJTable.FIELD_UCS:
             return "u" + key
         if field in (MJTable.FIELD_IVS, MJTable.FIELD_SVS):
@@ -75,7 +76,8 @@ class MJTable:
 
         raise KeyError(field)
 
-    def glyphname_to_field_key(self, glyphname):
+    def glyphname_to_field_key(self, glyphname: str) -> \
+            Union[Tuple[int, str], Tuple[None, None]]:
         if re.compile(r"^u[0-9a-f]{4,6}-ue01[0-9a-f]{2}$").match(glyphname):
             return MJTable.FIELD_IVS, glyphname
 
@@ -135,7 +137,7 @@ class MJTable:
 
         return None, None
 
-    def get(self, idx, field):
+    def get(self, idx: int, field: int) -> List[str]:
         keys = self._table[idx][field]
         if keys is None:
             return []
@@ -143,13 +145,15 @@ class MJTable:
             keys = [keys]
         return [self.key2gw(field, key) for key in keys]
 
-    def search(self, field, key):
+    def search(self, field: int, key: str) -> List[int]:
         return self._key2indices[field].get(key.lower(), [])
 
     def __init__(self):
-        self._table = load_package_data("data/3rd/mj.json")
+        self._table: List[List[Optional[Union[str, List[str]]]]] = \
+            load_package_data("data/3rd/mj.json")
 
-        self._key2indices = [{} for _ in range(MJTable.n_fields)]
+        self._key2indices: List[Dict[str, List[int]]] = \
+            [{} for _ in range(MJTable.n_fields)]
         for mjIdx, row in enumerate(self._table):
             for column, keys in enumerate(row):
                 if keys is None:
@@ -164,7 +168,7 @@ class MJTable:
 mjtable = MJTable()
 
 
-def get_base(name, field):
+def get_base(name: str, field: int):
     if field == MJTable.FIELD_UCS:
         return name.split("-")[0]
     return name
@@ -186,6 +190,7 @@ class MjValidator(Validator):
         field, key = mjtable.glyphname_to_field_key(name)
         if field is None:
             return False
+        assert key is not None
 
         indices = mjtable.search(field, key)
         if not indices:
@@ -197,6 +202,7 @@ class MjValidator(Validator):
             entity_name = gdata[19:]
             e_field, e_key = mjtable.glyphname_to_field_key(entity_name)
             if e_field is not None and e_field != field:
+                assert e_key is not None
                 entity_expected = set()
                 for idx in indices:
                     entity_expected.update(mjtable.get(idx, e_field))

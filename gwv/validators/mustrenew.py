@@ -1,3 +1,5 @@
+from typing import List, Set
+
 from gwv.dump import Dump
 from gwv.kagedata import KageData
 from gwv.validators import filters as default_filters
@@ -27,8 +29,8 @@ class MustrenewValidator(Validator):
 
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
-        quotings = set()
-        quotings_old = set()  # 最新版が旧部品を引用している部品の旧版
+        quotings: Set[str] = set()
+        quotings_old: Set[str] = set()  # 最新版が旧部品を引用している部品の旧版
         for line in kage.lines:
             if line.stroke_type == 99 and "@" in line.part_name:
                 quoted: str = line.part_name.split("@")[0]
@@ -38,7 +40,7 @@ class MustrenewValidator(Validator):
                     quotings.add(line.part_name)
         return [quotings, quotings_old] if quotings or quotings_old else False
 
-    def record(self, glyphname, error):
+    def record(self, glyphname: str, error: List[Set[str]]):
         quotings, quotings_old = error
         for buhinname in quotings:
             self.results[error_codes.MUSTRENEW_NO_OLD].setdefault(

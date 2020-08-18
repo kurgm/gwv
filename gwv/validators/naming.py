@@ -1,4 +1,5 @@
 import re
+from typing import Dict, List, Mapping
 
 from gwv.dump import Dump
 from gwv.helper import GWGroupLazyLoader
@@ -20,17 +21,18 @@ error_codes = ErrorCodes(
 
 class NamingRules:
 
-    def __init__(self, data):
+    def __init__(self, data: Mapping[str, List[str]]):
         self.regex = [re.compile(regex) for regex in data.get("regex", [])]
         self.string = set(data.get("string", []))
 
-    def match(self, name):
+    def match(self, name: str):
         return name in self.string or any(
             regex.search(name) for regex in self.regex)
 
 
 def get_naming_rules():
-    naming_data = load_package_data("data/naming.yaml")
+    naming_data: Dict[str, Dict[str, List[str]]] = \
+        load_package_data("data/naming.yaml")
     return {
         key: NamingRules(value) for key, value in naming_data.items()
     }

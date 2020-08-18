@@ -1,5 +1,5 @@
 import re
-from typing import Union
+from typing import Dict, Tuple, Union
 
 from gwv.dump import Dump
 from gwv.helper import GWGroupLazyLoader
@@ -34,7 +34,7 @@ nonspacinghalflist = GWGroupLazyLoader(
     "NonSpacingGlyphs-Halfwidth", isset=True)
 
 
-def getDWidth(glyphname):
+def getDWidth(glyphname: str):
     if glyphname in nonspacinghalflist.get_data():
         return 0
     for halflist in halflists:
@@ -46,7 +46,7 @@ def getDWidth(glyphname):
 pinf = float("inf")
 ninf = -pinf
 
-buhinWidths = {
+buhinWidths: Dict[str, Tuple[float, float]] = {
     "left-half-circle": (15.0, 100.0),  # @1
     "right-half-circle": (100.0, 185.0),  # @1
     "palatal-hook": (40.0, 64.0),  # @1
