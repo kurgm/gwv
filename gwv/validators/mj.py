@@ -2,6 +2,7 @@ import re
 from typing import Dict, List, Optional, Tuple, Union
 
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.helper import isTogoKanji
 from gwv.helper import load_package_data
 from gwv.kagedata import KageData
@@ -178,13 +179,9 @@ class MjValidator(Validator):
 
     name = "mj"
 
-    filters = {
-        "category": {
-            "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
-            "ucs-hikanji-var", "koseki-kanji", "koseki-hikanji", "toki",
-            "other"}
-    }
-
+    @filters.check_only(+filters.is_of_category({
+        "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
+        "ucs-hikanji-var", "koseki-kanji", "koseki-hikanji", "toki", "other"}))
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         field, key = mjtable.glyphname_to_field_key(name)

@@ -1,4 +1,5 @@
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -15,10 +16,7 @@ class KosekitokiValidator(Validator):
 
     name = "kosekitoki"
 
-    filters = {
-        "category": {"toki"}
-    }
-
+    @filters.check_only(+filters.is_of_category({"toki"}))
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         header = name[:7]

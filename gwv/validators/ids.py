@@ -2,6 +2,7 @@ import re
 from typing import List, Optional
 
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
 from gwv.validators import Validator
@@ -47,10 +48,7 @@ class IdsValidator(Validator):
 
     name = "ids"
 
-    filters = {
-        "category": {"ids"}
-    }
-
+    @filters.check_only(+filters.is_of_category({"ids"}))
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         # Replace with the entity if the glyph is an alias

@@ -2,6 +2,7 @@ import re
 from typing import Dict, Tuple, Union
 
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
@@ -78,12 +79,9 @@ class WidthValidator(Validator):
 
     name = "width"
 
-    filters = {
-        "category": {
-            "user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"},
-        "transform": {False},
-    }
-
+    @filters.check_only(+filters.is_of_category({
+        "user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"}))
+    @filters.check_only(-filters.has_transform)
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         minX: Union[int, float]

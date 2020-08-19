@@ -2,6 +2,7 @@ import re
 from typing import Dict, Set
 
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.helper import cjk_sources
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
@@ -31,10 +32,6 @@ _re_region_opthenka = re.compile(r"^(" + RE_REGIONS + r")(\d{2})?$")
 class JValidator(Validator):
 
     name = "j"
-
-    filters = {
-        "category": {"togo", "togo-var", "gokan-var", "ext", "bsh"}
-    }
 
     def __init__(self):
         Validator.__init__(self)
@@ -72,6 +69,8 @@ class JValidator(Validator):
                 ]
         return False
 
+    @filters.check_only(+filters.is_of_category({
+        "togo", "togo-var", "gokan-var", "ext", "bsh"}))
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         splitname = name.split("-")

@@ -1,6 +1,7 @@
 import re
 
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
 from gwv.validators import Validator
@@ -25,13 +26,10 @@ class UcsaliasValidator(Validator):
 
     name = "ucsalias"
 
-    filters = {
-        "alias": {True},
-        "category": {
-            "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
-            "ucs-hikanji-var"}
-    }
-
+    @filters.check_only(+filters.is_alias)
+    @filters.check_only(+filters.is_of_category({
+        "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
+        "ucs-hikanji-var"}))
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         entity = gdata[19:]

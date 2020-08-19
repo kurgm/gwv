@@ -1,5 +1,4 @@
-import itertools
-from typing import Dict, List, Optional, Type
+from typing import List, Optional, Type
 
 from gwv.dump import Dump
 from gwv.kagedata import KageData
@@ -24,31 +23,13 @@ def validate(dump: Dump, validator_names: Optional[List[str]] = None):
     validator_instances = [
         get_validator_class(name)() for name in validator_names]
 
-    filternames = validators.filters.keys()
-
-    filtered_validators: Dict[tuple, List[validators.Validator]] = {
-        k: []
-        for k in itertools.product(*[
-            validators.filters[filtername] for filtername in filternames])
-    }
-    for val in validator_instances:
-        for k in itertools.product(*[
-                val.filters.get(filtername, validators.filters[filtername])
-                for filtername in filternames]):
-            filtered_validators[k].append(val)
-
-    filter_funcs = [validators.filter_funcs[filtername]
-                    for filtername in filternames]
-
     for val in validator_instances:
         val.setup(dump)
 
     for glyphname in sorted(dump.keys()):
         related, data = dump[glyphname]
         kage = KageData(data)
-        vals = filtered_validators[
-            tuple(f(glyphname, related, kage, data) for f in filter_funcs)]
-        for val in vals:
+        for val in validator_instances:
             val.validate(glyphname, related, kage, data, dump)
 
     return {val.name: {

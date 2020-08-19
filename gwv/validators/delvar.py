@@ -1,6 +1,7 @@
 import re
 
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
 from gwv.validators import Validator
@@ -22,11 +23,8 @@ class DelvarValidator(Validator):
 
     name = "delvar"
 
-    filters = {
-        "category": {
-            "ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}
-    }
-
+    @filters.check_only(+filters.is_of_category({
+        "ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}))
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         m = _re_var_nnn_henka.match(name) or _re_var_src_henka.match(name) or \

@@ -2,9 +2,9 @@ import math
 from typing import List, Tuple
 
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.helper import isKanji
 from gwv.kagedata import KageData, KageLine
-from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -74,12 +74,9 @@ class DupValidator(Validator):
 
     name = "dup"
 
-    filters = {
-        "alias": {False},
-        "category": default_filters["category"] - {"user-owned"},
-        "transform": {False},
-    }
-
+    @filters.check_only(-filters.is_alias)
+    @filters.check_only(-filters.is_of_category({"user-owned"}))
+    @filters.check_only(-filters.has_transform)
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         exact_only = not isKanji(name)

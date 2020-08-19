@@ -1,13 +1,8 @@
 import abc
-from gwv.kagedata import KageData
 import logging
-import re
-from typing import Dict
 
 from gwv.dump import Dump
-from gwv.helper import isGokanKanji
-from gwv.helper import isTogoKanji
-from gwv.helper import isUcs
+from gwv.kagedata import KageData
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -33,54 +28,6 @@ all_validator_names = [
     "width",
 ]
 
-filters: Dict[str, set] = {
-    "alias": {True, False},
-    "category": {"user-owned", "ids", "togo", "togo-var", "gokan", "gokan-var",
-                 "ucs-hikanji", "ucs-hikanji-var", "cdp", "koseki-kanji",
-                 "koseki-hikanji", "toki", "ext", "bsh", "other"},
-    "transform": {True, False},
-}
-
-_re_ids = re.compile(r"u2ff[\dab]-")
-_re_cdp = re.compile(r"cdp[on]?-[\da-f]{4}(-|$)")
-_re_koseki = re.compile(r"^koseki-\d{6}$")
-_re_toki = re.compile(r"^toki-\d{8}$")
-_re_ext = re.compile(r"^irg201[57]-\d{5}$")
-_re_bsh = re.compile(r"^unstable-bsh-[\da-f]{4}$")
-
-
-def _categorize(glyphname: str):
-    if "_" in glyphname:
-        return "user-owned"
-    splitname = glyphname.split("-")
-    header = splitname[0]
-    if isUcs(header):
-        if _re_ids.match(glyphname):
-            return "ids"
-        if isTogoKanji(header):
-            return "togo" if len(splitname) == 1 else "togo-var"
-        if isGokanKanji(header):
-            return "gokan" if len(splitname) == 1 else "gokan-var"
-        return "ucs-hikanji" if len(splitname) == 1 else "ucs-hikanji-var"
-    if _re_cdp.match(glyphname):
-        return "cdp"
-    if _re_koseki.match(glyphname):
-        return "koseki-hikanji" if glyphname[7] == "9" else "koseki-kanji"
-    if _re_toki.match(glyphname):
-        return "toki"
-    if _re_ext.match(glyphname):
-        return "ext"
-    if _re_bsh.match(glyphname):
-        return "bsh"
-    return "other"
-
-
-filter_funcs = {
-    "alias": lambda glyphname, related, kage, data: kage.is_alias,
-    "category": lambda glyphname, related, kage, data: _categorize(glyphname),
-    "transform": lambda glyphname, related, kage, data: kage.has_transform,
-}
-
 
 class Validator(metaclass=abc.ABCMeta):
 
@@ -88,8 +35,6 @@ class Validator(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def name(self) -> str:
         raise NotImplementedError
-
-    filters: Dict[str, set] = {}
 
     def __init__(self):
         self.results = {}

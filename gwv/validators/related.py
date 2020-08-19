@@ -1,4 +1,5 @@
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.helper import cjk_sources
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
@@ -20,10 +21,8 @@ class RelatedValidator(Validator):
 
     name = "related"
 
-    filters = {
-        "category": {"togo", "togo-var", "gokan", "gokan-var"}
-    }
-
+    @filters.check_only(+filters.is_of_category({
+        "togo", "togo-var", "gokan", "gokan-var"}))
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         expected_related = name.split("-")[0]

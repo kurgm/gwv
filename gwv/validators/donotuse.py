@@ -1,4 +1,5 @@
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
@@ -13,10 +14,7 @@ class DonotuseValidator(Validator):
 
     name = "donotuse"
 
-    filters = {
-        "alias": {False},
-    }
-
+    @filters.check_only(-filters.is_alias)
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         quotings = []

@@ -1,8 +1,8 @@
 from gwv.dump import Dump
+import gwv.filters as filters
 from gwv.helper import isKanji
 from gwv.helper import isYoko
 from gwv.kagedata import KageData
-from gwv.validators import filters as default_filters
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -82,10 +82,7 @@ class IllegalValidator(Validator):
 
     name = "illegal"
 
-    filters = {
-        "category": default_filters["category"] - {"user-owned"}
-    }
-
+    @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
         isKanjiGlyph = isKanji(name)
