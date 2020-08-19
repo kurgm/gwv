@@ -2,6 +2,7 @@ import math
 from typing import List, Tuple
 
 from gwv.dump import Dump
+from gwv.helper import isKanji
 from gwv.kagedata import KageData, KageLine
 from gwv.validators import filters as default_filters
 from gwv.validators import Validator
@@ -81,6 +82,8 @@ class DupValidator(Validator):
 
     def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
                    dump: Dump):
+        exact_only = not isKanji(name)
+
         tate: List[LineSegment] = []
         yoko: List[LineSegment] = []
         curve: List[Tuple[KageLine, List[int]]] = []
@@ -110,10 +113,11 @@ class DupValidator(Validator):
             elif stype == 99:
                 buhin.append(line)
 
+        yoko_thresh = 0 if exact_only else 4
         yoko.sort(key=lambda r: r.dist)
         for i, yoko1 in enumerate(yoko):
             for yoko2 in yoko[i + 1:]:
-                if yoko2.dist - yoko1.dist > 4:
+                if yoko2.dist - yoko1.dist > yoko_thresh:
                     break
                 if abs(yoko1.angle - yoko2.angle) > 1.0 / 60.0:
                     continue
@@ -126,10 +130,11 @@ class DupValidator(Validator):
                             yoko1.t1 - yoko1.t0, yoko2.t1 - yoko2.t0)
                     ]  # 横
 
+        tate_thresh = 0 if exact_only else 9
         tate.sort(key=lambda r: r.dist)
         for i, tate1 in enumerate(tate):
             for tate2 in tate[i + 1:]:
-                if tate2.dist - tate1.dist > 9:
+                if tate2.dist - tate1.dist > tate_thresh:
                     break
                 if abs(tate1.angle - tate2.angle) > 1.0 / 60.0:
                     continue
@@ -142,10 +147,11 @@ class DupValidator(Validator):
                             tate1.t1 - tate1.t0, tate2.t1 - tate2.t0)
                     ]  # 縦
 
+        thresh = 0 if exact_only else 3
         curve.sort(key=lambda line_coords: line_coords[1][0])
         for (curve_1, curve_1_coords), (curve_2, curve_2_coords) in \
                 ineighbors(curve):
-            if all(-3 <= curve_1_coords[j] - curve_2_coords[j] <= 3
+            if all(-thresh <= curve_1_coords[j] - curve_2_coords[j] <= thresh
                    for j in range(6)):
                 return [
                     error_codes.CURVE,
@@ -155,7 +161,7 @@ class DupValidator(Validator):
 
         curve2.sort(key=lambda line: line.coords[0][0])
         for curve21, curve22 in ineighbors(curve2):
-            if all(-3 <= curve21.data[j] - curve22.data[j] <= 3
+            if all(-thresh <= curve21.data[j] - curve22.data[j] <= thresh
                    for j in range(3, 11)):
                 return [
                     error_codes.CCURVE,
@@ -167,7 +173,7 @@ class DupValidator(Validator):
         for buhin1, buhin2 in ineighbors(buhin):
             if buhin1.part_name != buhin2.part_name:
                 continue
-            if all(-3 <= buhin1.data[j] - buhin2.data[j] <= 3
+            if all(-thresh <= buhin1.data[j] - buhin2.data[j] <= thresh
                    for j in range(3, 7)):
                 return [
                     error_codes.PART,
@@ -177,7 +183,7 @@ class DupValidator(Validator):
 
         buhinIchi.sort(key=lambda line: line.coords[0][0])
         for buhinIchi1, buhinIchi2 in ineighbors(buhinIchi):
-            if all(-3 <= buhinIchi1.data[j] - buhinIchi2.data[j] <= 3
+            if all(-thresh <= buhinIchi1.data[j] - buhinIchi2.data[j] <= thresh
                    for j in range(3, 7)):
                 return [
                     error_codes.PARTPOS,
