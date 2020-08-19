@@ -1,12 +1,33 @@
 import functools
 import re
-from typing import Any, Callable, Container
+from typing import Any, Callable, Container, TypeVar
 
 from gwv.dump import Dump
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
 from gwv.helper import isUcs
 from gwv.kagedata import KageData
+
+
+T = TypeVar("T")
+
+
+def cache_prev(func: Callable[..., T]) -> Callable[..., T]:
+    prev_args = None
+    prev_result = None
+
+    @functools.wraps(func)
+    def wrapper(*args):
+        nonlocal prev_args, prev_result
+        if prev_args == args:
+            return prev_result
+
+        result = func(*args)
+        prev_args = args
+        prev_result = result
+        return result
+
+    return wrapper
 
 
 _re_ids = re.compile(r"u2ff[\dab]-")
@@ -17,6 +38,7 @@ _re_ext = re.compile(r"^irg201[57]-\d{5}$")
 _re_bsh = re.compile(r"^unstable-bsh-[\da-f]{4}$")
 
 
+@cache_prev
 def _categorize(glyphname: str):
     if "_" in glyphname:
         return "user-owned"
@@ -62,48 +84,29 @@ def check_only(pred: Predicate):
     return decorator
 
 
-class CachedPredicate:
+class BoolFunc:
 
-    def __init__(self, pred: Predicate):
-        self.pred = pred
-        self.last_args: tuple = (None, None, None, None, None)
-        self.last_result: bool = False
+    def __init__(self, func: Callable[..., bool]):
+        self._func = func
+        self._func_inv = lambda *args: not func(*args)
 
-    def _call(self, name: str, related: str, kage: KageData, gdata: str,
-              dump: Dump):
-        args = (name, related, kage, gdata, dump)
-        if all(arg is last_arg for arg, last_arg in zip(args, self.last_args)):
-            return self.last_result
-
-        result = self.pred(*args)
-        self.last_args = args
-        self.last_result = result
-        return result
-
-    def _call_inv(self, name: str, related: str, kage: KageData, gdata: str,
-                  dump: Dump):
-        return not self._call(name, related, kage, gdata, dump)
-
-    def __call__(self, name: str, related: str, kage: KageData, gdata: str,
-                 dump: Dump):
-        return self._call(name, related, kage, gdata, dump)
+    def __call__(self, *args):
+        return self._func(*args)
 
     def __pos__(self):
-        return self._call
+        return self._func
 
     def __neg__(self):
-        return self._call_inv
+        return self._func_inv
 
 
-is_alias = CachedPredicate(
-    lambda _name, _related, kage, _gdata, _dump: kage.is_alias)
+is_alias = BoolFunc(lambda _name, _related, kage, _gdata, _dump: kage.is_alias)
 
 
-has_transform = CachedPredicate(
-    lambda _name, _related, kage, _gdata, _dump: kage.has_transform)
+has_transform = BoolFunc(lambda _name, _related, kage, _gdata, _dump:
+                         kage.has_transform)
 
 
 def is_of_category(categories: Container[str]):
-    return CachedPredicate(
-        lambda name, _related, _kage, _gdata, _dump: (
-            _categorize(name) in categories))
+    return BoolFunc(lambda name, _related, _kage, _gdata, _dump:
+                    _categorize(name) in categories)
