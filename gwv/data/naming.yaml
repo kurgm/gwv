@@ -1,24 +1,33 @@
 ---
 rule-novar-nohenka:
+  # var/itaiji も偏化変形も許容しない
   regex:
   - '^u[23]?[\da-f]{4}-(g|t|j|k|v|h|kp|u|s|uk|m|us|i|ja|js|jv|[gktv]v)(\d{2})?$'
   string:
   - sandbox
   - tutorial
+
 rule-novar:
+  # var/itaiji は許容しないが、偏化変形は許容する
   regex:
   - '^u[23]?[\da-f]{4}-u(e01[\da-f]{2}|fe0[\da-f])$'
   - '^sosho-u[23]?[\da-f]{4}-\d{3}$'
   - '^unstable-u[\da-f]{4,5}(-ufe0[\da-f])?$'
+
 rule-nohenka:
+  # 偏化変形は許容しないが、var/itaiji は許容する
   regex:
   - '^u[1-3]?[\da-f]{4}(-u[1-3]?[\da-f]{4})*-vert$'
   - '^u[1-3]?[\da-f]{4}(-u[1-3]?[\da-f]{4})*-(full|half)width$'
+
 rule:
+  # var/itaiji も偏化変形も許容する
   regex:
   - '^u[1-3]?[\da-f]{4}(-u[1-3]?[\da-f]{4})*$'
   - '^u[1-3]?[\da-f]{4}(-u[1-3]?[\da-f]{4})*-sans$'
   - '^ue0[01][\da-f]{2}$'
+
+  # based on Group:prefix@23
   - '^koseki-\d{6}$'
   - '^a[jk]1-\d{5}$'
   - '^b-[\da-f]{4}$'
@@ -41,8 +50,6 @@ rule:
   - '^jmj-\d{6}$'
   - '^juchen-\d{4}[\da-f]{2}$'
   - '^juki-[\da-f]{4}$'
-  - '^k0-[\da-f]{4}$'
-  - '^k5-[\da-f]{4}$'
   - '^ka-kc\d{5}$'
   - '^katakana-[a-z]+$'
   - '^katakana(-letter)?-small-[a-z]+$'
@@ -63,7 +70,6 @@ rule:
   - '^sawno?-f[0-8][\da-f]{3}$'
   - '^sou?saku-[\da-z-]+$'
   - '^tangut-(1[\da-f]{4}|000[a-r][01]|0[\da-z]\d{3})$'
-  - '^t[bcde]-[\da-f]{4}$'
   - '^toki-\d{8}$'
   - '^tokigaiji-\d{4}[\da-f]{4}$'
   - '^tron-\d{2}-[\da-f]{4}$'
@@ -77,46 +83,90 @@ rule:
   - '^waseikanji-no-jiten2014-\d{4}[a-z]?$'
   - '^z-sat\d{5}$'
   - '^zihai-\d{6}$'
+
+  # Group:prefix-N5112作業用@3
+  - '^([gkthv]|kp)u-[23]?[\da-f]{4}$'
+  # Group:prefix-ac1@2
   - '^ac1-\d{5}$'
+  # Group:prefix-aj2@3
   - '^aj2-\d{4}$'
+  # Group:prefix-c@3
   - '^c([1-9a-f]|1[13])-[\da-f]{4}$'
+  # Group:prefix-fudemame@1
+  - '^fudemame-e[\da-f]{3}$'
+  # Group:prefix-g@20
   - '^g[013578eks]-[\da-f]{4}$'
   - '^g-(gfc|gfz|idc|ocd|xhz)\d{3}$'
   - '^g-(cy|h|idc|lgyj|pglg|t|xc)\d{4}$'
   - '^g-(cyy|dm|fzc|gjz|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw)\d{5}$'
-  - '^g-(bk|ch|cy|dz|kx|gh|hc|rm|wz|xc)\d{6}$'
+  - '^g-(bk|ch|cy|dz|kx|gh|hc|rm|wz|xc|zh)\d{6}$'
   - '^g-((h|hzr?|kx|z)\d{7}|k[\da-f]{4}|zys[\da-f]{5})$'
-  - '^([gkthv]|kp)u-[\da-f]{5}$'
+  # Group:prefix-heisei@3
+  # Group:prefix-hka@3
   - '^hka-[\da-f]{4}$'
+  # Group:prefix-hokke@3
   - '^hokke-\d{3}[1-6]{2}[12]?$'
+  # Group:prefix-irg2015@1
   - '^irg2015-\d{5}$'
+  # Group:prefix-irg2017@1
   - '^irg2017-\d{5}$'
+  # Group:prefix-k@1
   - '^k[\da-f]-[\da-f]{4}$'
+  # Group:prefix-kikkou@1
   - '^kikkou-[a-z]+2?$'
+  # Group:prefix-kokuji@2
   - '^kokuji-[a-z]+-\d{3}$'
+  # Group:prefix-kumimoji@5
+  # Group:prefix-lgccc@4
   - '^lgccc-\d{4}$'
+  # Group:prefix-misc@18
   - '^misc-.+$'
+  # Group:prefix-myogisho-z@2
   - '^myogisho-z-\d{5}[ab]?$'
+  # Group:prefix-negative-sandbox@2
   - '^negative-sandbox-.+$'
+  # Group:prefix-nihon-no-kanji@13
   - '^nihon-no-kanji-\d{5}$'
+  # Group:prefix-ninjal@3
   - '^ninjal-\d{9}$'
+  # Group:prefix-notstandardized@1
+  # Group:prefix-parts@9
   - '^parts-u[\da-f]{4,5}-\d{3}$'
+  # Group:prefix-pinyin@7
   - '^pinyin-[0-2][a-z]{1,7}[0-5]$'
+  # Group:prefix-proposal@5
   - '^proposal-(n\d{4}|l2-\d{2}-\d{3})-.+$'
+  # Group:prefix-s17stdkanjiv@5
+  - '^s17stdkanjiv-u[\da-f]{4,5}'
+  # Group:prefix-sawno@6
+  # Group:prefix-sdjt@1
   - '^sdjt-\d{5}$'
+  # Group:prefix-shincho@1
   - '^shincho-\d{5}$'
+  # Group:prefix-t@2
+  # Group:prefix-tf@1
+  # Group:prefix-t12@1
+  # Group:prefix-t13@1
+  - '^t[1-79a-f]-[\da-f]{4}$'
   - '^t1[23]-[\da-f]{4}$'
+  # Group:prefix-tb@1
+  # Group:prefix-tc@1
+  # Group:prefix-taiwanese@4
   - '^taiwanese-\d{4}$'
+  # Group:prefix-tdcntd@1
   - '^tdcntd-\d{6}$'
+  # Group:prefix-tenrei@4
   - '^tenrei-[1-6]\d{3}[ab]\d{2,3}$'
-  - '^tf-[\da-f]{4}$'
+  # Group:prefix-ttz@3
   - '^ttz-\d{3}-\d{2}-[a-z]+$'
+  # Group:prefix-u@7
+  # Group:prefix-uk@4
   - '^uk-\d{5}$'
+  # Group:prefix-unstable@10
   - '^unstable-bsh-[\da-f]{4}$'
-  - '^unstable-u[\da-f]{4,5}(-ufe0[\da-f])?$'
   - '^unstable-nishiki-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}$'
+  # Group:prefix-v@2
   - '^v-f[\da-f]{4}$'
-  - '^fx-kisho-chimei-\d{3}$'
   string:
   - do-not-use
   - hikanji
@@ -144,10 +194,13 @@ rule:
   - palatal-hook
   - latin-capital-letter-turned-r
   - latin-small-letter-dotless-i-with-stroke
+
 dont-create:
+  # 上記規則にマッチするが作成を禁止するグリフ
   regex:
-  - '(^|-)ud[89a-f][\da-f]{2}(-|$)'
+  - '(^|-)ud[89a-f][\da-f]{2}(-|$)'  # Surrogates
   string:
+  # Group:備忘録@52#住基コード欠番
   - juki-ad96
   - juki-adae
   - juki-adcd
@@ -236,6 +289,8 @@ dont-create:
   - juki-c073
   - juki-c0de
   - juki-c108
+
+  # Group:CodeChart-大漢和辞典文字26@5#欠番リスト
   - dkw-00151
   - dkw-02051
   - dkw-05296
@@ -410,6 +465,8 @@ dont-create:
   - dkw-49511
   - dkw-49878
   - dkw-49901
+
+  # Group-talk:GTコード@36#GTコード欠番一覧
   - gt-00176
   - gt-04099
   - gt-05145
@@ -509,7 +566,9 @@ dont-create:
   - gt-77832
   - gt-78018
   - gt-78047
+
 deprecated-rule:
+  # 廃止予定（グリフの白紙化待ち）
   regex:
   - '^geog-qin-\d+$'
   - '^kx-\d{6}$'
