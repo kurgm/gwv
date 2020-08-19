@@ -85,7 +85,7 @@ rule:
   - '^zihai-\d{6}$'
 
   # Group:prefix-N5112作業用@3
-  - '^([gkthv]|kp)u-[23]?[\da-f]{4}$'
+  - '^([gkthv]|kp)u-[023][\da-f]{4}$'
   # Group:prefix-ac1@2
   - '^ac1-\d{5}$'
   # Group:prefix-aj2@3
