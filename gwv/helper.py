@@ -96,7 +96,7 @@ _re_gwlink = re.compile(r"\[\[(?:[^]]+\s)?([0-9a-z_-]+(?:@\d+)?)\]\]")
 
 
 def getGlyphsInGroup(groupname: str) -> List[str]:
-    url = "http://glyphwiki.org/wiki/Group:{}?action=edit".format(
+    url = "https://glyphwiki.org/wiki/Group:{}?action=edit".format(
         quote(groupname.encode("utf-8")))
     f = urlopen(url, timeout=60)
     data = f.read().decode("utf-8")
