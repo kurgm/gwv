@@ -59,7 +59,6 @@ rule:
   - '^kp1-[\da-f]{4}$'
   - '^kumimoji-.+$'
   - '^kx-\d{7}$'
-  - '^mac-\d{5}$'
   - '^nihonjin-no-tsukutta-kanji-\d{3}(ks?)?$'
   - '^nyukan-[ef][\da-f]{3}$'
   - '^obuso-\d{4}(-jv)?$'
@@ -101,6 +100,10 @@ rule:
   - '^g-(cyy|dm|fzc|gjz|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw)\d{5}$'
   - '^g-(bk|ch|cy|dz|kx|gh|hc|rm|wz|xc|zh)\d{6}$'
   - '^g-((h|hzr?|kx|z)\d{7}|k[\da-f]{4}|zys[\da-f]{5})$'
+  # Group:prefix-h@1
+  - '^h-[\da-f]{4}$'
+  - '^h(b[0-2]|[de])-[\da-f]{4}$'
+  - '^hc-\d{4}$'
   # Group:prefix-heisei@3
   # Group:prefix-hka@3
   - '^hka-[\da-f]{4}$'
@@ -119,6 +122,11 @@ rule:
   # Group:prefix-kumimoji@5
   # Group:prefix-lgccc@4
   - '^lgccc-\d{4}$'
+  # Group:prefix-m@1
+  - '^mac-\d{5}$'
+  - '^m(a|b[12])-[\da-f]{4}$'
+  - '^mdh?-[23]?[\da-f]{4}$'
+  - '^me-[23]?[\da-f]{4}\d{3}$'
   # Group:prefix-misc@18
   - '^misc-.+$'
   # Group:prefix-myogisho-z@2
