@@ -98,7 +98,7 @@ rule:
   - '^g-(gfc|gfz|idc|ocd|xhz)\d{3}$'
   - '^g-(cy|h|idc|lgyj|pglg|t|xc)\d{4}$'
   - '^g-(cyy|dm|fzc|gjz|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw)\d{5}$'
-  - '^g-(bk|ch|cy|dz|kx|gh|hc|rm|wz|xc|zh)\d{6}$'
+  - '^g-(bk|ch|cy|dz|kx|gh|hc|rm|wz|xc|xh|zh)\d{6}$'
   - '^g-((h|hzr?|kx|z)\d{7}|k[\da-f]{4}|zys[\da-f]{5})$'
   # Group:prefix-h@1
   - '^h-[\da-f]{4}$'
