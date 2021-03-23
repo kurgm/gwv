@@ -216,7 +216,7 @@ no-use-part:
   u9ebb-k11: [u9ebb-11, u9ebb-11-var-001, u9ebb-11-var-002, u9ebb-g11, u9ebb-t11]
 
 no-apply-jv:
-# Group:簡体字特有の字形@25
+# Group:簡体字特有の字形@26
 - u4e13
 - u4e1c
 - u4e24
@@ -240,6 +240,8 @@ no-apply-jv:
 - u519c
 - u51e4
 - u51fb
+# - u520d  # 適用除外字あり
+- u52a8
 - u534e
 - u5356
 - u5364
@@ -251,7 +253,9 @@ no-apply-jv:
 - u56e2
 - u5904
 - u5934
+- u5ba1
 - u5baa
+- u5c1d
 - u5c27
 - u5c81
 - u5c82
@@ -260,23 +264,31 @@ no-apply-jv:
 - u62a5
 - u65f6
 - u6bd5
+- u7075
 - u7231
 - u76d1
+- u7a9c
 - u7e9f
 - u7f57
+- u7f62
 - u8042
 - u8083
 - u827a
 - u8282
+- u864f
+- u8651
 - u89c1
 - u8ba0
 - u8d1d
 - u8d28
 - u8f66
 - u8fbe
+- u8fc7
+- u8fdb
 - u9485
 - u957f
 - u95e8  # [[aj1-14061]]は使わない
+- u9690
 - u96be
 - u97e6
 - u9875
@@ -295,7 +307,7 @@ no-apply-jv:
 - u200d3
 - u20b24
 - u22016  # [[u5723]]との使い分けは要検討
-- u2b1e6  # [[u8484]]や[[u84c2]]など由来が異なるものは対象外
+- u2b1e6  # 適用除外字あり
 - u2b823
 - u30021
 - u30022
