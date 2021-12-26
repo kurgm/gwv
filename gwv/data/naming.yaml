@@ -216,7 +216,7 @@ dont-create:
   regex:
   - '(^|-)ud[89a-f][\da-f]{2}(-|$)'  # Surrogates
   string:
-  # Group:備忘録@52#住基コード欠番
+  # Group:備忘録@56#住基コード欠番
   - juki-ad96
   - juki-adae
   - juki-adcd
@@ -482,7 +482,7 @@ dont-create:
   - dkw-49878
   - dkw-49901
 
-  # Group-talk:GTコード@36#GTコード欠番一覧
+  # Group-talk:GTコード@41#GTコード欠番一覧
   - gt-00176
   - gt-04099
   - gt-05145
