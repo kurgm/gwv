@@ -27,7 +27,7 @@ rule:
   - '^u[1-3]?[\da-f]{4}(-u[1-3]?[\da-f]{4})*-sans$'
   - '^ue0[01][\da-f]{2}$'
 
-  # based on Group:prefix@23
+  # based on Group:prefix@24
   - '^koseki-\d{6}$'
   - '^a[jk]1-\d{5}$'
   - '^b-[\da-f]{4}$'
@@ -76,47 +76,53 @@ rule:
   - '^twedu-[abcn]\d{5}(-\d{3}(-\d)?)?$'
   - '^unc-\d{3}$'
   - '^(utc|uci)-\d{5}$'
-  - '^v04-[\da-f]{4}$'
   - '^vnpf-6[0-3][\da-f]{3}$'
   - '^waseikanji-no-jiten-\d{4}[a-z]?$'
   - '^waseikanji-no-jiten2014-\d{4}[a-z]?$'
   - '^z-sat\d{5}$'
   - '^zihai-\d{6}$'
 
-  # Group:prefix-N5112作業用@3
-  - '^([gkthv]|kp)u-[023][\da-f]{4}$'
+  # Group:prefix-N5112作業用@4
+  - '^(k|kp|t)u-[023][\da-f]{4}$'
   # Group:prefix-ac1@2
   - '^ac1-\d{5}$'
   # Group:prefix-aj2@3
   - '^aj2-\d{4}$'
+  # Group:prefix-bouyei@1
+  - '^bouyei-\d{5}$'
   # Group:prefix-c@3
   - '^c([1-9a-f]|1[13])-[\da-f]{4}$'
   # Group:prefix-fudemame@1
   - '^fudemame-e[\da-f]{3}$'
-  # Group:prefix-g@20
+  # Group:prefix-g@22
   - '^g[013578eks]-[\da-f]{4}$'
+  - '^gh-\d{4}$'
   - '^g-(gfc|gfz|idc|ocd|xhz)\d{3}$'
-  - '^g-(cy|h|idc|lgyj|pglg|t|xc)\d{4}$'
+  - '^g-(cy|idc|lgyj|pglg|t|xc)\d{4}$'
   - '^g-(cyy|dm|fzc|gjz|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw)\d{5}$'
   - '^g-(bk|ch|cy|dz|kx|gh|hc|rm|wz|xc|xh|zh)\d{6}$'
   - '^g-((h|hzr?|kx|z)\d{7}|k[\da-f]{4}|zys[\da-f]{5})$'
+  - '^gu-[023][\da-f]{4}$'
   # Group:prefix-h@1
   - '^h-[\da-f]{4}$'
   - '^h(b[0-2]|[de])-[\da-f]{4}$'
   - '^hc-\d{4}$'
-  # Group:prefix-heisei@3
+  - '^hu-[023][\da-f]{4}$'
+  # Group:prefix-heisei@4
   # Group:prefix-hka@3
   - '^hka-[\da-f]{4}$'
   # Group:prefix-hokke@3
   - '^hokke-\d{3}[1-6]{2}[12]?$'
   # Group:prefix-irg2015@1
-  - '^irg2015-\d{5}$'
   # Group:prefix-irg2017@1
-  - '^irg2017-\d{5}$'
+  # Group:prefix-irg2021@1
+  - '^irg20(15|17|21)-\d{5}$'
   # Group:prefix-k@1
   - '^k[\da-f]-[\da-f]{4}$'
   # Group:prefix-kikkou@1
   - '^kikkou-[a-z]+2?$'
+  # Group:prefix-kinhd@1
+  - '^kinhd-\d{5}$'
   # Group:prefix-kokuji@2
   - '^kokuji-[a-z]+-\d{3}$'
   # Group:prefix-kumimoji@5
@@ -131,11 +137,13 @@ rule:
   - '^misc-.+$'
   # Group:prefix-myogisho-z@2
   - '^myogisho-z-\d{5}[ab]?$'
+  # # Group:prefix-nct@3
+  # - '^nct-\d{4}$'
   # Group:prefix-negative-sandbox@2
   - '^negative-sandbox-.+$'
   # Group:prefix-nihon-no-kanji@13
   - '^nihon-no-kanji-\d{5}$'
-  # Group:prefix-ninjal@3
+  # Group:prefix-ninjal@6
   - '^ninjal-\d{9}$'
   # Group:prefix-notstandardized@1
   # Group:prefix-parts@9
@@ -154,27 +162,27 @@ rule:
   # Group:prefix-t@2
   # Group:prefix-tf@1
   # Group:prefix-t12@1
-  # Group:prefix-t13@1
   - '^t[1-79a-f]-[\da-f]{4}$'
-  - '^t1[23]-[\da-f]{4}$'
+  - '^t1[1-3]-[\da-f]{4}$'
   # Group:prefix-tb@1
   # Group:prefix-tc@1
   # Group:prefix-taiwanese@4
   - '^taiwanese-\d{4}$'
-  # Group:prefix-tdcntd@1
+  # Group:prefix-tdcntd@2
   - '^tdcntd-\d{6}$'
   # Group:prefix-tenrei@4
   - '^tenrei-[1-6]\d{3}[ab]\d{2,3}$'
   # Group:prefix-ttz@3
   - '^ttz-\d{3}-\d{2}-[a-z]+$'
-  # Group:prefix-u@7
-  # Group:prefix-uk@4
+  # Group:prefix-u@8
+  # Group:prefix-uk@5
   - '^uk-\d{5}$'
   # Group:prefix-unstable@10
   - '^unstable-bsh-[\da-f]{4}$'
   - '^unstable-nishiki-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}$'
-  # Group:prefix-v@2
-  - '^v-f[\da-f]{4}$'
+  # Group:prefix-v@5
+  - '^v[0-4]-[\da-f]{4}$'
+  - '^vn-[\da-f]{5}$'
   string:
   - do-not-use
   - hikanji
