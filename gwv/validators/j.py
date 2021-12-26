@@ -81,8 +81,8 @@ class JValidator(Validator):
         if len(splitname) > 2:
             return False
 
-        if splitname[0] in ("irg2015", "irg2017"):
-            # irg2015-, irg2017- glyphs have no J source
+        if splitname[0] in ("irg2015", "irg2017", "irg2021"):
+            # irg2015-, irg2017-, irg2021- glyphs have no J source
             return self.checkJV(kage.get_entity(dump))
 
         # uXXXX, uXXXX-...
