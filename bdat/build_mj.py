@@ -10,7 +10,7 @@ import zipfile
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-MJ_ZIP_URL = "https://mojikiban.ipa.go.jp/OSCDL/mji.00502.zip"
+MJ_ZIP_URL = "https://moji.or.jp/wp-content/mojikiban/oscdl/mji.00502.zip"
 MJ_JSON_FILENAME = "mj.json"
 
 
