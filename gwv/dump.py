@@ -1,8 +1,6 @@
 import os
 from typing import Dict, List, Optional, Tuple
 
-from gwv.kagedata import KageData
-
 
 class Dump:
 
@@ -44,18 +42,14 @@ class Dump:
 
     def get_alias_of(self, name: str):
         if self._get_alias_of_dic is None:
-            self._get_alias_of_dic = {}
+            dic = self._get_alias_of_dic = {}
             for gname in self:
-                if gname in self._get_alias_of_dic:
-                    continue
-                kage = KageData(self[gname][1])
-                if not kage.is_alias:
+                if gname in dic:
                     continue
                 entity_name = self.get_entity_name(gname)
-                entry = self._get_alias_of_dic.setdefault(
-                    entity_name, [entity_name])
-                entry.append(gname)
-                self._get_alias_of_dic[gname] = entry
+                if entity_name == gname:
+                    continue
+                dic.setdefault(entity_name, [entity_name]).append(gname)
         return self._get_alias_of_dic.get(name, [name])
 
     @classmethod
