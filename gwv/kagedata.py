@@ -1,32 +1,28 @@
-import math
 from typing import List, Optional, Tuple
 
 
 def kageInt(s: str) -> int:
-    """Imitates Math.floor(+s) in ECMAScript (returns an int).
+    """Convert a string to an integer, in the same fashion as KAGE engine.
 
-    KAGE Engine uses Math.floor to parse numbers in KAGE data.
+    It is the same as int(s) except that it returns 0 if s is an empty string.
+    This behavior is an imitation of Math.floor(+s) in ECMAScript, which is
+    used by KAGE engine to parse numbers in KAGE data.
+    It raises a ValueError for floating-point number input or non-decimal input
+    and will not try to parse (and round) it.
     """
-    s = s.strip()
-    if s == "":
-        return 0
     try:
-        # decimal integer literal (may have leading 0 digits)
         return int(s)
     except ValueError:
-        try:
-            # hexadecimal, octal, binary integer literal
-            return int(s, 0)
-        except ValueError:
-            # contains decimal point and/or exponent part
-            return int(math.floor(float(s)))
+        if s.strip() == "":
+            return 0
+        raise
 
 
 def kageIntSuppressError(s: str) -> Optional[int]:
     """The same as kageInt except that it returns None when s is invalid"""
     try:
         return kageInt(s)
-    except (ValueError, OverflowError):
+    except ValueError:
         return None
 
 
