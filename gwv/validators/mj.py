@@ -29,6 +29,22 @@ def gl2kuten(gl_: str):
     return (gl >> 8) - 32, (gl & 0xFF) - 32
 
 
+_re_ivs = re.compile(r"^u[0-9a-f]{4,6}-ue01[0-9a-f]{2}$")
+_re_svs = re.compile(r"^u[0-9a-f]{4,6}-ufe0[0-9a-f]$")
+_re_ucs = re.compile(r"^u([0-9a-f]{4,6})(-|$)")
+_re_ids = re.compile(r"^u2ff[\dab]-")
+_re_koseki = re.compile(r"^koseki-(\d{6})$")
+_re_jmj = re.compile(r"^jmj-(\d{6})$")
+_re_juki = re.compile(r"^juki-([0-9a-f]{4})$")
+_re_nyukan = re.compile(r"^nyukan-([0-9a-f]{4})$")
+_re_toki = re.compile(r"^toki-(\d{8})$")
+_re_dkw = re.compile(r"^dkw-(\d{5}d{0,2}|h\d{4})$")
+_re_jx1 = re.compile(r"^jx1-200[04]-([0-9a-f]{4})$")
+_re_jx2 = re.compile(r"^jx2-([0-9a-f]{4})$")
+_re_jsp = re.compile(r"^jsp-([0-9a-f]{4})$")
+_re_shincho = re.compile(r"^shincho-(\d{5})$")
+_re_sdjt = re.compile(r"^sdjt-(\d{5})$")
+
 class MJTable:
 
     FIELD_JMJ = 0
@@ -79,60 +95,60 @@ class MJTable:
 
     def glyphname_to_field_key(self, glyphname: str) -> \
             Union[Tuple[int, str], Tuple[None, None]]:
-        if re.compile(r"^u[0-9a-f]{4,6}-ue01[0-9a-f]{2}$").match(glyphname):
+        if _re_ivs.match(glyphname):
             return MJTable.FIELD_IVS, glyphname
 
-        if re.compile(r"^u[0-9a-f]{4,6}-ufe0[0-9a-f]$").match(glyphname):
+        if _re_svs.match(glyphname):
             return MJTable.FIELD_SVS, glyphname
 
-        m = re.compile(r"^u([0-9a-f]{4,6})(-|$)").match(glyphname)
-        if m and not re.compile(r"^u2ff[\dab]-").match(glyphname):
+        m = _re_ucs.match(glyphname)
+        if m and not _re_ids.match(glyphname):
             # ucs but not ids
             return MJTable.FIELD_UCS, m.group(1)
 
-        m = re.compile(r"^koseki-(\d{6})$").match(glyphname)
+        m = _re_koseki.match(glyphname)
         if m:
             return MJTable.FIELD_KOSEKI, m.group(1)
 
-        m = re.compile(r"^jmj-(\d{6})$").match(glyphname)
+        m = _re_jmj.match(glyphname)
         if m:
             return MJTable.FIELD_JMJ, m.group(1)
 
-        m = re.compile(r"^juki-([0-9a-f]{4})$").match(glyphname)
+        m = _re_juki.match(glyphname)
         if m:
             return MJTable.FIELD_JUKI, m.group(1)
 
-        m = re.compile(r"^nyukan-([0-9a-f]{4})$").match(glyphname)
+        m = _re_nyukan.match(glyphname)
         if m:
             return MJTable.FIELD_NYUKAN, m.group(1)
 
-        m = re.compile(r"^toki-(\d{8})$").match(glyphname)
+        m = _re_toki.match(glyphname)
         if m:
             return MJTable.FIELD_TOKI, m.group(1)
 
-        m = re.compile(r"^dkw-(\d{5}d{0,2}|h\d{4})$").match(glyphname)
+        m = _re_dkw.match(glyphname)
         if m:
             return MJTable.FIELD_DKW, m.group(1)
 
         # x0213(plane 1)
-        m = re.compile(r"^jx1-200[04]-([0-9a-f]{4})$").match(glyphname)
+        m = _re_jx1.match(glyphname)
         if m:
             return MJTable.FIELD_X0213, "1-" + m.group(1)
 
         # x0213(plane 2)
-        m = re.compile(r"^jx2-([0-9a-f]{4})$").match(glyphname)
+        m = _re_jx2.match(glyphname)
         if m:
             return MJTable.FIELD_X0213, "2-" + m.group(1)
 
-        m = re.compile(r"^jsp-([0-9a-f]{4})$").match(glyphname)
+        m = _re_jsp.match(glyphname)
         if m:
             return MJTable.FIELD_X0212, m.group(1)
 
-        m = re.compile(r"^shincho-(\d{5})$").match(glyphname)
+        m = _re_shincho.match(glyphname)
         if m:
             return MJTable.FIELD_SHINCHO, m.group(1)
 
-        m = re.compile(r"^sdjt-(\d{5})$").match(glyphname)
+        m = _re_sdjt.match(glyphname)
         if m:
             return MJTable.FIELD_SDJT, m.group(1)
 
@@ -175,6 +191,9 @@ def get_base(name: str, field: int):
     return name
 
 
+_re_itaiji = re.compile(r"-itaiji-\d{3}$")
+
+
 class MjValidator(Validator):
 
     name = "mj"
@@ -195,7 +214,7 @@ class MjValidator(Validator):
                 return [error_codes.UNDEFINED_MJ]  # 欠番のMJ
             return False
 
-        if kage.is_alias and not re.compile(r"-itaiji-\d{3}$").search(name):
+        if kage.is_alias and not _re_itaiji.search(name):
             entity_name = gdata[19:]
             e_field, e_key = mjtable.glyphname_to_field_key(entity_name)
             if e_field is not None and e_field != field:
