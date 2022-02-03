@@ -22,12 +22,16 @@ error_codes = ErrorCodes(
 class NamingRules:
 
     def __init__(self, data: Mapping[str, List[str]]):
-        self.regex = [re.compile(regex) for regex in data.get("regex", [])]
+        patterns = data.get("regex", [])
+        if patterns:
+            self.regex = re.compile(r"|".join(patterns))
+        else:
+            self.regex = None
         self.string = set(data.get("string", []))
 
     def match(self, name: str):
-        return name in self.string or any(
-            regex.search(name) for regex in self.regex)
+        return name in self.string or (
+            self.regex is not None and bool(self.regex.search(name)))
 
 
 def get_naming_rules():
