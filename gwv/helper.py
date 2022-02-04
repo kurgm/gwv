@@ -27,9 +27,8 @@ def isKanji(name: str):
 _re_togo_f = re.compile(
     r"""^u(
         4d[c-f][0-9a-f]|              # Ext A
-        9ff[d-f]|                     # URO
-        2a6d[ef]|2a6[ef][0-9a-f]|     # Ext B
-        2b73[5-9a-f]|                 # Ext C
+        2a6[ef][0-9a-f]|              # Ext B
+        2b73[9a-f]|                   # Ext C
         2b81[ef]|                     # Ext D
         2cea[2-9a-f]|                 # Ext E
         2ebe[1-9a-f]|2ebf[0-9a-f]|    # Ext F
