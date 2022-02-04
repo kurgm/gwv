@@ -17,9 +17,9 @@ error_codes = ErrorCodes(
     UCS_IS_ALIAS_OF_ITAIJI="21",  # uxxxx が uxxxx-itaiji-xxx の別名
 )
 
-_re_sources = re.compile(r"^" + RE_REGIONS + r"$")
-_re_ucs_ = re.compile(r"^u[\da-f]+(-|$)")
-_re_ids = re.compile(r"^u2ff.-")
+_re_sources = re.compile(RE_REGIONS)
+_re_ucs_ = re.compile(r"u[\da-f]+(-|$)")
+_re_ids = re.compile(r"u2ff.-")
 
 
 class UcsaliasValidator(Validator):
@@ -56,7 +56,7 @@ class UcsaliasValidator(Validator):
                 # uxxxx-itaiji-xxx が uxxxx (の実体)の別名
                 return [error_codes.ITAIJI_HAS_SAME_ENTITY_AS_NOMARK, entity] \
                     if entity == nomark_entity else False
-            if _re_sources.match(sname[1]):
+            if _re_sources.fullmatch(sname[1]):
                 return [error_codes.REGION_IS_ALIAS_OF_NOMARK] \
                     if entity == sname[0] else False
             return False

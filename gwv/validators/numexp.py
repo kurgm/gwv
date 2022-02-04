@@ -14,7 +14,7 @@ error_codes = ErrorCodes(
 )
 
 
-_re_valid_chars = re.compile(r"^[\da-z_\:@-]+$")
+_re_invalid_chars = re.compile(r"[^\da-z_\:@-]")
 
 
 class NumexpValidator(Validator):
@@ -26,7 +26,7 @@ class NumexpValidator(Validator):
         for i, line in enumerate(gdata.split("$")):
             if line == "":
                 return [error_codes.BLANK_LINE, [i, line]]  # 空行
-            if not _re_valid_chars.match(line):
+            if _re_invalid_chars.search(line):
                 return [error_codes.INVALID_CHAR, [i, line]]  # 不正な文字
             data = line.split(":")
             for j, col in enumerate(data):

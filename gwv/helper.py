@@ -10,7 +10,7 @@ import pkg_resources
 
 
 _re_ids = re.compile(r"u2ff[\dab]-")
-_re_koseki = re.compile(r"^koseki-\d{6}$")
+_re_koseki = re.compile(r"koseki-\d{6}")
 
 
 def isKanji(name: str):
@@ -19,7 +19,7 @@ def isKanji(name: str):
     header = name.split("-")[0]
     if isUcs(header):
         return isTogoKanji(header) or isGokanKanji(header)
-    if _re_koseki.match(name):
+    if _re_koseki.fullmatch(name):
         return name[7] != "9"
     return True
 
@@ -68,12 +68,12 @@ def isGokanKanji(name: str):
         cp not in _togo_in_compat
 
 
-_re_ucs = re.compile(r"^u[\da-f]{4,6}$")
+_re_ucs = re.compile(r"u[\da-f]{4,6}")
 RE_REGIONS = r"(?:[gtv]v?|[hmis]|k[pv]?|u[ks]?|j[asv]?)"
 
 
 def isUcs(name: str):
-    return _re_ucs.match(name)
+    return _re_ucs.fullmatch(name)
 
 
 def get_ucs_codepoint(name: str):

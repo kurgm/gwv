@@ -20,10 +20,17 @@ error_codes = ErrorCodes(
 )
 
 
-_re_halfWidth = re.compile(
-    r"-halfwidth$|^uff(6[1-9a-f]|[7-9a-d][0-9a-f]|e[8-e])$")
-_re_fullWidth = re.compile(r"-fullwidth$|^uff([0-5][0-9a-f]|60|e[0-6])$")
+_re_halfWidth = re.compile(r"uff(6[1-9a-f]|[7-9a-d][0-9a-f]|e[8-e])")
+_re_fullWidth = re.compile(r"uff([0-5][0-9a-f]|60|e[0-6])")
 _re_hen = re.compile(r"-" + RE_REGIONS + r"?01(-(var|itaiji)-|$)")
+
+
+def is_halfwidth_name(name: str):
+    return name.endswith("-halfwidth") or bool(_re_halfWidth.fullmatch(name))
+
+
+def is_fullwidth_name(name: str):
+    return name.endswith("-fullwidth") or bool(_re_fullWidth.fullmatch(name))
 
 
 halflists = [
@@ -86,10 +93,10 @@ class WidthValidator(Validator):
                    dump: Dump):
         minX: Union[int, float]
         maxX: Union[int, float]
-        if _re_fullWidth.search(name):
+        if is_fullwidth_name(name):
             minX = 0
             maxX = 200
-        elif _re_halfWidth.search(name):
+        elif is_halfwidth_name(name):
             minX = 0
             maxX = 100
         elif _re_hen.search(name):
@@ -120,7 +127,7 @@ class WidthValidator(Validator):
                             bL = minX
                             bR = maxX
                         elif bgW == 2:
-                            if _re_fullWidth.search(gn) or \
+                            if is_fullwidth_name(gn) or \
                                     (gn + "-halfwidth") in dump:
                                 bL = xL + w * 0.31
                                 bR = xL + w * 0.69

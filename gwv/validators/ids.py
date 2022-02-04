@@ -23,15 +23,15 @@ error_codes = ErrorCodes(
     UNKNOWN_IDC="90",  # 未定義のIDC
 )
 
-_re_idc = re.compile(r"^u2ff[\dab]$")
+_re_idc = re.compile(r"u2ff[\dab]")
 _re_vars = re.compile(
-    r"-" + RE_REGIONS + r"?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
+    r"-" + RE_REGIONS + r"?(\d{2})(?:-(?:var|itaiji)-\d{3})?(?=@|$)")
 
 
 def indexOfFirstKanjiBuhinLine(sname: List[str], kage: KageData):
     """IDSの最初の漢字を部品としているKageLine（なければNone）を返す"""
     for i, sname_i in enumerate(sname):
-        if _re_idc.match(sname_i):
+        if _re_idc.fullmatch(sname_i):
             continue
         firstKanji = sname_i
         if firstKanji == "cdp":

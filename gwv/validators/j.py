@@ -26,7 +26,7 @@ error_codes = ErrorCodes(
 
 source_separation = GWGroupLazyLoader("原規格分離", isset=True)
 
-_re_region_opthenka = re.compile(r"^(" + RE_REGIONS + r")(\d{2})?$")
+_re_region_opthenka = re.compile(r"(" + RE_REGIONS + r")(\d{2})?")
 
 
 class JValidator(Validator):
@@ -95,7 +95,7 @@ class JValidator(Validator):
                 return self.checkJV(kage.get_entity(dump))
             return False
 
-        m = _re_region_opthenka.match(splitname[1])
+        m = _re_region_opthenka.fullmatch(splitname[1])
         if not m:
             return False
         region = m.group(1)

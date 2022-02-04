@@ -349,9 +349,8 @@ def is_ZH_corner(t: Segment, yoko: List[Segment], _tate: List[Segment]):
 
 TATE_CORNER_STYLES = (12, 13, 22, 23, 313, None, 413, None, None, None, 24)
 
-_re_gdesign = re.compile(r"^(u[0-9a-f]+-[gi](\d{2})?|zihai-\d{6})$")
-_re_tdesign = re.compile(
-    r"^(u[0-9a-f]+-[th](\d{2})?|twedu-.+|lgccc-.+|hka-.+)$")
+_re_gdesign = re.compile(r"u[0-9a-f]+-[gi](\d{2})?|zihai-\d{6}")
+_re_tdesign = re.compile(r"u[0-9a-f]+-[th](\d{2})?|twedu-.+|lgccc-.+|hka-.+")
 
 _STYLE_NO_END = -1
 
@@ -373,8 +372,8 @@ class CornerValidator(Validator):
         yoko: List[Segment] = []
         tate_vert: List[Segment] = []
         yoko_hori: List[Segment] = []
-        isGdesign = _re_gdesign.match(name)
-        isTdesign = _re_tdesign.match(name)
+        isGdesign = bool(_re_gdesign.fullmatch(name))
+        isTdesign = bool(_re_tdesign.fullmatch(name))
 
         strokes = [Stroke(line) for line in kage.lines]
         for stroke in strokes:

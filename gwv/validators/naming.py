@@ -31,7 +31,7 @@ class NamingRules:
 
     def match(self, name: str):
         return name in self.string or (
-            self.regex is not None and bool(self.regex.search(name)))
+            self.regex is not None and bool(self.regex.fullmatch(name)))
 
 
 def get_naming_rules():
@@ -54,7 +54,7 @@ _re_var = re.compile(r"-(var|itaiji)-\d{3}$")
 _re_henka = re.compile(r"-\d{2}$")
 
 _re_gl_glyph = re.compile(
-    r"^(j78|j83|j90|jsp|jx1-200[04]|jx2|k0|g0|c[0-9a-f])-([\da-f]{4})$")
+    r"(j78|j83|j90|jsp|jx1-200[04]|jx2|k0|g0|c[0-9a-f])-([\da-f]{4})")
 _re_valid_gl = re.compile(r"(2[1-9a-f]|[3-6][\da-f]|7[\da-e]){2}")
 
 _re_cdp = re.compile(r"(?:^|-)(cdp([on]?)-([\da-f]{4}))(?=-|$)")
@@ -92,13 +92,13 @@ class NamingValidator(Validator):
 
         if rules["dont-create"].match(name):
             return [error_codes.PROHIBITED_GLYPH_NAME]  # 禁止されたグリフ名
-        if _re_gl_glyph.match(name):
-            if not _re_valid_gl.match(name[-4:]):
+        if _re_gl_glyph.fullmatch(name):
+            if not _re_valid_gl.fullmatch(name[-4:]):
                 # 禁止されたグリフ名（不正なGL領域の番号）
                 return [error_codes.PROHIBITED_GLYPH_NAME]
         else:
             for m in _re_cdp.finditer(name):
-                if not _re_valid_cdp.match(m.group(3)):
+                if not _re_valid_cdp.fullmatch(m.group(3)):
                     # 禁止されたグリフ名（不正なCDP番号）
                     return [error_codes.PROHIBITED_GLYPH_NAME]
 
