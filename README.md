@@ -1,6 +1,6 @@
 # gwv
 
-[![Test](https://github.com/kurgm/gwv-view/actions/workflows/test.yml/badge.svg)](https://github.com/kurgm/gwv-view/actions/workflows/test.yml)
+[![Test](https://github.com/kurgm/gwv/actions/workflows/test.yml/badge.svg)](https://github.com/kurgm/gwv/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/kurgm/gwv/branch/master/graph/badge.svg)](https://codecov.io/gh/kurgm/gwv)
 
 GlyphWiki data validator - https://kurgm.github.io/gwv-view/
