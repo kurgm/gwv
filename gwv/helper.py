@@ -24,54 +24,48 @@ def isKanji(name: str):
     return True
 
 
-_re_togo_f = re.compile(
-    r"""^u(
-        4d[c-f][0-9a-f]|              # Ext A
-        2a6[ef][0-9a-f]|              # Ext B
-        2b73[9a-f]|                   # Ext C
-        2b81[ef]|                     # Ext D
-        2cea[2-9a-f]|                 # Ext E
-        2ebe[1-9a-f]|2ebf[0-9a-f]|    # Ext F
-        3134[b-f]|313[5-9a-f][0-9a-f] # Ext G
-    )$""",
-    re.X)
-_re_togo_t1 = re.compile(
-    r"""^u(
-        3[4-9a-f]|          # Ext A
-        [4-9][0-9a-f]|      # URO
-        2[0-9a-d][0-9a-f]|  # Ext B, C, D, E, F
-        2e[0-9ab]|          # Ext F
-        30[0-9a-f]|31[0-3]  # Ext G
-    )[\da-f]{2}$""",
-    re.X)
-_re_togo_t2 = re.compile(r"^ufa(0[ef]|1[134f]|2[134789])$")
+def range_inclusive(stt: int, end: int):
+    return range(stt, end + 1)
+
+
+_togo_ranges = [
+    range_inclusive(0x3400, 0x4dbf),    # Ext A
+    range_inclusive(0x4e00, 0x9fff),    # URO
+    range_inclusive(0x20000, 0x2a6df),  # Ext B
+    range_inclusive(0x2a700, 0x2b738),  # Ext C
+    range_inclusive(0x2b740, 0x2b81d),  # Ext D
+    range_inclusive(0x2b820, 0x2cea1),  # Ext E
+    range_inclusive(0x2ceb0, 0x2ebe0),  # Ext F
+    range_inclusive(0x30000, 0x3134a),  # Ext G
+]
+
+_togo_in_compat = {
+    0xfa0e, 0xfa0f,
+    0xfa11, 0xfa13, 0xfa14, 0xfa1f,
+    0xfa21, 0xfa23, 0xfa24, 0xfa27, 0xfa28, 0xfa29,
+}
+
+_gokan_ranges = [
+    range_inclusive(0xf900, 0xfa6d),
+    range_inclusive(0xfa70, 0xfad9),
+    range_inclusive(0x2f800, 0x2fa1d),
+]
 
 
 def isTogoKanji(name: str):
-    if _re_togo_f.match(name):
+    cp = get_ucs_codepoint(name)
+    if cp is None:
         return False
-    if _re_togo_t1.match(name):
-        return True
-    if _re_togo_t2.match(name):
-        return True
-    return False
-
-
-_re_gokan_f = re.compile(r"^ufa(6[ef]|d[a-f]|[ef][\da-f])$")
-_re_gokan_t1 = re.compile(r"^uf[9a][\da-f]{2}$")
-_re_gokan_t2 = re.compile(r"^u2f([89][\da-f]{2}|a0[\da-f]|a1[\da-d])$")
+    return any(cp in trange for trange in _togo_ranges) or \
+        cp in _togo_in_compat
 
 
 def isGokanKanji(name: str):
-    if _re_gokan_f.match(name):
+    cp = get_ucs_codepoint(name)
+    if cp is None:
         return False
-    if _re_togo_t2.match(name):
-        return False
-    if _re_gokan_t1.match(name):
-        return True
-    if _re_gokan_t2.match(name):
-        return True
-    return False
+    return any(cp in grange for grange in _gokan_ranges) and \
+        cp not in _togo_in_compat
 
 
 _re_ucs = re.compile(r"^u[\da-f]{4,6}$")
@@ -80,6 +74,12 @@ RE_REGIONS = r"(?:[gtv]v?|[hmis]|k[pv]?|u[ks]?|j[asv]?)"
 
 def isUcs(name: str):
     return _re_ucs.match(name)
+
+
+def get_ucs_codepoint(name: str):
+    if not isUcs(name):
+        return None
+    return int(name[1:], 16)
 
 
 def isYoko(x0: int, y0: int, x1: int, y1: int) -> bool:
