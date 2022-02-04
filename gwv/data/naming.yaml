@@ -96,12 +96,13 @@ rule:
   - fudemame-e[\da-f]{3}
   # Group:prefix-g@22
   - g[013578eks]-[\da-f]{4}
+  - gfz-[\da-f]{4}
   - gh-\d{4}
   - g-(gfc|gfz|idc|ocd|xhz)\d{3}
-  - g-(cy|idc|lgyj|pglg|t|xc)\d{4}
-  - g-(cyy|dm|fzc|gjz|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw)\d{5}
-  - g-(bk|ch|cy|dz|kx|gh|hc|rm|wz|xc|xh|zh)\d{6}
-  - g-((h|hzr?|kx|z)\d{7}|k[\da-f]{4}|zys[\da-f]{5})
+  - g-(cy|lgyj|pglg|t|xc)\d{4}
+  - g-(4k|cyy|dm|fzc|gjz|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw|zys)\d{5}
+  - g-(bk|ch|cy|dz|gh|hc|kx|rm|wz|xc|xh|zh)\d{6}
+  - g-(h|hzr?|kx|z)\d{7}
   - gu-[023][\da-f]{4}
   # Group:prefix-h@1
   - h-[\da-f]{4}
