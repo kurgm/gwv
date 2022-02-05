@@ -27,19 +27,16 @@ class KosekitokiValidator(Validator):
         else:
             koseki_entity = koseki_name
 
-        if not entry.kage.is_alias:
-            entity = entry.name
-            if entity != koseki_entity:
+        entity = entry.entity_name or entry.name
+        if entity != koseki_entity:
+            if entry.entity_name is None:
                 # エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）
                 return [error_codes.NOT_ALIAS]
-        else:
-            entity = entry.kage.lines[0].part_name
-            if entity != koseki_entity:
-                if koseki_entity == koseki_name:
-                    # koseki-xxxxx0のエイリアスでない
-                    return [error_codes.NOT_ALIAS_OF_KOSEKI, entity]
-                # koseki-xxxxx0と異なる実体のエイリアス
-                return [
-                    error_codes.NOT_ALIAS_OF_ENTITY_OF_KOSEKI,
-                    entity, koseki_entity]
+            if koseki_entity == koseki_name:
+                # koseki-xxxxx0のエイリアスでない
+                return [error_codes.NOT_ALIAS_OF_KOSEKI, entity]
+            # koseki-xxxxx0と異なる実体のエイリアス
+            return [
+                error_codes.NOT_ALIAS_OF_ENTITY_OF_KOSEKI,
+                entity, koseki_entity]
         return False

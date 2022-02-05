@@ -35,26 +35,26 @@ class RelatedValidator(Validator):
             # 間違った関連字
             return [error_codes.WRONG_RELATED, entry.related, expected_related]
 
-        if entry.kage.is_alias:
-            entity_name = entry.gdata[19:]
-            entity_header = entity_name.split("-")[0]
+        if entry.entity_name is not None:
+            entity_header = entry.entity_name.split("-")[0]
             if isTogoKanji(entity_header):
                 return False
-            if entity_name not in dump:
-                return [error_codes.ENTITY_NOT_FOUND, entity_name]  # 実体が存在しない
+            if entry.entity_name not in dump:
+                # 実体が存在しない
+                return [error_codes.ENTITY_NOT_FOUND, entry.entity_name]
 
-            related = dump[entity_name].related
+            related = dump[entry.entity_name].related
             if related == "u3013":
                 # 実体が関連字なし
                 return [
                     error_codes.MISSING_ENTITY_RELATED,
-                    entity_name, expected_related]
+                    entry.entity_name, expected_related]
 
             if expected_related != related:
                 # 実体の関連字が違う
                 return [
                     error_codes.WRONG_ENTITY_RELATED,
-                    entity_name, related, expected_related]
+                    entry.entity_name, related, expected_related]
 
         elif entry.related == "u3013":
             return [error_codes.MISSING_RELATED, expected_related]  # 関連字なし

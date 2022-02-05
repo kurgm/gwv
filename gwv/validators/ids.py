@@ -52,8 +52,8 @@ class IdsValidator(Validator):
     def is_invalid(self, entry: DumpEntry, dump: Dump):
         kage = entry.kage
         # Replace with the entity if the glyph is an alias
-        if kage.is_alias:
-            aliasentry = dump.get(entry.gdata[19:].split("@")[0])
+        if entry.entity_name is not None:
+            aliasentry = dump.get(entry.entity_name)
             if aliasentry:
                 kage = aliasentry.kage
 

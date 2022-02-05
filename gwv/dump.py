@@ -3,11 +3,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import Dict, List, Optional, Tuple
 
-from gwv.kagedata import KageData
-
-
-_alias_prefix = "99:0:0:0:0:200:200:"
-_alias_prefix_len = len(_alias_prefix)
+from gwv.kagedata import KageData, get_entity_name
 
 
 class Dump:
@@ -39,18 +35,14 @@ class Dump:
 
     def get_entity_name(self, glyphname: str) -> str:
         _rel, data = self._data[glyphname]
-        if "$" not in data and data.startswith(_alias_prefix):
-            entity = data[_alias_prefix_len:]
-            if ":" not in entity:  # this should be always true
-                return entity
-        return glyphname
+        return get_entity_name(data) or glyphname
 
     _get_alias_of_dic: Optional[Dict[str, List[str]]] = None
 
     def get_alias_of(self, name: str):
         if self._get_alias_of_dic is None:
             dic = self._get_alias_of_dic = {}
-            for gname in self:
+            for gname in self._data:
                 if gname in dic:
                     continue
                 entity_name = self.get_entity_name(gname)
@@ -94,3 +86,11 @@ class DumpEntry:
     @cached_property
     def kage(self):
         return KageData(self.gdata)
+
+    @cached_property
+    def entity_name(self):
+        return get_entity_name(self.gdata)
+
+    @cached_property
+    def is_alias(self):
+        return self.entity_name is not None

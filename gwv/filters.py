@@ -98,7 +98,7 @@ class BoolFunc:
         return self._func_inv
 
 
-is_alias = BoolFunc(lambda entry, _dump: entry.kage.is_alias)
+is_alias = BoolFunc(lambda entry, _dump: entry.is_alias)
 
 
 has_transform = BoolFunc(lambda entry, _dump: entry.kage.has_transform)

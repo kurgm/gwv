@@ -75,14 +75,20 @@ class JValidator(Validator):
         splitname = entry.name.split("-")
 
         if len(splitname) == 3 and splitname[:2] == ["unstable", "bsh"]:
-            return self.checkJV(entry.kage.get_entity(dump))
+            entity_kage = dump[entry.entity_name].kage \
+                if entry.entity_name is not None and \
+                entry.entity_name in dump else entry.kage
+            return self.checkJV(entity_kage)
 
         if len(splitname) > 2:
             return False
 
         if splitname[0] in ("irg2015", "irg2017", "irg2021"):
             # irg2015-, irg2017-, irg2021- glyphs have no J source
-            return self.checkJV(entry.kage.get_entity(dump))
+            entity_kage = dump[entry.entity_name].kage \
+                if entry.entity_name is not None and \
+                entry.entity_name in dump else entry.kage
+            return self.checkJV(entity_kage)
 
         # uXXXX, uXXXX-...
         ucs = splitname[0]
@@ -91,7 +97,10 @@ class JValidator(Validator):
         if len(splitname) == 1:  # 無印
             if jsource is None and ucs not in self.jv_no_apply_parts and \
                     ucs not in source_separation.get_data():
-                return self.checkJV(entry.kage.get_entity(dump))
+                entity_kage = dump[entry.entity_name].kage \
+                    if entry.entity_name is not None and \
+                    entry.entity_name in dump else entry.kage
+                return self.checkJV(entity_kage)
             return False
 
         m = _re_region_opthenka.fullmatch(splitname[1])
@@ -131,10 +140,7 @@ class JValidator(Validator):
         if region not in ("j", "ja", "jv"):
             return False
 
-        if entry.kage.is_alias:
-            entity_name = entry.kage.lines[0].part_name
-        else:
-            entity_name = entry.name
+        entity_name = entry.entity_name or entry.name
 
         if ucs not in dump:
             return False  # 無印が見つからない
@@ -153,5 +159,8 @@ class JValidator(Validator):
             # uxxxx-jv と uxxxx-ja が共存している
             return [error_codes.J_JV_COEXISTENT, "ja"]
         if ucs not in self.jv_no_apply_parts:
-            return self.checkJV(entry.kage.get_entity(dump))
+            entity_kage = dump[entry.entity_name].kage \
+                if entry.entity_name is not None and \
+                entry.entity_name in dump else entry.kage
+            return self.checkJV(entity_kage)
         return False

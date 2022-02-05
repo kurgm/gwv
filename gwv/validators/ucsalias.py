@@ -30,7 +30,7 @@ class UcsaliasValidator(Validator):
         "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
         "ucs-hikanji-var"}))
     def is_invalid(self, entry: DumpEntry, dump: Dump):
-        entity = entry.gdata[19:]
+        entity: str = entry.entity_name
         if "-" in entry.name:
             sname = entry.name.split("-")
             len_sname = len(sname)
@@ -41,12 +41,7 @@ class UcsaliasValidator(Validator):
                     return False
                 if sname[0] not in dump:
                     return False  # 無印が見つからない
-                nomark_data = dump[sname[0]].gdata.split("$")
-                if len(nomark_data) == 1 and \
-                        nomark_data[0].startswith("99:0:0:0:0:200:200:"):
-                    nomark_entity = nomark_data[0][19:]
-                else:
-                    nomark_entity = sname[0]
+                nomark_entity = dump.get_entity_name(sname[0])
                 if sname[1] == "var":
                     # uxxxx-var-xxx が uxxxx (の実体)の別名
                     return [error_codes.VAR_HAS_SAME_ENTITY_AS_NOMARK, entity]\

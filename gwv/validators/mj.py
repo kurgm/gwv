@@ -213,16 +213,15 @@ class MjValidator(Validator):
                 return [error_codes.UNDEFINED_MJ]  # 欠番のMJ
             return False
 
-        if entry.kage.is_alias and not _re_itaiji.search(entry.name):
-            entity_name = entry.gdata[19:]
-            e_field, e_key = mjtable.glyphname_to_field_key(entity_name)
+        if entry.entity_name is not None and not _re_itaiji.search(entry.name):
+            e_field, e_key = mjtable.glyphname_to_field_key(entry.entity_name)
             if e_field is not None and e_field != field:
                 assert e_key is not None
                 entity_expected = set()
                 for idx in indices:
                     entity_expected.update(mjtable.get(idx, e_field))
 
-                entity_base = get_base(entity_name, e_field)
+                entity_base = get_base(entry.entity_name, e_field)
 
                 if entity_expected and entity_base not in entity_expected:
                     e_indices = mjtable.search(e_field, e_key)
@@ -237,7 +236,7 @@ class MjValidator(Validator):
                         # entity_name のエイリアスになっているが entity_expected のエイリアスの間違い
                         return [
                             error_codes.WRONG_ENTITY,
-                            entity_name, list(entity_expected)]
+                            entry.entity_name, list(entity_expected)]
 
         ucs_expected = set()
         for idx in indices:
@@ -250,10 +249,9 @@ class MjValidator(Validator):
 
         if ucs_expected:
             related = entry.related
-            if related == "u3013" and entry.kage.is_alias:
-                entity_name = entry.gdata[19:]
-                related = dump[entity_name].related if entity_name in dump \
-                    else "u3013"
+            if related == "u3013" and entry.entity_name is not None:
+                related = dump[entry.entity_name].related \
+                    if entry.entity_name in dump else "u3013"
             if related == "u3013":
                 # 関連字未設定であるが ucs_expected である
                 return [error_codes.RELATED_UNSET, None, list(ucs_expected)]

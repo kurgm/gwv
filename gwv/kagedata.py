@@ -26,25 +26,31 @@ def kageIntSuppressError(s: str) -> Optional[int]:
         return None
 
 
+_alias_prefix = "99:0:0:0:0:200:200:"
+_alias_prefix_len = len(_alias_prefix)
+
+
+def get_entity_name(data: str) -> Optional[str]:
+    """Extract the entity name from an alias data.
+
+    It returns None if the given data is not an alias data."""
+    if "$" not in data and data.startswith(_alias_prefix):
+        entity = data[_alias_prefix_len:]
+        if ":" not in entity:  # this should always be true
+            return entity
+    return None
+
+
 class KageData:
 
     def __init__(self, data: str):
         self.lines = tuple([KageLine(i, l)
                             for i, l in enumerate(data.split("$"))])
         self.len = len(self.lines)
-        self.is_alias = self.len == 1 and \
-            self.lines[0].strdata.startswith("99:0:0:0:0:200:200:")
         self.has_transform = any(
             len(line.data) >= 2 and
             line.stroke_type == 0 and line.head_type in (97, 98, 99)
             for line in self.lines)
-
-    def get_entity(self, dump):
-        if self.is_alias:
-            entity_name = self.lines[0].part_name
-            if entity_name in dump:
-                return dump[entity_name].kage
-        return self
 
 
 class KageLine:

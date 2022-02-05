@@ -108,7 +108,7 @@ class IllegalValidator(Validator):
                     return [
                         error_codes.WRONG_NUMBER_OF_COLUMNS,
                         [line.line_number, line.strdata]]
-                if lendata == 11 and entry.kage.is_alias:
+                if lendata == 11 and entry.is_alias:
                     # エイリアスに11列
                     return [
                         error_codes.ALIAS_11_COLUMNS,
