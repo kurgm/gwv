@@ -43,7 +43,7 @@ class RelatedValidator(Validator):
             if entity_name not in dump:
                 return [error_codes.ENTITY_NOT_FOUND, entity_name]  # 実体が存在しない
 
-            related = dump[entity_name][0]
+            related = dump[entity_name].related
             if related == "u3013":
                 # 実体が関連字なし
                 return [

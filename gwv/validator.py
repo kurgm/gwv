@@ -1,6 +1,6 @@
 from typing import List, Optional, Type
 
-from gwv.dump import Dump, DumpEntry
+from gwv.dump import Dump
 from gwv import validators
 
 
@@ -26,8 +26,7 @@ def validate(dump: Dump, validator_names: Optional[List[str]] = None):
         val.setup(dump)
 
     for glyphname in sorted(dump.keys()):
-        related, data = dump[glyphname]
-        entry = DumpEntry(glyphname, related, data)
+        entry = dump[glyphname]
         for val in validator_instances:
             val.validate(entry, dump)
 

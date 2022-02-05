@@ -19,8 +19,8 @@ class DonotuseValidator(Validator):
         for line in entry.kage.lines:
             if line.stroke_type != 99:
                 continue
-            part_data = dump.get(line.part_name.split("@")[0])[1]
-            if part_data and "do-not-use" in part_data:
+            part_entry = dump.get(line.part_name.split("@")[0])
+            if part_entry and "do-not-use" in part_entry.gdata:
                 quotings.append(line.part_name)
         if quotings:
             return [error_codes.DO_NOT_USE] + quotings

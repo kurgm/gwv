@@ -29,7 +29,7 @@ class MustrenewValidator(Validator):
         for line in entry.kage.lines:
             if line.stroke_type == 99 and "@" in line.part_name:
                 quoted: str = line.part_name.split("@")[0]
-                if quoted in dump and "@" in dump[quoted][1]:
+                if quoted in dump and "@" in dump[quoted].gdata:
                     quotings_old.add(line.part_name)
                 else:
                     quotings.add(line.part_name)

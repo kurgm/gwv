@@ -17,10 +17,13 @@ class Dump:
         self.timestamp = timestamp
 
     def __getitem__(self, glyphname: str):
-        return self._data[glyphname]
+        return DumpEntry(glyphname, *self._data[glyphname])
 
     def get(self, glyphname: str):
-        return self._data.get(glyphname, (None, None))
+        value = self._data.get(glyphname)
+        if value is None:
+            return None
+        return DumpEntry(glyphname, *value)
 
     def __contains__(self, glyphname: str):
         return glyphname in self._data
@@ -34,14 +37,8 @@ class Dump:
     def keys(self):
         return self._data.keys()
 
-    def values(self):
-        return self._data.values()
-
-    def items(self):
-        return self._data.items()
-
     def get_entity_name(self, glyphname: str) -> str:
-        _rel, data = self[glyphname]
+        _rel, data = self._data[glyphname]
         if "$" not in data and data.startswith(_alias_prefix):
             entity = data[_alias_prefix_len:]
             if ":" not in entity:  # this should be always true

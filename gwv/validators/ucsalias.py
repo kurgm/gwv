@@ -41,7 +41,7 @@ class UcsaliasValidator(Validator):
                     return False
                 if sname[0] not in dump:
                     return False  # 無印が見つからない
-                nomark_data = dump[sname[0]][1].split("$")
+                nomark_data = dump[sname[0]].gdata.split("$")
                 if len(nomark_data) == 1 and \
                         nomark_data[0].startswith("99:0:0:0:0:200:200:"):
                     nomark_entity = nomark_data[0][19:]

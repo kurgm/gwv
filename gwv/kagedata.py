@@ -43,7 +43,7 @@ class KageData:
         if self.is_alias:
             entity_name = self.lines[0].part_name
             if entity_name in dump:
-                return KageData(dump[entity_name][1])
+                return dump[entity_name].kage
         return self
 
 
