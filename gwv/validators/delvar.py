@@ -1,9 +1,8 @@
 import re
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -24,11 +23,10 @@ class DelvarValidator(Validator):
 
     @filters.check_only(+filters.is_of_category({
         "ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}))
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
-        m = _re_var_nnn_henka.fullmatch(name) or \
-            _re_var_src_henka.fullmatch(name) or \
-            _re_var_other.fullmatch(name)
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
+        m = _re_var_nnn_henka.fullmatch(entry.name) or \
+            _re_var_src_henka.fullmatch(entry.name) or \
+            _re_var_other.fullmatch(entry.name)
         if m:
             prefix = m.group(1)
             if prefix not in dump:

@@ -1,7 +1,6 @@
 import re
 
-from gwv.dump import Dump
-from gwv.kagedata import KageData
+from gwv.dump import Dump, DumpEntry
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -21,9 +20,8 @@ class NumexpValidator(Validator):
 
     name = "numexp"
 
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
-        for i, line in enumerate(gdata.split("$")):
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
+        for i, line in enumerate(entry.gdata.split("$")):
             if line == "":
                 return [error_codes.BLANK_LINE, [i, line]]  # 空行
             if _re_invalid_chars.search(line):

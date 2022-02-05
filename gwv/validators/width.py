@@ -1,11 +1,10 @@
 import re
 from typing import Dict, Tuple, Union
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import RE_REGIONS
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -89,23 +88,22 @@ class WidthValidator(Validator):
     @filters.check_only(+filters.is_of_category({
         "user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"}))
     @filters.check_only(-filters.has_transform)
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
         minX: Union[int, float]
         maxX: Union[int, float]
-        if is_fullwidth_name(name):
+        if is_fullwidth_name(entry.name):
             minX = 0
             maxX = 200
-        elif is_halfwidth_name(name):
+        elif is_halfwidth_name(entry.name):
             minX = 0
             maxX = 100
-        elif _re_hen.search(name):
+        elif _re_hen.search(entry.name):
             minX = 0
             maxX = 200
         else:
             minX = pinf
             maxX = ninf
-            for line in kage.lines:
+            for line in entry.kage.lines:
                 if line.stroke_type == 0:
                     continue
                 if line.stroke_type != 99:
@@ -141,7 +139,7 @@ class WidthValidator(Validator):
                     maxX = max(maxX, bL, bR)
         if maxX == ninf:
             return False
-        gWidth = getDWidth(name)
+        gWidth = getDWidth(entry.name)
         if (maxX <= 110 and minX < 90) is not (gWidth != 2):
             return [str(gWidth)]
         return False

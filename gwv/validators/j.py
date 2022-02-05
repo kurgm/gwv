@@ -1,7 +1,7 @@
 import re
 from typing import Dict, Set
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import cjk_sources
 from gwv.helper import GWGroupLazyLoader
@@ -71,19 +71,18 @@ class JValidator(Validator):
 
     @filters.check_only(+filters.is_of_category({
         "togo", "togo-var", "gokan-var", "ext", "bsh"}))
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
-        splitname = name.split("-")
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
+        splitname = entry.name.split("-")
 
         if len(splitname) == 3 and splitname[:2] == ["unstable", "bsh"]:
-            return self.checkJV(kage.get_entity(dump))
+            return self.checkJV(entry.kage.get_entity(dump))
 
         if len(splitname) > 2:
             return False
 
         if splitname[0] in ("irg2015", "irg2017", "irg2021"):
             # irg2015-, irg2017-, irg2021- glyphs have no J source
-            return self.checkJV(kage.get_entity(dump))
+            return self.checkJV(entry.kage.get_entity(dump))
 
         # uXXXX, uXXXX-...
         ucs = splitname[0]
@@ -92,7 +91,7 @@ class JValidator(Validator):
         if len(splitname) == 1:  # 無印
             if jsource is None and ucs not in self.jv_no_apply_parts and \
                     ucs not in source_separation.get_data():
-                return self.checkJV(kage.get_entity(dump))
+                return self.checkJV(entry.kage.get_entity(dump))
             return False
 
         m = _re_region_opthenka.fullmatch(splitname[1])
@@ -132,10 +131,10 @@ class JValidator(Validator):
         if region not in ("j", "ja", "jv"):
             return False
 
-        if kage.is_alias:
-            entity_name = kage.lines[0].part_name
+        if entry.kage.is_alias:
+            entity_name = entry.kage.lines[0].part_name
         else:
-            entity_name = name
+            entity_name = entry.name
 
         if ucs not in dump:
             return False  # 無印が見つからない
@@ -154,5 +153,5 @@ class JValidator(Validator):
             # uxxxx-jv と uxxxx-ja が共存している
             return [error_codes.J_JV_COEXISTENT, "ja"]
         if ucs not in self.jv_no_apply_parts:
-            return self.checkJV(kage.get_entity(dump))
+            return self.checkJV(entry.kage.get_entity(dump))
         return False

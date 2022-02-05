@@ -1,9 +1,8 @@
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import cjk_sources
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -23,9 +22,8 @@ class RelatedValidator(Validator):
 
     @filters.check_only(+filters.is_of_category({
         "togo", "togo-var", "gokan", "gokan-var"}))
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
-        expected_related = name.split("-")[0]
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
+        expected_related = entry.name.split("-")[0]
         if isGokanKanji(expected_related):
             u = cjk_sources.get(
                 expected_related, cjk_sources.COLUMN_COMPATIBILITY_VARIANT)
@@ -33,12 +31,12 @@ class RelatedValidator(Validator):
                 return False
             expected_related = "u" + u[2:].lower()
 
-        if related != "u3013" and expected_related != related:
+        if entry.related != "u3013" and expected_related != entry.related:
             # 間違った関連字
-            return [error_codes.WRONG_RELATED, related, expected_related]
+            return [error_codes.WRONG_RELATED, entry.related, expected_related]
 
-        if kage.is_alias:
-            entity_name = gdata[19:]
+        if entry.kage.is_alias:
+            entity_name = entry.gdata[19:]
             entity_header = entity_name.split("-")[0]
             if isTogoKanji(entity_header):
                 return False
@@ -58,7 +56,7 @@ class RelatedValidator(Validator):
                     error_codes.WRONG_ENTITY_RELATED,
                     entity_name, related, expected_related]
 
-        elif related == "u3013":
+        elif entry.related == "u3013":
             return [error_codes.MISSING_RELATED, expected_related]  # 関連字なし
 
         return False

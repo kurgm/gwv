@@ -1,8 +1,7 @@
 from typing import List, Set
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -24,11 +23,10 @@ class MustrenewValidator(Validator):
 
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
         quotings: Set[str] = set()
         quotings_old: Set[str] = set()  # 最新版が旧部品を引用している部品の旧版
-        for line in kage.lines:
+        for line in entry.kage.lines:
             if line.stroke_type == 99 and "@" in line.part_name:
                 quoted: str = line.part_name.split("@")[0]
                 if quoted in dump and "@" in dump[quoted][1]:

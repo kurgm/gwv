@@ -2,11 +2,10 @@ import functools
 import re
 from typing import Any, Callable, Container, TypeVar
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
 from gwv.helper import isUcs
-from gwv.kagedata import KageData
 
 
 T = TypeVar("T")
@@ -65,19 +64,18 @@ def _categorize(glyphname: str):
     return "other"
 
 
-Predicate = Callable[[str, str, KageData, str, Dump], bool]
+Predicate = Callable[[DumpEntry, Dump], bool]
 
 
 def check_only(pred: Predicate):
 
-    def decorator(f: Callable[[Any, str, str, KageData, str, Dump], Any]):
+    def decorator(f: Callable[[Any, DumpEntry, Dump], Any]):
 
         @functools.wraps(f)
-        def wrapper(self: Any, name: str, related: str, kage: KageData,
-                    gdata: str, dump: Dump):
-            if not pred(name, related, kage, gdata, dump):
+        def wrapper(self: Any, entry: DumpEntry, dump: Dump):
+            if not pred(entry, dump):
                 return False
-            return f(self, name, related, kage, gdata, dump)
+            return f(self, entry, dump)
 
         return wrapper
 
@@ -100,13 +98,11 @@ class BoolFunc:
         return self._func_inv
 
 
-is_alias = BoolFunc(lambda _name, _related, kage, _gdata, _dump: kage.is_alias)
+is_alias = BoolFunc(lambda entry, _dump: entry.kage.is_alias)
 
 
-has_transform = BoolFunc(lambda _name, _related, kage, _gdata, _dump:
-                         kage.has_transform)
+has_transform = BoolFunc(lambda entry, _dump: entry.kage.has_transform)
 
 
 def is_of_category(categories: Container[str]):
-    return BoolFunc(lambda name, _related, _kage, _gdata, _dump:
-                    _categorize(name) in categories)
+    return BoolFunc(lambda entry, _dump: _categorize(entry.name) in categories)

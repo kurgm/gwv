@@ -1,7 +1,6 @@
 from typing import List, Optional, Type
 
-from gwv.dump import Dump
-from gwv.kagedata import KageData
+from gwv.dump import Dump, DumpEntry
 from gwv import validators
 
 
@@ -28,9 +27,9 @@ def validate(dump: Dump, validator_names: Optional[List[str]] = None):
 
     for glyphname in sorted(dump.keys()):
         related, data = dump[glyphname]
-        kage = KageData(data)
+        entry = DumpEntry(glyphname, related, data)
         for val in validator_instances:
-            val.validate(glyphname, related, kage, data, dump)
+            val.validate(entry, dump)
 
     return {val.name: {
         "timestamp": dump.timestamp,

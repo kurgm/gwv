@@ -1,5 +1,9 @@
 import os
+from dataclasses import dataclass
+from functools import cached_property
 from typing import Dict, List, Optional, Tuple
+
+from gwv.kagedata import KageData
 
 
 _alias_prefix = "99:0:0:0:0:200:200:"
@@ -82,3 +86,14 @@ class Dump:
                     data[row[0]] = (row[1], row[2])
 
         return cls(data, timestamp)
+
+
+@dataclass(frozen=True)
+class DumpEntry:
+    name: str
+    related: str
+    gdata: str
+
+    @cached_property
+    def kage(self):
+        return KageData(self.gdata)

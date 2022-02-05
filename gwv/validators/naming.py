@@ -1,11 +1,10 @@
 import re
 from typing import Dict, List, Mapping
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -79,10 +78,10 @@ class NamingValidator(Validator):
     name = "naming"
 
     @filters.check_only(-filters.is_of_category({"user-owned"}))
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
         isHenka = False
         isVar = False
+        name = entry.name
         if _re_var.search(name):
             name = name.rsplit("-", 2)[0]
             isVar = True

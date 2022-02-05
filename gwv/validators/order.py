@@ -1,9 +1,8 @@
 import re
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -29,12 +28,11 @@ class OrderValidator(Validator):
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.has_transform)
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
-        if kage.len == 1:
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
+        if entry.kage.len == 1:
             return False
-        first = kage.lines[0]
-        last = kage.lines[-1]
+        first = entry.kage.lines[0]
+        last = entry.kage.lines[-1]
         if first.stroke_type == 99:
             fG = first.part_name
             m = _re_vars.search(fG)

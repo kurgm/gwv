@@ -1,8 +1,7 @@
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import isKanji
 from gwv.helper import isYoko
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -83,10 +82,9 @@ class IllegalValidator(Validator):
     name = "illegal"
 
     @filters.check_only(-filters.is_of_category({"user-owned"}))
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
-        isKanjiGlyph = isKanji(name)
-        for line in kage.lines:
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
+        isKanjiGlyph = isKanji(entry.name)
+        for line in entry.kage.lines:
             lendata = len(line.data)
             stype = line.stroke_type
             try:
@@ -110,7 +108,7 @@ class IllegalValidator(Validator):
                     return [
                         error_codes.WRONG_NUMBER_OF_COLUMNS,
                         [line.line_number, line.strdata]]
-                if lendata == 11 and kage.is_alias:
+                if lendata == 11 and entry.kage.is_alias:
                     # エイリアスに11列
                     return [
                         error_codes.ALIAS_11_COLUMNS,

@@ -1,6 +1,5 @@
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -15,10 +14,9 @@ class DonotuseValidator(Validator):
     name = "donotuse"
 
     @filters.check_only(-filters.is_alias)
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
         quotings = []
-        for line in kage.lines:
+        for line in entry.kage.lines:
             if line.stroke_type != 99:
                 continue
             part_data = dump.get(line.part_name.split("@")[0])[1]

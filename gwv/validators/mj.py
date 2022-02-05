@@ -1,11 +1,10 @@
 import re
 from typing import Dict, List, Optional, Tuple, Union
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import isTogoKanji
 from gwv.helper import load_package_data
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -44,6 +43,7 @@ _re_jx2 = re.compile(r"jx2-([0-9a-f]{4})")
 _re_jsp = re.compile(r"jsp-([0-9a-f]{4})")
 _re_shincho = re.compile(r"shincho-(\d{5})")
 _re_sdjt = re.compile(r"sdjt-(\d{5})")
+
 
 class MJTable:
 
@@ -201,9 +201,8 @@ class MjValidator(Validator):
     @filters.check_only(+filters.is_of_category({
         "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
         "ucs-hikanji-var", "koseki-kanji", "koseki-hikanji", "toki", "other"}))
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
-        field, key = mjtable.glyphname_to_field_key(name)
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
+        field, key = mjtable.glyphname_to_field_key(entry.name)
         if field is None:
             return False
         assert key is not None
@@ -214,8 +213,8 @@ class MjValidator(Validator):
                 return [error_codes.UNDEFINED_MJ]  # 欠番のMJ
             return False
 
-        if kage.is_alias and not _re_itaiji.search(name):
-            entity_name = gdata[19:]
+        if entry.kage.is_alias and not _re_itaiji.search(entry.name):
+            entity_name = entry.gdata[19:]
             e_field, e_key = mjtable.glyphname_to_field_key(entity_name)
             if e_field is not None and e_field != field:
                 assert e_key is not None
@@ -231,7 +230,7 @@ class MjValidator(Validator):
                     for e_idx in e_indices:
                         expected_from_entity.update(mjtable.get(e_idx, field))
 
-                    base = get_base(name, field)
+                    base = get_base(entry.name, field)
 
                     if expected_from_entity and \
                             base not in expected_from_entity:
@@ -250,8 +249,9 @@ class MjValidator(Validator):
                     ucs_expected.add(ucs)
 
         if ucs_expected:
-            if related == "u3013" and kage.is_alias:
-                related = dump.get(gdata[19:])[0] or "u3013"
+            related = entry.related
+            if related == "u3013" and entry.kage.is_alias:
+                related = dump.get(entry.gdata[19:])[0] or "u3013"
             if related == "u3013":
                 # 関連字未設定であるが ucs_expected である
                 return [error_codes.RELATED_UNSET, None, list(ucs_expected)]

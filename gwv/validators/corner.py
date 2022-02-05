@@ -2,10 +2,10 @@ import itertools
 import re
 from typing import List, Optional
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import isYoko
-from gwv.kagedata import KageData, KageLine
+from gwv.kagedata import KageLine
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -365,17 +365,16 @@ class CornerValidator(Validator):
     @filters.check_only(-filters.is_of_category({
         "user-owned", "ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji"}))
     @filters.check_only(-filters.has_transform)
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
         strokes = []
         tate: List[Segment] = []
         yoko: List[Segment] = []
         tate_vert: List[Segment] = []
         yoko_hori: List[Segment] = []
-        isGdesign = bool(_re_gdesign.fullmatch(name))
-        isTdesign = bool(_re_tdesign.fullmatch(name))
+        isGdesign = bool(_re_gdesign.fullmatch(entry.name))
+        isTdesign = bool(_re_tdesign.fullmatch(entry.name))
 
-        strokes = [Stroke(line) for line in kage.lines]
+        strokes = [Stroke(line) for line in entry.kage.lines]
         for stroke in strokes:
             stroke.setSegments(tate, tate_vert, yoko, yoko_hori)
 
@@ -689,7 +688,7 @@ class CornerValidator(Validator):
                     error_codes.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW
                 ) else 100
             )
-            glines = gdata.split("$")
+            glines = entry.gdata.split("$")
             return [
                 result[0],
                 [result[1], glines[result[1]]],

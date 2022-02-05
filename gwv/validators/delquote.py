@@ -1,5 +1,4 @@
-from gwv.dump import Dump
-from gwv.kagedata import KageData
+from gwv.dump import Dump, DumpEntry
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -13,9 +12,8 @@ class DelquoteValidator(Validator):
 
     name = "delquote"
 
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
-        for line in kage.lines:
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
+        for line in entry.kage.lines:
             if line.stroke_type == 99 and \
                     line.part_name.split("@")[0] not in dump:
                 # 無い部品を引用している

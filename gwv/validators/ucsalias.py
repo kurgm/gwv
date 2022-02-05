@@ -1,9 +1,8 @@
 import re
 
-from gwv.dump import Dump
+from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
-from gwv.kagedata import KageData
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -30,11 +29,10 @@ class UcsaliasValidator(Validator):
     @filters.check_only(+filters.is_of_category({
         "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
         "ucs-hikanji-var"}))
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
-        entity = gdata[19:]
-        if "-" in name:
-            sname = name.split("-")
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
+        entity = entry.gdata[19:]
+        if "-" in entry.name:
+            sname = entry.name.split("-")
             len_sname = len(sname)
             if len_sname > 3:
                 return False
@@ -66,7 +64,7 @@ class UcsaliasValidator(Validator):
             # “uxxxx”が“uyyyy-…”以外やIDSのエイリアス
             return [error_codes.UCS_IS_ALIAS_OF_NON_UCS, entity]
         s_entity = entity.split("-")
-        if s_entity[0] == name and len(s_entity) == 3:
+        if s_entity[0] == entry.name and len(s_entity) == 3:
             if s_entity[1] == "var":
                 # uxxxx が uxxxx-var-xxx の別名
                 return [error_codes.UCS_IS_ALIAS_OF_VAR, entity]

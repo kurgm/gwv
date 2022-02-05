@@ -1,8 +1,7 @@
 import abc
 import logging
 
-from gwv.dump import Dump
-from gwv.kagedata import KageData
+from gwv.dump import Dump, DumpEntry
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -43,22 +42,20 @@ class Validator(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def is_invalid(self, name: str, related: str, kage: KageData, gdata: str,
-                   dump: Dump):
+    def is_invalid(self, entry: DumpEntry, dump: Dump):
         raise NotImplementedError
 
-    def validate(self, glyphname: str, related: str, kage: KageData,
-                 gdata: str, dump: Dump):
+    def validate(self, entry: DumpEntry, dump: Dump):
         try:
-            is_invalid = self.is_invalid(glyphname, related, kage, gdata, dump)
+            is_invalid = self.is_invalid(entry, dump)
         except Exception:
             log.exception(
                 "Exception while %s is validating %s",
-                self.name, glyphname)
+                self.name, entry.name)
             return
 
         if is_invalid:
-            self.record(glyphname, is_invalid)
+            self.record(entry.name, is_invalid)
 
     def record(self, glyphname: str, error):
         key = str(error[0])
