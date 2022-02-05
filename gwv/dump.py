@@ -2,6 +2,10 @@ import os
 from typing import Dict, List, Optional, Tuple
 
 
+_alias_prefix = "99:0:0:0:0:200:200:"
+_alias_prefix_len = len(_alias_prefix)
+
+
 class Dump:
 
     def __init__(self, data: Dict[str, Tuple[str, str]], timestamp: float):
@@ -34,8 +38,10 @@ class Dump:
 
     def get_entity_name(self, glyphname: str) -> str:
         _rel, data = self[glyphname]
-        if "$" not in data and data.startswith("99:0:0:0:0:200:200:"):
-            return data.split(":")[7]
+        if "$" not in data and data.startswith(_alias_prefix):
+            entity = data[_alias_prefix_len:]
+            if ":" not in entity:  # this should be always true
+                return entity
         return glyphname
 
     _get_alias_of_dic: Optional[Dict[str, List[str]]] = None

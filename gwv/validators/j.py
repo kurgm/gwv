@@ -139,11 +139,7 @@ class JValidator(Validator):
 
         if ucs not in dump:
             return False  # 無印が見つからない
-        nomark_kage = KageData(dump[ucs][1])
-        if nomark_kage.is_alias:
-            nomark_entity_name = nomark_kage.lines[0].part_name
-        else:
-            nomark_entity_name = ucs
+        nomark_entity_name = dump.get_entity_name(ucs)
 
         if entity_name != nomark_entity_name and not isHenka:
             # uxxxx-j, ja, jv (の実体)と無印(の実体)が違う

@@ -24,13 +24,10 @@ class KosekitokiValidator(Validator):
             return False
 
         koseki_name = "koseki-" + name[7:]
-        koseki_entity = koseki_name
-
-        koseki_gdata = dump.get(koseki_name)[1]
-        if koseki_gdata is not None:
-            koseki_kage = KageData(koseki_gdata)
-            if koseki_kage.is_alias:
-                koseki_entity = koseki_kage.lines[0].part_name
+        if koseki_name in dump:
+            koseki_entity = dump.get_entity_name(koseki_name)
+        else:
+            koseki_entity = koseki_name
 
         if not kage.is_alias:
             entity = name
