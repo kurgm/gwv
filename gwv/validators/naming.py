@@ -57,21 +57,21 @@ _re_gl_glyph = re.compile(
     r"(j78|j83|j90|jsp|jx1-200[04]|jx2|k0|g0|c[0-9a-f])-([\da-f]{4})")
 _re_valid_gl = re.compile(r"(2[1-9a-f]|[3-6][\da-f]|7[\da-e]){2}")
 
-_re_cdp = re.compile(r"(?:^|-)(cdp([on]?)-([\da-f]{4}))(?=-|$)")
+_re_cdp = re.compile(r"\bcdp([on]?)-([\da-f]{4})\b")
 _re_valid_cdp = re.compile(
     r"(8[1-9a-f]|9[\da-f]|a0|c[67])(a[1-9a-f]|[4-6b-e][\da-f]|[7f][\da-e])")
 
 _re_ids_head = re.compile(r"u2ff[\dab]-")
-_re_idc_2 = re.compile(r"(^|-)u2ff[014-9ab](?=-|$)")
-_re_idc_3 = re.compile(r"(^|-)u2ff[23](?=-|$)")
+_re_idc_2 = re.compile(r"\bu2ff[014-9ab]\b")
+_re_idc_3 = re.compile(r"\bu2ff[23]\b")
 _re_kanji = re.compile(
-    r"""-(?:
+    r"""\b(?:
         u[23]?[\da-f]{4}(?:-u(?:e01[\da-f]{2}|fe0[\da-f]))?|
         cdp[on]?-[\da-f]{4}
-    )(?=-|$)""",
+    )\b""",
     re.X)
 _re_ids_kanji = re.compile(r"２-漢-漢|３-漢-漢-漢")
-_re_ucs = re.compile(r"(^|-)(u[23]?[\da-f]{4})(?=-|$)")
+_re_ucs = re.compile(r"\bu[23]?[\da-f]{4}\b")
 
 
 class NamingValidator(Validator):
@@ -98,15 +98,15 @@ class NamingValidator(Validator):
                 return [error_codes.PROHIBITED_GLYPH_NAME]
         else:
             for m in _re_cdp.finditer(name):
-                if not _re_valid_cdp.fullmatch(m.group(3)):
+                if not _re_valid_cdp.fullmatch(m.group(2)):
                     # 禁止されたグリフ名（不正なCDP番号）
                     return [error_codes.PROHIBITED_GLYPH_NAME]
 
         if _re_ids_head.match(name):
             idsReplacedName = name
-            idsReplacedName = _re_idc_2.sub(r"\1２", idsReplacedName)
-            idsReplacedName = _re_idc_3.sub(r"\1３", idsReplacedName)
-            idsReplacedName = _re_kanji.sub("-漢", idsReplacedName)
+            idsReplacedName = _re_idc_2.sub("２", idsReplacedName)
+            idsReplacedName = _re_idc_3.sub("３", idsReplacedName)
+            idsReplacedName = _re_kanji.sub("漢", idsReplacedName)
 
             while _re_ids_kanji.search(idsReplacedName):
                 idsReplacedName = _re_ids_kanji.sub("漢", idsReplacedName)
@@ -114,8 +114,8 @@ class NamingValidator(Validator):
                 return [error_codes.INVALID_IDS, idsReplacedName]  # 不正なIDS
 
             for m in _re_cdp.finditer(name):
-                cdp = m.group(1)
-                cdpv = m.group(2)
+                cdp = m.group(0)
+                cdpv = m.group(1)
                 if cdpv and cdp not in cdp_dict:
                     cdp = "cdp-" + cdp[-4:]
                 if cdp in cdp_dict:
@@ -123,7 +123,7 @@ class NamingValidator(Validator):
                     return [error_codes.ENCODED_CDP_IN_IDS, cdp, cdp_dict[cdp]]
 
             for m in _re_ucs.finditer(name):
-                ucs = m.group(2)
+                ucs = m.group(0)
                 if ucs == "u3013":
                     return [error_codes.INVALID_IDS, idsReplacedName]  # 〓
                 if "ue000" <= ucs <= "uf8ff":
