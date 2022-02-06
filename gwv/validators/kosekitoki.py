@@ -27,9 +27,9 @@ class KosekitokiValidator(Validator):
         else:
             koseki_entity = koseki_name
 
-        entity = ctx.glyph.entity_name or ctx.glyph.name
+        entity = ctx.entity.name
         if entity != koseki_entity:
-            if ctx.glyph.entity_name is None:
+            if not ctx.glyph.is_alias:
                 # エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）
                 return [error_codes.NOT_ALIAS]
             if koseki_entity == koseki_name:

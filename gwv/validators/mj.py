@@ -251,9 +251,8 @@ class MjValidator(Validator):
 
         if ucs_expected:
             related = ctx.glyph.related
-            if related == "u3013" and ctx.glyph.entity_name is not None:
-                related = ctx.dump[ctx.glyph.entity_name].related \
-                    if ctx.glyph.entity_name in ctx.dump else "u3013"
+            if related == "u3013" and ctx.glyph.is_alias:
+                related = ctx.entity.related
             if related == "u3013":
                 # 関連字未設定であるが ucs_expected である
                 return [error_codes.RELATED_UNSET, None, list(ucs_expected)]

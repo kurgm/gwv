@@ -45,7 +45,7 @@ class RelatedValidator(Validator):
                 # 実体が存在しない
                 return [error_codes.ENTITY_NOT_FOUND, ctx.glyph.entity_name]
 
-            related = ctx.dump[ctx.glyph.entity_name].related
+            related = ctx.entity.related
             if related == "u3013":
                 # 実体が関連字なし
                 return [

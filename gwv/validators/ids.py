@@ -50,12 +50,7 @@ class IdsValidator(Validator):
 
     @filters.check_only(+filters.is_of_category({"ids"}))
     def is_invalid(self, ctx: ValidatorContext):
-        kage = ctx.glyph.kage
-        # Replace with the entity if the glyph is an alias
-        if ctx.glyph.entity_name is not None:
-            aliasentry = ctx.dump.get(ctx.glyph.entity_name)
-            if aliasentry:
-                kage = aliasentry.kage
+        kage = ctx.entity.kage
 
         if not (kage.lines[0].stroke_type == 99 and kage.len > 1):
             return False
