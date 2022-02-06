@@ -2,10 +2,10 @@ import functools
 import re
 from typing import Any, Callable, Container, TypeVar
 
-from gwv.dump import Dump, DumpEntry
 from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
 from gwv.helper import isUcs
+from gwv.validatorctx import ValidatorContext
 
 
 T = TypeVar("T")
@@ -64,18 +64,18 @@ def _categorize(glyphname: str):
     return "other"
 
 
-Predicate = Callable[[DumpEntry, Dump], bool]
+Predicate = Callable[[ValidatorContext], bool]
 
 
 def check_only(pred: Predicate):
 
-    def decorator(f: Callable[[Any, DumpEntry, Dump], Any]):
+    def decorator(f: Callable[[Any, ValidatorContext], Any]):
 
         @functools.wraps(f)
-        def wrapper(self: Any, entry: DumpEntry, dump: Dump):
-            if not pred(entry, dump):
+        def wrapper(self: Any, ctx: ValidatorContext):
+            if not pred(ctx):
                 return False
-            return f(self, entry, dump)
+            return f(self, ctx)
 
         return wrapper
 
@@ -98,11 +98,11 @@ class BoolFunc:
         return self._func_inv
 
 
-is_alias = BoolFunc(lambda entry, _dump: entry.is_alias)
+is_alias = BoolFunc(lambda ctx: ctx.glyph.is_alias)
 
 
-has_transform = BoolFunc(lambda entry, _dump: entry.kage.has_transform)
+has_transform = BoolFunc(lambda ctx: ctx.glyph.kage.has_transform)
 
 
 def is_of_category(categories: Container[str]):
-    return BoolFunc(lambda entry, _dump: _categorize(entry.name) in categories)
+    return BoolFunc(lambda ctx: _categorize(ctx.glyph.name) in categories)

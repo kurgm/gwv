@@ -1,8 +1,8 @@
 import re
 
-from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -29,19 +29,19 @@ class UcsaliasValidator(Validator):
     @filters.check_only(+filters.is_of_category({
         "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
         "ucs-hikanji-var"}))
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        entity: str = entry.entity_name
-        if "-" in entry.name:
-            sname = entry.name.split("-")
+    def is_invalid(self, ctx: ValidatorContext):
+        entity: str = ctx.glyph.entity_name
+        if "-" in ctx.glyph.name:
+            sname = ctx.glyph.name.split("-")
             len_sname = len(sname)
             if len_sname > 3:
                 return False
             if len_sname == 3:
                 if sname[1] not in ("var", "itaiji"):
                     return False
-                if sname[0] not in dump:
+                if sname[0] not in ctx.dump:
                     return False  # 無印が見つからない
-                nomark_entity = dump.get_entity_name(sname[0])
+                nomark_entity = ctx.dump.get_entity_name(sname[0])
                 if sname[1] == "var":
                     # uxxxx-var-xxx が uxxxx (の実体)の別名
                     return [error_codes.VAR_HAS_SAME_ENTITY_AS_NOMARK, entity]\
@@ -59,7 +59,7 @@ class UcsaliasValidator(Validator):
             # “uxxxx”が“uyyyy-…”以外やIDSのエイリアス
             return [error_codes.UCS_IS_ALIAS_OF_NON_UCS, entity]
         s_entity = entity.split("-")
-        if s_entity[0] == entry.name and len(s_entity) == 3:
+        if s_entity[0] == ctx.glyph.name and len(s_entity) == 3:
             if s_entity[1] == "var":
                 # uxxxx が uxxxx-var-xxx の別名
                 return [error_codes.UCS_IS_ALIAS_OF_VAR, entity]

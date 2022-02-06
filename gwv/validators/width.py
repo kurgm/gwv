@@ -1,10 +1,10 @@
 import re
 from typing import Dict, Tuple, Union
 
-from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import RE_REGIONS
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -88,22 +88,22 @@ class WidthValidator(Validator):
     @filters.check_only(+filters.is_of_category({
         "user-owned", "ucs-hikanji", "ucs-hikanji-var", "toki", "other"}))
     @filters.check_only(-filters.has_transform)
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
+    def is_invalid(self, ctx: ValidatorContext):
         minX: Union[int, float]
         maxX: Union[int, float]
-        if is_fullwidth_name(entry.name):
+        if is_fullwidth_name(ctx.glyph.name):
             minX = 0
             maxX = 200
-        elif is_halfwidth_name(entry.name):
+        elif is_halfwidth_name(ctx.glyph.name):
             minX = 0
             maxX = 100
-        elif _re_hen.search(entry.name):
+        elif _re_hen.search(ctx.glyph.name):
             minX = 0
             maxX = 200
         else:
             minX = pinf
             maxX = ninf
-            for line in entry.kage.lines:
+            for line in ctx.glyph.kage.lines:
                 if line.stroke_type == 0:
                     continue
                 if line.stroke_type != 99:
@@ -126,7 +126,7 @@ class WidthValidator(Validator):
                             bR = maxX
                         elif bgW == 2:
                             if is_fullwidth_name(gn) or \
-                                    (gn + "-halfwidth") in dump:
+                                    (gn + "-halfwidth") in ctx.dump:
                                 bL = xL + w * 0.31
                                 bR = xL + w * 0.69
                             else:
@@ -139,7 +139,7 @@ class WidthValidator(Validator):
                     maxX = max(maxX, bL, bR)
         if maxX == ninf:
             return False
-        gWidth = getDWidth(entry.name)
+        gWidth = getDWidth(ctx.glyph.name)
         if (maxX <= 110 and minX < 90) is not (gWidth != 2):
             return [str(gWidth)]
         return False

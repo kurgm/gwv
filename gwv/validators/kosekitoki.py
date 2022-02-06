@@ -1,5 +1,5 @@
-from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -16,20 +16,20 @@ class KosekitokiValidator(Validator):
     name = "kosekitoki"
 
     @filters.check_only(+filters.is_of_category({"toki"}))
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        header = entry.name[:7]
+    def is_invalid(self, ctx: ValidatorContext):
+        header = ctx.glyph.name[:7]
         if header != "toki-00":
             return False
 
-        koseki_name = "koseki-" + entry.name[7:]
-        if koseki_name in dump:
-            koseki_entity = dump.get_entity_name(koseki_name)
+        koseki_name = "koseki-" + ctx.glyph.name[7:]
+        if koseki_name in ctx.dump:
+            koseki_entity = ctx.dump.get_entity_name(koseki_name)
         else:
             koseki_entity = koseki_name
 
-        entity = entry.entity_name or entry.name
+        entity = ctx.glyph.entity_name or ctx.glyph.name
         if entity != koseki_entity:
-            if entry.entity_name is None:
+            if ctx.glyph.entity_name is None:
                 # エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）
                 return [error_codes.NOT_ALIAS]
             if koseki_entity == koseki_name:

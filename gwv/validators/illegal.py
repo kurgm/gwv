@@ -1,7 +1,7 @@
-from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import isKanji
 from gwv.helper import isYoko
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -82,9 +82,9 @@ class IllegalValidator(Validator):
     name = "illegal"
 
     @filters.check_only(-filters.is_of_category({"user-owned"}))
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        isKanjiGlyph = isKanji(entry.name)
-        for line in entry.kage.lines:
+    def is_invalid(self, ctx: ValidatorContext):
+        isKanjiGlyph = isKanji(ctx.glyph.name)
+        for line in ctx.glyph.kage.lines:
             lendata = len(line.data)
             stype = line.stroke_type
             try:
@@ -108,7 +108,7 @@ class IllegalValidator(Validator):
                     return [
                         error_codes.WRONG_NUMBER_OF_COLUMNS,
                         [line.line_number, line.strdata]]
-                if lendata == 11 and entry.is_alias:
+                if lendata == 11 and ctx.glyph.is_alias:
                     # エイリアスに11列
                     return [
                         error_codes.ALIAS_11_COLUMNS,

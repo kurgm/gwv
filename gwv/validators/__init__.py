@@ -1,7 +1,8 @@
 import abc
 import logging
 
-from gwv.dump import Dump, DumpEntry
+from gwv.dump import Dump
+from gwv.validatorctx import ValidatorContext
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -42,20 +43,20 @@ class Validator(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
+    def is_invalid(self, ctx: ValidatorContext):
         raise NotImplementedError
 
-    def validate(self, entry: DumpEntry, dump: Dump):
+    def validate(self, ctx: ValidatorContext):
         try:
-            is_invalid = self.is_invalid(entry, dump)
+            is_invalid = self.is_invalid(ctx)
         except Exception:
             log.exception(
                 "Exception while %s is validating %s",
-                self.name, entry.name)
+                self.name, ctx.glyph.name)
             return
 
         if is_invalid:
-            self.record(entry.name, is_invalid)
+            self.record(ctx.glyph.name, is_invalid)
 
     def record(self, glyphname: str, error):
         key = str(error[0])

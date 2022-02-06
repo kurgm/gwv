@@ -1,8 +1,8 @@
 import math
 
-from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import isYoko
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -25,8 +25,8 @@ class SkewValidator(Validator):
 
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        for line in entry.kage.lines:
+    def is_invalid(self, ctx: ValidatorContext):
+        for line in ctx.glyph.kage.lines:
             stype = line.stroke_type
             coords = line.coords
             if stype == 1:

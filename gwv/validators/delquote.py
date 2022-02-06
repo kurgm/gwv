@@ -1,4 +1,4 @@
-from gwv.dump import Dump, DumpEntry
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -12,10 +12,10 @@ class DelquoteValidator(Validator):
 
     name = "delquote"
 
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        for line in entry.kage.lines:
+    def is_invalid(self, ctx: ValidatorContext):
+        for line in ctx.glyph.kage.lines:
             if line.stroke_type == 99 and \
-                    line.part_name.split("@")[0] not in dump:
+                    line.part_name.split("@")[0] not in ctx.dump:
                 # 無い部品を引用している
                 return [error_codes.PART_NOT_FOUND, line.part_name]
         return False

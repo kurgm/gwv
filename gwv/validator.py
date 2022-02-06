@@ -2,6 +2,7 @@ from typing import List, Optional, Type
 
 from gwv.dump import Dump
 from gwv import validators
+from gwv.validatorctx import ValidatorContext
 
 
 def get_validator_name(name: str) -> str:
@@ -27,8 +28,9 @@ def validate(dump: Dump, validator_names: Optional[List[str]] = None):
 
     for glyphname in sorted(dump.keys()):
         entry = dump[glyphname]
+        ctx = ValidatorContext(dump, entry)
         for val in validator_instances:
-            val.validate(entry, dump)
+            val.validate(ctx)
 
     return {val.name: {
         "timestamp": dump.timestamp,

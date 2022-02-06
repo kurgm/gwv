@@ -1,8 +1,8 @@
 import re
 
-from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -23,12 +23,12 @@ class DelvarValidator(Validator):
 
     @filters.check_only(+filters.is_of_category({
         "ids", "togo-var", "gokan-var", "ucs-hikanji-var", "cdp", "other"}))
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        m = _re_var_nnn_henka.fullmatch(entry.name) or \
-            _re_var_src_henka.fullmatch(entry.name) or \
-            _re_var_other.fullmatch(entry.name)
+    def is_invalid(self, ctx: ValidatorContext):
+        m = _re_var_nnn_henka.fullmatch(ctx.glyph.name) or \
+            _re_var_src_henka.fullmatch(ctx.glyph.name) or \
+            _re_var_other.fullmatch(ctx.glyph.name)
         if m:
             prefix = m.group(1)
-            if prefix not in dump:
+            if prefix not in ctx.dump:
                 return [error_codes.BASE_NOT_FOUND, prefix]  # 派生元が無い
         return None

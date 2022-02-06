@@ -1,6 +1,6 @@
 import re
 
-from gwv.dump import Dump, DumpEntry
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -20,8 +20,8 @@ class NumexpValidator(Validator):
 
     name = "numexp"
 
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        for i, line in enumerate(entry.gdata.split("$")):
+    def is_invalid(self, ctx: ValidatorContext):
+        for i, line in enumerate(ctx.glyph.gdata.split("$")):
             if line == "":
                 return [error_codes.BLANK_LINE, [i, line]]  # 空行
             if _re_invalid_chars.search(line):

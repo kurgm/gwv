@@ -1,10 +1,10 @@
 import re
 from typing import Dict, List, Optional, Tuple, Union
 
-from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import isTogoKanji
 from gwv.helper import load_package_data
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -201,8 +201,8 @@ class MjValidator(Validator):
     @filters.check_only(+filters.is_of_category({
         "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
         "ucs-hikanji-var", "koseki-kanji", "koseki-hikanji", "toki", "other"}))
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        field, key = mjtable.glyphname_to_field_key(entry.name)
+    def is_invalid(self, ctx: ValidatorContext):
+        field, key = mjtable.glyphname_to_field_key(ctx.glyph.name)
         if field is None:
             return False
         assert key is not None
@@ -213,15 +213,17 @@ class MjValidator(Validator):
                 return [error_codes.UNDEFINED_MJ]  # 欠番のMJ
             return False
 
-        if entry.entity_name is not None and not _re_itaiji.search(entry.name):
-            e_field, e_key = mjtable.glyphname_to_field_key(entry.entity_name)
+        if ctx.glyph.entity_name is not None and \
+                not _re_itaiji.search(ctx.glyph.name):
+            e_field, e_key = mjtable.glyphname_to_field_key(
+                ctx.glyph.entity_name)
             if e_field is not None and e_field != field:
                 assert e_key is not None
                 entity_expected = set()
                 for idx in indices:
                     entity_expected.update(mjtable.get(idx, e_field))
 
-                entity_base = get_base(entry.entity_name, e_field)
+                entity_base = get_base(ctx.glyph.entity_name, e_field)
 
                 if entity_expected and entity_base not in entity_expected:
                     e_indices = mjtable.search(e_field, e_key)
@@ -229,29 +231,29 @@ class MjValidator(Validator):
                     for e_idx in e_indices:
                         expected_from_entity.update(mjtable.get(e_idx, field))
 
-                    base = get_base(entry.name, field)
+                    base = get_base(ctx.glyph.name, field)
 
                     if expected_from_entity and \
                             base not in expected_from_entity:
                         # entity_name のエイリアスになっているが entity_expected のエイリアスの間違い
                         return [
                             error_codes.WRONG_ENTITY,
-                            entry.entity_name, list(entity_expected)]
+                            ctx.glyph.entity_name, list(entity_expected)]
 
         ucs_expected = set()
         for idx in indices:
             for ucs in mjtable.get(idx, MJTable.FIELD_UCS):
                 if not isTogoKanji(ucs):
                     # グリフウィキの互換漢字には適切な関連字が設定されていると仮定する
-                    ucs = dump[ucs].related if ucs in dump else "u3013"
+                    ucs = ctx.dump[ucs].related if ucs in ctx.dump else "u3013"
                 if ucs != "u3013":
                     ucs_expected.add(ucs)
 
         if ucs_expected:
-            related = entry.related
-            if related == "u3013" and entry.entity_name is not None:
-                related = dump[entry.entity_name].related \
-                    if entry.entity_name in dump else "u3013"
+            related = ctx.glyph.related
+            if related == "u3013" and ctx.glyph.entity_name is not None:
+                related = ctx.dump[ctx.glyph.entity_name].related \
+                    if ctx.glyph.entity_name in ctx.dump else "u3013"
             if related == "u3013":
                 # 関連字未設定であるが ucs_expected である
                 return [error_codes.RELATED_UNSET, None, list(ucs_expected)]

@@ -1,13 +1,14 @@
 import re
 from typing import Dict, Set
 
-from gwv.dump import Dump, DumpEntry
+from gwv.dump import Dump
 import gwv.filters as filters
 from gwv.helper import cjk_sources
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import ErrorCodes
 from gwv.validators import Validator
 
@@ -71,13 +72,13 @@ class JValidator(Validator):
 
     @filters.check_only(+filters.is_of_category({
         "togo", "togo-var", "gokan-var", "ext", "bsh"}))
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        splitname = entry.name.split("-")
+    def is_invalid(self, ctx: ValidatorContext):
+        splitname = ctx.glyph.name.split("-")
 
         if len(splitname) == 3 and splitname[:2] == ["unstable", "bsh"]:
-            entity_kage = dump[entry.entity_name].kage \
-                if entry.entity_name is not None and \
-                entry.entity_name in dump else entry.kage
+            entity_kage = ctx.dump[ctx.glyph.entity_name].kage \
+                if ctx.glyph.entity_name is not None and \
+                ctx.glyph.entity_name in ctx.dump else ctx.glyph.kage
             return self.checkJV(entity_kage)
 
         if len(splitname) > 2:
@@ -85,9 +86,9 @@ class JValidator(Validator):
 
         if splitname[0] in ("irg2015", "irg2017", "irg2021"):
             # irg2015-, irg2017-, irg2021- glyphs have no J source
-            entity_kage = dump[entry.entity_name].kage \
-                if entry.entity_name is not None and \
-                entry.entity_name in dump else entry.kage
+            entity_kage = ctx.dump[ctx.glyph.entity_name].kage \
+                if ctx.glyph.entity_name is not None and \
+                ctx.glyph.entity_name in ctx.dump else ctx.glyph.kage
             return self.checkJV(entity_kage)
 
         # uXXXX, uXXXX-...
@@ -97,9 +98,9 @@ class JValidator(Validator):
         if len(splitname) == 1:  # 無印
             if jsource is None and ucs not in self.jv_no_apply_parts and \
                     ucs not in source_separation.get_data():
-                entity_kage = dump[entry.entity_name].kage \
-                    if entry.entity_name is not None and \
-                    entry.entity_name in dump else entry.kage
+                entity_kage = ctx.dump[ctx.glyph.entity_name].kage \
+                    if ctx.glyph.entity_name is not None and \
+                    ctx.glyph.entity_name in ctx.dump else ctx.glyph.kage
                 return self.checkJV(entity_kage)
             return False
 
@@ -140,11 +141,11 @@ class JValidator(Validator):
         if region not in ("j", "ja", "jv"):
             return False
 
-        entity_name = entry.entity_name or entry.name
+        entity_name = ctx.glyph.entity_name or ctx.glyph.name
 
-        if ucs not in dump:
+        if ucs not in ctx.dump:
             return False  # 無印が見つからない
-        nomark_entity_name = dump.get_entity_name(ucs)
+        nomark_entity_name = ctx.dump.get_entity_name(ucs)
 
         if entity_name != nomark_entity_name and not isHenka:
             # uxxxx-j, ja, jv (の実体)と無印(の実体)が違う
@@ -152,15 +153,15 @@ class JValidator(Validator):
 
         if region != "jv":
             return False
-        if (ucs + "-j") in dump:
+        if (ucs + "-j") in ctx.dump:
             # uxxxx-jv と uxxxx-j  が共存している
             return [error_codes.J_JV_COEXISTENT, "j"]
-        if (ucs + "-ja") in dump:
+        if (ucs + "-ja") in ctx.dump:
             # uxxxx-jv と uxxxx-ja が共存している
             return [error_codes.J_JV_COEXISTENT, "ja"]
         if ucs not in self.jv_no_apply_parts:
-            entity_kage = dump[entry.entity_name].kage \
-                if entry.entity_name is not None and \
-                entry.entity_name in dump else entry.kage
+            entity_kage = ctx.dump[ctx.glyph.entity_name].kage \
+                if ctx.glyph.entity_name is not None and \
+                ctx.glyph.entity_name in ctx.dump else ctx.glyph.kage
             return self.checkJV(entity_kage)
         return False

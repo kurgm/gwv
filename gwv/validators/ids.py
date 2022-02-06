@@ -1,10 +1,10 @@
 import re
 from typing import List, Optional
 
-from gwv.dump import Dump, DumpEntry
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
+from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
 from gwv.validators import ErrorCodes
 
@@ -49,11 +49,11 @@ class IdsValidator(Validator):
     name = "ids"
 
     @filters.check_only(+filters.is_of_category({"ids"}))
-    def is_invalid(self, entry: DumpEntry, dump: Dump):
-        kage = entry.kage
+    def is_invalid(self, ctx: ValidatorContext):
+        kage = ctx.glyph.kage
         # Replace with the entity if the glyph is an alias
-        if entry.entity_name is not None:
-            aliasentry = dump.get(entry.entity_name)
+        if ctx.glyph.entity_name is not None:
+            aliasentry = ctx.dump.get(ctx.glyph.entity_name)
             if aliasentry:
                 kage = aliasentry.kage
 
@@ -66,7 +66,7 @@ class IdsValidator(Validator):
         else:
             aspect = abs(float(x1 - x2) / (y1 - y2))
 
-        sname = entry.name.split("-")
+        sname = ctx.glyph.name.split("-")
 
         # ⿰⿱ とか ⿱⿰ とかで始まるものは最初の部品の縦横比を予測できない
         isComplicated = (
