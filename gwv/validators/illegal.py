@@ -1,5 +1,4 @@
 import gwv.filters as filters
-from gwv.helper import isKanji
 from gwv.helper import isYoko
 from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
@@ -83,7 +82,6 @@ class IllegalValidator(Validator):
 
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, ctx: ValidatorContext):
-        isKanjiGlyph = isKanji(ctx.glyph.name)
         for line in ctx.glyph.kage.lines:
             lendata = len(line.data)
             stype = line.stroke_type
@@ -97,7 +95,7 @@ class IllegalValidator(Validator):
                 endType = 0
             coords = line.coords
 
-            if not isKanjiGlyph:
+            if not ctx.is_kanji:
                 stype = stype % 100 if stype >= 0 else stype
                 sttType = sttType % 100 if sttType >= 0 else sttType
                 endType = endType % 100 if endType >= 0 else endType
@@ -194,7 +192,7 @@ class IllegalValidator(Validator):
                 strokeKeijo = (stype, sttType, endType)
 
                 if strokeKeijo not in keijoKumiawase and (
-                        isKanjiGlyph or
+                        ctx.is_kanji or
                         strokeKeijo not in hikanjiKeijoKumiawase):
                     # 未定義の形状の組み合わせ
                     return [

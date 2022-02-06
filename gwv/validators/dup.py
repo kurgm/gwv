@@ -2,7 +2,6 @@ import math
 from typing import List, Tuple
 
 import gwv.filters as filters
-from gwv.helper import isKanji
 from gwv.kagedata import KageLine
 from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
@@ -78,7 +77,7 @@ class DupValidator(Validator):
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.has_transform)
     def is_invalid(self, ctx: ValidatorContext):
-        exact_only = not isKanji(ctx.glyph.name)
+        exact_only = not ctx.is_kanji
 
         tate: List[LineSegment] = []
         yoko: List[LineSegment] = []

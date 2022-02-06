@@ -73,17 +73,13 @@ class JValidator(Validator):
     @filters.check_only(+filters.is_of_category({
         "togo", "togo-var", "gokan-var", "ext", "bsh"}))
     def is_invalid(self, ctx: ValidatorContext):
-        splitname = ctx.glyph.name.split("-")
-
-        if len(splitname) == 3 and splitname[:2] == ["unstable", "bsh"]:
-            return self.checkJV(ctx.entity.kage)
-
-        if len(splitname) > 2:
-            return False
-
-        if splitname[0] in ("irg2015", "irg2017", "irg2021"):
+        if ctx.category in ("bsh", "ext"):
             # irg2015-, irg2017-, irg2021- glyphs have no J source
             return self.checkJV(ctx.entity.kage)
+
+        splitname = ctx.glyph.name.split("-")
+        if len(splitname) > 2:
+            return False
 
         # uXXXX, uXXXX-...
         ucs = splitname[0]

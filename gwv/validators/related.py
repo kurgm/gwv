@@ -1,6 +1,5 @@
 import gwv.filters as filters
 from gwv.helper import cjk_sources
-from gwv.helper import isGokanKanji
 from gwv.helper import isTogoKanji
 from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator
@@ -24,7 +23,7 @@ class RelatedValidator(Validator):
         "togo", "togo-var", "gokan", "gokan-var"}))
     def is_invalid(self, ctx: ValidatorContext):
         expected_related = ctx.glyph.name.split("-")[0]
-        if isGokanKanji(expected_related):
+        if ctx.category in ("gokan", "gokan-var"):
             u = cjk_sources.get(
                 expected_related, cjk_sources.COLUMN_COMPATIBILITY_VARIANT)
             if u is None:

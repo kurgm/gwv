@@ -9,25 +9,6 @@ import yaml
 import pkg_resources
 
 
-_re_ids = re.compile(r"u2ff[\dab]-")
-_re_cdp = re.compile(r"cdp[on]?-[\da-f]{4}(-.+)?")
-_re_koseki = re.compile(r"koseki-\d{6}")
-_re_toki = re.compile(r"toki-\d{8}")
-_re_ext = re.compile(r"irg20(15|17|21)-\d{5}")
-_re_bsh = re.compile(r"unstable-bsh-[\da-f]{4}")
-
-
-def isKanji(name: str):
-    if _re_ids.match(name):
-        return True
-    header = name.split("-")[0]
-    if isUcs(header):
-        return isTogoKanji(header) or isGokanKanji(header)
-    if _re_koseki.fullmatch(name):
-        return name[7] != "9"
-    return True
-
-
 def range_inclusive(stt: int, end: int):
     return range(stt, end + 1)
 
@@ -73,6 +54,13 @@ def isGokanKanji(name: str):
 
 
 _re_ucs = re.compile(r"u[\da-f]{4,6}")
+_re_ids = re.compile(r"u2ff[\dab]-")
+_re_cdp = re.compile(r"cdp[on]?-[\da-f]{4}(-.+)?")
+_re_koseki = re.compile(r"koseki-\d{6}")
+_re_toki = re.compile(r"toki-\d{8}")
+_re_ext = re.compile(r"irg20(15|17|21)-\d{5}")
+_re_bsh = re.compile(r"unstable-bsh-[\da-f]{4}")
+
 RE_REGIONS = r"(?:[gtv]v?|[hmis]|k[pv]?|u[ks]?|j[asv]?)"
 
 
