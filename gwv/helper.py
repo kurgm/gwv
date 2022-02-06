@@ -10,7 +10,11 @@ import pkg_resources
 
 
 _re_ids = re.compile(r"u2ff[\dab]-")
+_re_cdp = re.compile(r"cdp[on]?-[\da-f]{4}(-.+)?")
 _re_koseki = re.compile(r"koseki-\d{6}")
+_re_toki = re.compile(r"toki-\d{8}")
+_re_ext = re.compile(r"irg20(15|17|21)-\d{5}")
+_re_bsh = re.compile(r"unstable-bsh-[\da-f]{4}")
 
 
 def isKanji(name: str):
@@ -80,6 +84,32 @@ def get_ucs_codepoint(name: str):
     if not isUcs(name):
         return None
     return int(name[1:], 16)
+
+
+def categorize(glyphname: str):
+    if "_" in glyphname:
+        return "user-owned"
+    splitname = glyphname.split("-")
+    header = splitname[0]
+    if isUcs(header):
+        if _re_ids.match(glyphname):
+            return "ids"
+        if isTogoKanji(header):
+            return "togo" if len(splitname) == 1 else "togo-var"
+        if isGokanKanji(header):
+            return "gokan" if len(splitname) == 1 else "gokan-var"
+        return "ucs-hikanji" if len(splitname) == 1 else "ucs-hikanji-var"
+    if _re_cdp.fullmatch(glyphname):
+        return "cdp"
+    if _re_koseki.fullmatch(glyphname):
+        return "koseki-hikanji" if glyphname[7] == "9" else "koseki-kanji"
+    if _re_toki.fullmatch(glyphname):
+        return "toki"
+    if _re_ext.fullmatch(glyphname):
+        return "ext"
+    if _re_bsh.fullmatch(glyphname):
+        return "bsh"
+    return "other"
 
 
 def isYoko(x0: int, y0: int, x1: int, y1: int) -> bool:

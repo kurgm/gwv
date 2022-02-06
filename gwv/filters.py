@@ -1,67 +1,7 @@
 import functools
-import re
-from typing import Any, Callable, Container, TypeVar
+from typing import Any, Callable, Container
 
-from gwv.helper import isGokanKanji
-from gwv.helper import isTogoKanji
-from gwv.helper import isUcs
 from gwv.validatorctx import ValidatorContext
-
-
-T = TypeVar("T")
-
-
-def cache_prev(func: Callable[..., T]) -> Callable[..., T]:
-    prev_args = None
-    prev_result = None
-
-    @functools.wraps(func)
-    def wrapper(*args):
-        nonlocal prev_args, prev_result
-        if prev_args == args:
-            return prev_result
-
-        result = func(*args)
-        prev_args = args
-        prev_result = result
-        return result
-
-    return wrapper
-
-
-_re_ids = re.compile(r"u2ff[\dab]-")
-_re_cdp = re.compile(r"cdp[on]?-[\da-f]{4}(-.+)?")
-_re_koseki = re.compile(r"koseki-\d{6}")
-_re_toki = re.compile(r"toki-\d{8}")
-_re_ext = re.compile(r"irg20(15|17|21)-\d{5}")
-_re_bsh = re.compile(r"unstable-bsh-[\da-f]{4}")
-
-
-@cache_prev
-def _categorize(glyphname: str):
-    if "_" in glyphname:
-        return "user-owned"
-    splitname = glyphname.split("-")
-    header = splitname[0]
-    if isUcs(header):
-        if _re_ids.match(glyphname):
-            return "ids"
-        if isTogoKanji(header):
-            return "togo" if len(splitname) == 1 else "togo-var"
-        if isGokanKanji(header):
-            return "gokan" if len(splitname) == 1 else "gokan-var"
-        return "ucs-hikanji" if len(splitname) == 1 else "ucs-hikanji-var"
-    if _re_cdp.fullmatch(glyphname):
-        return "cdp"
-    if _re_koseki.fullmatch(glyphname):
-        return "koseki-hikanji" if glyphname[7] == "9" else "koseki-kanji"
-    if _re_toki.fullmatch(glyphname):
-        return "toki"
-    if _re_ext.fullmatch(glyphname):
-        return "ext"
-    if _re_bsh.fullmatch(glyphname):
-        return "bsh"
-    return "other"
 
 
 Predicate = Callable[[ValidatorContext], bool]
@@ -98,11 +38,19 @@ class BoolFunc:
         return self._func_inv
 
 
-is_alias = BoolFunc(lambda ctx: ctx.glyph.is_alias)
+@BoolFunc
+def is_alias(ctx: ValidatorContext):
+    return ctx.glyph.is_alias
 
 
-has_transform = BoolFunc(lambda ctx: ctx.glyph.kage.has_transform)
+@BoolFunc
+def has_transform(ctx: ValidatorContext):
+    return ctx.glyph.kage.has_transform
 
 
 def is_of_category(categories: Container[str]):
-    return BoolFunc(lambda ctx: _categorize(ctx.glyph.name) in categories)
+    @BoolFunc
+    def is_of_given_category(ctx: ValidatorContext):
+        return ctx.category in categories
+
+    return is_of_given_category
