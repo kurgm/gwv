@@ -6,16 +6,35 @@ from typing import Dict, List, Optional, Tuple
 from gwv.kagedata import KageData, get_entity_name
 
 
+@dataclass(frozen=True)
+class DumpEntry:
+    name: str
+    related: str
+    gdata: str
+
+    @cached_property
+    def kage(self):
+        return KageData(self.gdata)
+
+    @cached_property
+    def entity_name(self):
+        return get_entity_name(self.gdata)
+
+    @cached_property
+    def is_alias(self):
+        return self.entity_name is not None
+
+
 class Dump:
 
     def __init__(self, data: Dict[str, Tuple[str, str]], timestamp: float):
         self._data = data
         self.timestamp = timestamp
 
-    def __getitem__(self, glyphname: str):
+    def __getitem__(self, glyphname: str) -> DumpEntry:
         return DumpEntry(glyphname, *self._data[glyphname])
 
-    def get(self, glyphname: str):
+    def get(self, glyphname: str) -> Optional[DumpEntry]:
         value = self._data.get(glyphname)
         if value is None:
             return None
@@ -75,22 +94,3 @@ class Dump:
                     data[row[0]] = (row[1], row[2])
 
         return cls(data, timestamp)
-
-
-@dataclass(frozen=True)
-class DumpEntry:
-    name: str
-    related: str
-    gdata: str
-
-    @cached_property
-    def kage(self):
-        return KageData(self.gdata)
-
-    @cached_property
-    def entity_name(self):
-        return get_entity_name(self.gdata)
-
-    @cached_property
-    def is_alias(self):
-        return self.entity_name is not None

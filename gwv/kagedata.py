@@ -1,6 +1,21 @@
 from typing import List, Optional, Tuple
 
 
+_alias_prefix = "99:0:0:0:0:200:200:"
+_alias_prefix_len = len(_alias_prefix)
+
+
+def get_entity_name(data: str) -> Optional[str]:
+    """Extract the entity name from an alias data.
+
+    It returns None if the given data is not an alias data."""
+    if "$" not in data and data.startswith(_alias_prefix):
+        entity = data[_alias_prefix_len:]
+        if ":" not in entity:  # this should always be true
+            return entity
+    return None
+
+
 def kageInt(s: str) -> int:
     """Convert a string to an integer, in the same fashion as KAGE engine.
 
@@ -24,21 +39,6 @@ def kageIntSuppressError(s: str) -> Optional[int]:
         return kageInt(s)
     except ValueError:
         return None
-
-
-_alias_prefix = "99:0:0:0:0:200:200:"
-_alias_prefix_len = len(_alias_prefix)
-
-
-def get_entity_name(data: str) -> Optional[str]:
-    """Extract the entity name from an alias data.
-
-    It returns None if the given data is not an alias data."""
-    if "$" not in data and data.startswith(_alias_prefix):
-        entity = data[_alias_prefix_len:]
-        if ":" not in entity:  # this should always be true
-            return entity
-    return None
 
 
 class KageData:
