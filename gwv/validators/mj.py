@@ -198,9 +198,8 @@ class MjValidator(Validator):
 
     name = "mj"
 
-    @filters.check_only(+filters.is_of_category({
-        "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
-        "ucs-hikanji-var", "koseki-kanji", "koseki-hikanji", "toki", "other"}))
+    @filters.check_only(-filters.is_of_category({
+        "user-owned", "ids", "cdp", "ext", "bsh"}))
     def is_invalid(self, ctx: ValidatorContext):
         field, key = mjtable.glyphname_to_field_key(ctx.glyph.name)
         if field is None:
