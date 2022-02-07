@@ -22,7 +22,7 @@ class RelatedValidator(Validator):
     @filters.check_only(+filters.is_of_category({
         "togo", "togo-var", "gokan", "gokan-var"}))
     def is_invalid(self, ctx: ValidatorContext):
-        expected_related = ctx.glyph.name.split("-")[0]
+        expected_related = "u" + ctx.category_param[1][0]
         if ctx.category in ("gokan", "gokan-var"):
             u = cjk_sources.get(
                 expected_related, cjk_sources.COLUMN_COMPATIBILITY_VARIANT)

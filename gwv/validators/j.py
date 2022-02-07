@@ -27,7 +27,7 @@ error_codes = ErrorCodes(
 
 source_separation = GWGroupLazyLoader("原規格分離", isset=True)
 
-_re_region_opthenka = re.compile(r"(" + RE_REGIONS + r")(\d{2})?")
+_re_region_opthenka = re.compile(r"-(" + RE_REGIONS + r")(\d{2})?")
 
 
 class JValidator(Validator):
@@ -77,21 +77,18 @@ class JValidator(Validator):
             # irg2015-, irg2017-, irg2021- glyphs have no J source
             return self.checkJV(ctx.entity.kage)
 
-        splitname = ctx.glyph.name.split("-")
-        if len(splitname) > 2:
-            return False
-
         # uXXXX, uXXXX-...
-        ucs = splitname[0]
+        ucs, tail = ctx.category_param[1]
+        ucs = "u" + ucs
         jsource = cjk_sources.get(ucs, cjk_sources.COLUMN_J)
 
-        if len(splitname) == 1:  # 無印
+        if tail == "":  # 無印
             if jsource is None and ucs not in self.jv_no_apply_parts and \
                     ucs not in source_separation.get_data():
                 return self.checkJV(ctx.entity.kage)
             return False
 
-        m = _re_region_opthenka.fullmatch(splitname[1])
+        m = _re_region_opthenka.fullmatch(tail)
         if not m:
             return False
         region = m.group(1)

@@ -75,8 +75,8 @@ def isGokanKanji(name: str):
 
 _re_categorize = re.compile(r"""
     (?P<ids>    u2ff[\dab]-.+)|
-    (?P<UCS>    u([\da-f]{4,6})(-.+)?)|
-    (?P<cdp>    (cdp[on]?)-([\da-f]{4})(-.+)?)|
+    (?P<UCS>    u([\da-f]{4,6})((?:-.+)?))|
+    (?P<cdp>    (cdp[on]?)-([\da-f]{4})(?:(-.+)?))|
     (?P<KOSEKI> koseki-(\d{6}))|
     (?P<toki>   toki-(\d{8}))|
     (?P<ext>    irg(20(?:15|17|21))-(\d{5}))|
@@ -109,12 +109,13 @@ def categorize(glyphname: str) -> CategoryParam:
 
     if category == "UCS":
         cp = int(params[0], 16)
+        is_var = params[1] != ""
         if is_togo_kanji_cp(cp):
-            category = "togo" if len(params) == 1 else "togo-var"
+            category = "togo-var" if is_var else "togo"
         elif is_gokan_kanji_cp(cp):
-            category = "gokan" if len(params) == 1 else "gokan-var"
+            category = "gokan-var" if is_var else "gokan"
         else:
-            category = "ucs-hikanji" if len(params) == 1 else "ucs-hikanji-var"
+            category = "ucs-hikanji-var" if is_var else "ucs-hikanji"
     elif category == "KOSEKI":
         category = "koseki-hikanji" if glyphname[7] == "9" else "koseki-kanji"
 

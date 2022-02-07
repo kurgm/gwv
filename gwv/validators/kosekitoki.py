@@ -17,11 +17,11 @@ class KosekitokiValidator(Validator):
 
     @filters.check_only(+filters.is_of_category({"toki"}))
     def is_invalid(self, ctx: ValidatorContext):
-        header = ctx.glyph.name[:7]
-        if header != "toki-00":
+        num, = ctx.category_param[1]
+        if not num.startswith("00"):
             return False
 
-        koseki_name = "koseki-" + ctx.glyph.name[7:]
+        koseki_name = "koseki-" + num[2:]
         if koseki_name in ctx.dump:
             koseki_entity = ctx.dump.get_entity_name(koseki_name)
         else:
