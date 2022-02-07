@@ -1,6 +1,7 @@
 import functools
 from typing import Any, Callable, Container
 
+from gwv.helper import CategoryType
 from gwv.validatorctx import ValidatorContext
 
 
@@ -48,7 +49,7 @@ def has_transform(ctx: ValidatorContext):
     return ctx.glyph.kage.has_transform
 
 
-def is_of_category(categories: Container[str]):
+def is_of_category(categories: Container[CategoryType]):
     @BoolFunc
     def is_of_given_category(ctx: ValidatorContext):
         return ctx.category in categories

@@ -1,7 +1,7 @@
 import json
 import os.path
 import re
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Union
 from urllib.parse import quote
 from urllib.request import urlopen
 
@@ -37,67 +37,93 @@ _gokan_ranges = [
 ]
 
 
+def is_togo_kanji_cp(cp: int):
+    return any(cp in trange for trange in _togo_ranges) or \
+        cp in _togo_in_compat
+
+
+def is_gokan_kanji_cp(cp: int):
+    return any(cp in grange for grange in _gokan_ranges) and \
+        cp not in _togo_in_compat
+
+
+RE_REGIONS = r"(?:[gtv]v?|[hmis]|k[pv]?|u[ks]?|j[asv]?)"
+
+_re_ucs = re.compile(r"u([\da-f]{4,6})")
+
+
+def get_ucs_codepoint(name: str):
+    m = _re_ucs.fullmatch(name)
+    if not m:
+        return None
+    return int(m.group(1), 16)
+
+
 def isTogoKanji(name: str):
     cp = get_ucs_codepoint(name)
     if cp is None:
         return False
-    return any(cp in trange for trange in _togo_ranges) or \
-        cp in _togo_in_compat
+    return is_togo_kanji_cp(cp)
 
 
 def isGokanKanji(name: str):
     cp = get_ucs_codepoint(name)
     if cp is None:
         return False
-    return any(cp in grange for grange in _gokan_ranges) and \
-        cp not in _togo_in_compat
+    return is_gokan_kanji_cp(cp)
 
 
-_re_ucs = re.compile(r"u[\da-f]{4,6}")
-_re_ids = re.compile(r"u2ff[\dab]-")
-_re_cdp = re.compile(r"cdp[on]?-[\da-f]{4}(-.+)?")
-_re_koseki = re.compile(r"koseki-\d{6}")
-_re_toki = re.compile(r"toki-\d{8}")
-_re_ext = re.compile(r"irg20(15|17|21)-\d{5}")
-_re_bsh = re.compile(r"unstable-bsh-[\da-f]{4}")
+_re_categorize = re.compile(r"""
+    (?P<ids>    u2ff[\dab]-.+)|
+    (?P<UCS>    u([\da-f]{4,6})(-.+)?)|
+    (?P<cdp>    (cdp[on]?)-([\da-f]{4})(-.+)?)|
+    (?P<KOSEKI> koseki-(\d{6}))|
+    (?P<toki>   toki-(\d{8}))|
+    (?P<ext>    irg(20(?:15|17|21))-(\d{5}))|
+    (?P<bsh>    unstable-bsh-([\da-f]{4}))|
+""", re.X)
 
-RE_REGIONS = r"(?:[gtv]v?|[hmis]|k[pv]?|u[ks]?|j[asv]?)"
+CategoryType = Literal[
+    "user-owned",
+    "ids",
+    "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji", "ucs-hikanji-var",
+    "cdp",
+    "koseki-kanji", "koseki-hikanji",
+    "toki",
+    "ext",
+    "bsh",
+    "other",
+]
+CategoryParam = Tuple[CategoryType, Tuple[str, ...]]
 
 
-def isUcs(name: str):
-    return _re_ucs.fullmatch(name)
-
-
-def get_ucs_codepoint(name: str):
-    if not isUcs(name):
-        return None
-    return int(name[1:], 16)
-
-
-def categorize(glyphname: str):
+def categorize(glyphname: str) -> CategoryParam:
     if "_" in glyphname:
-        return "user-owned"
-    splitname = glyphname.split("-")
-    header = splitname[0]
-    if isUcs(header):
-        if _re_ids.match(glyphname):
-            return "ids"
-        if isTogoKanji(header):
-            return "togo" if len(splitname) == 1 else "togo-var"
-        if isGokanKanji(header):
-            return "gokan" if len(splitname) == 1 else "gokan-var"
-        return "ucs-hikanji" if len(splitname) == 1 else "ucs-hikanji-var"
-    if _re_cdp.fullmatch(glyphname):
-        return "cdp"
-    if _re_koseki.fullmatch(glyphname):
-        return "koseki-hikanji" if glyphname[7] == "9" else "koseki-kanji"
-    if _re_toki.fullmatch(glyphname):
-        return "toki"
-    if _re_ext.fullmatch(glyphname):
-        return "ext"
-    if _re_bsh.fullmatch(glyphname):
-        return "bsh"
-    return "other"
+        return "user-owned", ()
+    m = _re_categorize.fullmatch(glyphname)
+    if m is None:
+        return "other", ()
+    category = m.lastgroup
+    assert category is not None
+    params = tuple(s for s in m.groups(None) if s is not None)[1:]
+
+    if category == "UCS":
+        cp = int(params[0], 16)
+        if is_togo_kanji_cp(cp):
+            category = "togo" if len(params) == 1 else "togo-var"
+        elif is_gokan_kanji_cp(cp):
+            category = "gokan" if len(params) == 1 else "gokan-var"
+        else:
+            category = "ucs-hikanji" if len(params) == 1 else "ucs-hikanji-var"
+    elif category == "KOSEKI":
+        category = "koseki-hikanji" if glyphname[7] == "9" else "koseki-kanji"
+
+    return category, params  # type: ignore
+
+
+def is_hikanji(category_param: CategoryParam) -> bool:
+    category, _params = category_param
+    return category in ("ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji")
 
 
 def isYoko(x0: int, y0: int, x1: int, y1: int) -> bool:
