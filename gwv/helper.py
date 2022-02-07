@@ -77,7 +77,7 @@ _re_categorize = re.compile(r"""
     (?P<ids>    u2ff[\dab]-.+)|
     (?P<UCS>    u([\da-f]{4,6})((?:-.+)?))|
     (?P<cdp>    (cdp[on]?)-([\da-f]{4})(?:(-.+)?))|
-    (?P<KOSEKI> koseki-(\d{6}))|
+    (?P<koseki> koseki-(\d{6}))|
     (?P<toki>   toki-(\d{8}))|
     (?P<ext>    irg(20(?:15|17|21))-(\d{5}))|
     (?P<bsh>    unstable-bsh-([\da-f]{4}))|
@@ -88,7 +88,7 @@ CategoryType = Literal[
     "ids",
     "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji", "ucs-hikanji-var",
     "cdp",
-    "koseki-kanji", "koseki-hikanji",
+    "koseki",
     "toki",
     "ext",
     "bsh",
@@ -116,15 +116,17 @@ def categorize(glyphname: str) -> CategoryParam:
             category = "gokan-var" if is_var else "gokan"
         else:
             category = "ucs-hikanji-var" if is_var else "ucs-hikanji"
-    elif category == "KOSEKI":
-        category = "koseki-hikanji" if glyphname[7] == "9" else "koseki-kanji"
 
     return category, params  # type: ignore
 
 
 def is_hikanji(category_param: CategoryParam) -> bool:
-    category, _params = category_param
-    return category in ("ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji")
+    category, params = category_param
+    if category in ("ucs-hikanji", "ucs-hikanji-var"):
+        return True
+    if category == "koseki":
+        return params[0][0] == "9"
+    return False
 
 
 def isYoko(x0: int, y0: int, x1: int, y1: int) -> bool:

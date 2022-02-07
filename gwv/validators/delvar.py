@@ -22,8 +22,8 @@ class DelvarValidator(Validator):
     name = "delvar"
 
     @filters.check_only(-filters.is_of_category({
-        "user-owned", "togo", "gokan", "ucs-hikanji", "koseki-hikanji",
-        "koseki-kanji", "toki", "ext", "bsh"}))
+        "user-owned", "togo", "gokan", "ucs-hikanji", "koseki", "toki", "ext",
+        "bsh"}))
     def is_invalid(self, ctx: ValidatorContext):
         m = _re_var_nnn_henka.fullmatch(ctx.glyph.name) or \
             _re_var_src_henka.fullmatch(ctx.glyph.name) or \
