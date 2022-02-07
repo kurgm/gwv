@@ -28,8 +28,7 @@ class UcsaliasValidator(Validator):
 
     @filters.check_only(+filters.is_alias)
     @filters.check_only(+filters.is_of_category({
-        "togo", "togo-var", "gokan", "gokan-var", "ucs-hikanji",
-        "ucs-hikanji-var"}))
+        "togo", "gokan", "ucs-hikanji"}))
     def is_invalid(self, ctx: ValidatorContext):
         entity: str = ctx.glyph.entity_name  # type: ignore
         name_cp, name_tail = ctx.category_param[1]
