@@ -362,8 +362,8 @@ class CornerValidator(Validator):
     name = "corner"
 
     @filters.check_only(-filters.is_alias)
-    @filters.check_only(-filters.is_of_category({
-        "user-owned", "ucs-hikanji", "ucs-hikanji-var", "koseki-hikanji"}))
+    @filters.check_only(-filters.is_of_category({"user-owned"}))
+    @filters.check_only(-filters.is_hikanji)
     @filters.check_only(-filters.has_transform)
     def is_invalid(self, ctx: ValidatorContext):
         strokes = []

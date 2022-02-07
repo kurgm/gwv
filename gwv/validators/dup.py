@@ -77,7 +77,7 @@ class DupValidator(Validator):
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.has_transform)
     def is_invalid(self, ctx: ValidatorContext):
-        exact_only = not ctx.is_kanji
+        exact_only = ctx.is_hikanji
 
         tate: List[LineSegment] = []
         yoko: List[LineSegment] = []

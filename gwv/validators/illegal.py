@@ -95,7 +95,7 @@ class IllegalValidator(Validator):
                 endType = 0
             coords = line.coords
 
-            if not ctx.is_kanji:
+            if ctx.is_hikanji:
                 stype = stype % 100 if stype >= 0 else stype
                 sttType = sttType % 100 if sttType >= 0 else sttType
                 endType = endType % 100 if endType >= 0 else endType
@@ -191,9 +191,9 @@ class IllegalValidator(Validator):
             if stype != 99:
                 strokeKeijo = (stype, sttType, endType)
 
-                if strokeKeijo not in keijoKumiawase and (
-                        ctx.is_kanji or
-                        strokeKeijo not in hikanjiKeijoKumiawase):
+                if strokeKeijo not in keijoKumiawase and not (
+                        ctx.is_hikanji and
+                        strokeKeijo in hikanjiKeijoKumiawase):
                     # 未定義の形状の組み合わせ
                     return [
                         error_codes.UNKNOWN_STROKE_FORM,

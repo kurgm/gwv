@@ -55,3 +55,8 @@ def is_of_category(categories: Container[CategoryType]):
         return ctx.category in categories
 
     return is_of_given_category
+
+
+@BoolFunc
+def is_hikanji(ctx: ValidatorContext):
+    return ctx.is_hikanji
