@@ -3,7 +3,7 @@ from typing import Dict, Set
 
 from gwv.dump import Dump
 import gwv.filters as filters
-from gwv.helper import cjk_sources
+from gwv.helper import cjk_sources, is_gokan_kanji_cp
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
 from gwv.helper import RE_REGIONS
@@ -70,8 +70,7 @@ class JValidator(Validator):
                 ]
         return False
 
-    @filters.check_only(+filters.is_of_category({
-        "togo", "gokan", "ext", "bsh"}))
+    @filters.check_only(+filters.is_of_category({"ucs-kanji", "ext", "bsh"}))
     def is_invalid(self, ctx: ValidatorContext):
         if ctx.category in ("bsh", "ext"):
             # irg2015-, irg2017-, irg2021- glyphs have no J source
@@ -83,7 +82,7 @@ class JValidator(Validator):
         jsource = cjk_sources.get(ucs, cjk_sources.COLUMN_J)
 
         if tail == "":  # 無印
-            if ctx.category == "gokan":
+            if is_gokan_kanji_cp(int(ucs[1:], 16)):
                 return False
             if jsource is None and ucs not in self.jv_no_apply_parts and \
                     ucs not in source_separation.get_data():

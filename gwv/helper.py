@@ -86,7 +86,7 @@ _re_categorize = re.compile(r"""
 CategoryType = Literal[
     "user-owned",
     "ids",
-    "togo", "gokan", "ucs-hikanji",
+    "ucs-kanji", "ucs-hikanji",
     "cdp",
     "koseki",
     "toki",
@@ -109,10 +109,8 @@ def categorize(glyphname: str) -> CategoryParam:
 
     if category == "UCS":
         cp = int(params[0], 16)
-        if is_togo_kanji_cp(cp):
-            category = "togo"
-        elif is_gokan_kanji_cp(cp):
-            category = "gokan"
+        if is_togo_kanji_cp(cp) or is_gokan_kanji_cp(cp):
+            category = "ucs-kanji"
         else:
             category = "ucs-hikanji"
 

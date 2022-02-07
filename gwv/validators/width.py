@@ -86,7 +86,7 @@ class WidthValidator(Validator):
     name = "width"
 
     @filters.check_only(-filters.is_of_category({
-        "ids", "togo", "gokan", "cdp", "koseki", "ext", "bsh"}))
+        "ids", "ucs-kanji", "cdp", "koseki", "ext", "bsh"}))
     @filters.check_only(-filters.has_transform)
     def is_invalid(self, ctx: ValidatorContext):
         minX: Union[int, float]
