@@ -71,8 +71,6 @@ def ineighbors(iterable):
 
 class DupValidator(Validator):
 
-    name = "dup"
-
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.has_transform)

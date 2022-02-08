@@ -46,8 +46,6 @@ def indexOfFirstKanjiBuhinLine(sname: List[str], kage: KageData):
 
 class IdsValidator(Validator):
 
-    name = "ids"
-
     @filters.check_only(+filters.is_of_category({"ids"}))
     def is_invalid(self, ctx: ValidatorContext):
         kage = ctx.entity.kage

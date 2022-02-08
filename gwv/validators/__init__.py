@@ -31,11 +31,6 @@ all_validator_names = [
 
 class Validator(metaclass=abc.ABCMeta):
 
-    @property
-    @abc.abstractmethod
-    def name(self) -> str:
-        raise NotImplementedError
-
     def __init__(self):
         self.results = {}
 
@@ -52,7 +47,7 @@ class Validator(metaclass=abc.ABCMeta):
         except Exception:
             log.exception(
                 "Exception while %s is validating %s",
-                self.name, ctx.glyph.name)
+                type(self).__name__, ctx.glyph.name)
             return
 
         if is_invalid:

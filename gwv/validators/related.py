@@ -17,8 +17,6 @@ error_codes = ErrorCodes(
 
 class RelatedValidator(Validator):
 
-    name = "related"
-
     @filters.check_only(+filters.is_of_category({"ucs-kanji"}))
     def is_invalid(self, ctx: ValidatorContext):
         expected_related = "u" + ctx.category_param[1][0]

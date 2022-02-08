@@ -83,8 +83,6 @@ buhinWidths: Dict[str, Tuple[float, float]] = {
 
 class WidthValidator(Validator):
 
-    name = "width"
-
     @filters.check_only(-filters.is_of_category({
         "ids", "ucs-kanji", "cdp", "koseki", "ext", "bsh"}))
     @filters.check_only(-filters.has_transform)

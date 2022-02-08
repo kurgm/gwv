@@ -18,7 +18,6 @@ _re_invalid_chars = re.compile(r"[^\da-z_\:@-]")
 
 class NumexpValidator(Validator):
 
-    name = "numexp"
 
     def is_invalid(self, ctx: ValidatorContext):
         for i, line in enumerate(ctx.glyph.gdata.split("$")):

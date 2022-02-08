@@ -13,8 +13,6 @@ error_codes = ErrorCodes(
 
 class KosekitokiValidator(Validator):
 
-    name = "kosekitoki"
-
     @filters.check_only(+filters.is_of_category({"toki"}))
     def is_invalid(self, ctx: ValidatorContext):
         num, = ctx.category_param[1]

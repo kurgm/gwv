@@ -196,8 +196,6 @@ _re_itaiji = re.compile(r"-itaiji-\d{3}$")
 
 class MjValidator(Validator):
 
-    name = "mj"
-
     @filters.check_only(-filters.is_of_category({
         "user-owned", "ids", "cdp", "ext", "bsh"}))
     def is_invalid(self, ctx: ValidatorContext):

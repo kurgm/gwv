@@ -21,8 +21,6 @@ error_codes = ErrorCodes(
 
 class SkewValidator(Validator):
 
-    name = "skew"
-
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, ctx: ValidatorContext):

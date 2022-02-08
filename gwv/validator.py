@@ -20,19 +20,24 @@ def validate(dump: Dump, validator_names: Optional[List[str]] = None):
     if validator_names is None:
         validator_names = validators.all_validator_names
 
-    validator_instances = [
-        get_validator_class(name)() for name in validator_names]
+    validator_instances = {
+        name: get_validator_class(name)()
+        for name in validator_names
+    }
 
-    for val in validator_instances:
+    for val in validator_instances.values():
         val.setup(dump)
 
     for glyphname in sorted(dump.keys()):
         entry = dump[glyphname]
         ctx = ValidatorContext(dump, entry)
-        for val in validator_instances:
+        for val in validator_instances.values():
             val.validate(ctx)
 
-    return {val.name: {
-        "timestamp": dump.timestamp,
-        "result": val.get_result()
-    } for val in validator_instances}
+    return {
+        val_name: {
+            "timestamp": dump.timestamp,
+            "result": val.get_result()
+        }
+        for val_name, val in validator_instances.items()
+    }

@@ -75,8 +75,6 @@ _re_ucs = re.compile(r"\bu[23]?[\da-f]{4}\b")
 
 class NamingValidator(Validator):
 
-    name = "naming"
-
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, ctx: ValidatorContext):
         isHenka = False

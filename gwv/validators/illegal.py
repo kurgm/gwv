@@ -78,8 +78,6 @@ datalens = {
 
 class IllegalValidator(Validator):
 
-    name = "illegal"
-
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, ctx: ValidatorContext):
         for line in ctx.glyph.kage.lines:

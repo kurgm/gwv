@@ -359,8 +359,6 @@ _NO_ERROR = "-2"
 
 class CornerValidator(Validator):
 
-    name = "corner"
-
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.is_hikanji)

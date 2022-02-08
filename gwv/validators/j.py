@@ -32,7 +32,6 @@ _re_region_opthenka = re.compile(r"-(" + RE_REGIONS + r")(\d{2})?")
 
 class JValidator(Validator):
 
-    name = "j"
 
     def __init__(self):
         Validator.__init__(self)

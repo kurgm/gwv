@@ -24,8 +24,6 @@ _re_ids = re.compile(r"u2ff.-")
 
 class UcsaliasValidator(Validator):
 
-    name = "ucsalias"
-
     @filters.check_only(+filters.is_alias)
     @filters.check_only(+filters.is_of_category({"ucs-kanji", "ucs-hikanji"}))
     def is_invalid(self, ctx: ValidatorContext):

@@ -11,8 +11,6 @@ error_codes = ErrorCodes(
 
 class DonotuseValidator(Validator):
 
-    name = "donotuse"
-
     @filters.check_only(-filters.is_alias)
     def is_invalid(self, ctx: ValidatorContext):
         quotings = []

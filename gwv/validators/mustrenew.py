@@ -14,7 +14,6 @@ error_codes = ErrorCodes(
 
 class MustrenewValidator(Validator):
 
-    name = "mustrenew"
 
     def __init__(self, *args, **kwargs):
         super(MustrenewValidator, self).__init__(*args, **kwargs)

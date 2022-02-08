@@ -10,7 +10,6 @@ error_codes = ErrorCodes(
 
 class DelquoteValidator(Validator):
 
-    name = "delquote"
 
     def is_invalid(self, ctx: ValidatorContext):
         for line in ctx.glyph.kage.lines:

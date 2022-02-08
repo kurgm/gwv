@@ -19,8 +19,6 @@ _re_var_other = re.compile(r"(u[0-9a-f]{4,5}|cdp[on]?-[0-9a-f]{4})-.+")
 
 class DelvarValidator(Validator):
 
-    name = "delvar"
-
     @filters.check_only(-filters.is_of_category({
         "user-owned", "koseki", "toki", "ext", "bsh"}))
     def is_invalid(self, ctx: ValidatorContext):
