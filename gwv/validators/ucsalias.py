@@ -1,20 +1,39 @@
 import re
+from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    VAR_HAS_SAME_ENTITY_AS_NOMARK="10",  # uxxxx-var-xxx が uxxxx (の実体)の別名
-    ITAIJI_HAS_SAME_ENTITY_AS_NOMARK="20",  # uxxxx-itaiji-xxx が uxxxx (の実体)の別名
-    REGION_IS_ALIAS_OF_NOMARK="1",  # 地域ソース字形が無印のエイリアス
-    UCS_IS_ALIAS_OF_NON_UCS="0",  # “uxxxx”が“uyyyy-…”以外やIDSのエイリアス
-    UCS_IS_ALIAS_OF_VAR="11",  # uxxxx が uxxxx-var-xxx の別名
-    UCS_IS_ALIAS_OF_ITAIJI="21",  # uxxxx が uxxxx-itaiji-xxx の別名
-)
+class UcsaliasError(NamedTuple):
+    entity: str
+
+
+class UcsaliasValidatorError(ValidatorErrorEnum):
+    @error_code("10")
+    class VAR_HAS_SAME_ENTITY_AS_NOMARK(UcsaliasError):
+        """uxxxx-var-xxx が uxxxx (の実体)の別名"""
+    @error_code("20")
+    class ITAIJI_HAS_SAME_ENTITY_AS_NOMARK(UcsaliasError):
+        """uxxxx-itaiji-xxx が uxxxx (の実体)の別名"""
+    @error_code("1")
+    class REGION_IS_ALIAS_OF_NOMARK(NamedTuple):
+        """地域ソース字形が無印のエイリアス"""
+    @error_code("0")
+    class UCS_IS_ALIAS_OF_NON_UCS(UcsaliasError):
+        """“uxxxx”が“uyyyy-…”以外やIDSのエイリアス"""
+    @error_code("11")
+    class UCS_IS_ALIAS_OF_VAR(UcsaliasError):
+        """uxxxx が uxxxx-var-xxx の別名"""
+    @error_code("21")
+    class UCS_IS_ALIAS_OF_ITAIJI(UcsaliasError):
+        """uxxxx が uxxxx-itaiji-xxx の別名"""
+
+
+E = UcsaliasValidatorError
+
 
 _re_sources = re.compile(r"-" + RE_REGIONS)
 _re_tail_var_itaiji = re.compile(r"-(var|itaiji)-\d{3}")
@@ -39,27 +58,27 @@ class UcsaliasValidator(Validator):
                 nomark_entity = ctx.dump.get_entity_name(nomark)
                 if var_or_itaiji == "var":
                     # uxxxx-var-xxx が uxxxx (の実体)の別名
-                    return [error_codes.VAR_HAS_SAME_ENTITY_AS_NOMARK, entity]\
+                    return E.VAR_HAS_SAME_ENTITY_AS_NOMARK(entity)\
                         if entity == nomark_entity else False
                 # uxxxx-itaiji-xxx が uxxxx (の実体)の別名
-                return [error_codes.ITAIJI_HAS_SAME_ENTITY_AS_NOMARK, entity] \
+                return E.ITAIJI_HAS_SAME_ENTITY_AS_NOMARK(entity) \
                     if entity == nomark_entity else False
             if _re_sources.fullmatch(name_tail):
-                return [error_codes.REGION_IS_ALIAS_OF_NOMARK] \
+                return E.REGION_IS_ALIAS_OF_NOMARK() \
                     if entity == nomark else False
             return False
         if not _re_ucs_.match(entity) or _re_ids.match(entity):
             if entity == "undefined":
                 return False
             # “uxxxx”が“uyyyy-…”以外やIDSのエイリアス
-            return [error_codes.UCS_IS_ALIAS_OF_NON_UCS, entity]
+            return E.UCS_IS_ALIAS_OF_NON_UCS(entity)
 
         if entity.startswith(nomark + "-") and \
                 (m := _re_tail_var_itaiji.fullmatch(entity, len(nomark))):
             var_or_itaiji = m.group(1)
             if var_or_itaiji == "var":
                 # uxxxx が uxxxx-var-xxx の別名
-                return [error_codes.UCS_IS_ALIAS_OF_VAR, entity]
+                return E.UCS_IS_ALIAS_OF_VAR(entity)
             # uxxxx が uxxxx-itaiji-xxx の別名
-            return [error_codes.UCS_IS_ALIAS_OF_ITAIJI, entity]
+            return E.UCS_IS_ALIAS_OF_ITAIJI(entity)
         return False

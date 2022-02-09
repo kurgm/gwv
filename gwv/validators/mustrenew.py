@@ -1,24 +1,28 @@
-from typing import List, Set
+from typing import List, NamedTuple, Set
 
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    MUSTRENEW_NO_OLD="0",  # 最新版が旧部品を引用していない部品の旧版を引用している
-    MUSTRENEW_OLD="@",  # 最新版が旧部品を引用している部品の旧版を引用している
-)
+class MustrenewValidatorError(ValidatorErrorEnum):
+    @error_code("0")
+    class MUSTRENEW_NO_OLD(NamedTuple):
+        """最新版が旧部品を引用していない部品の旧版を引用している"""
+    @error_code("@")
+    class MUSTRENEW_OLD(NamedTuple):
+        """最新版が旧部品を引用している部品の旧版を引用している"""
+
+
+E = MustrenewValidatorError
 
 
 class MustrenewValidator(Validator):
 
-
     def __init__(self, *args, **kwargs):
         super(MustrenewValidator, self).__init__(*args, **kwargs)
-        self.results["0"] = {}
-        self.results["@"] = {}
+        self.results[E.MUSTRENEW_NO_OLD.errcode] = {}
+        self.results[E.MUSTRENEW_OLD.errcode] = {}
 
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
@@ -37,10 +41,10 @@ class MustrenewValidator(Validator):
     def record(self, glyphname: str, error: List[Set[str]]):
         quotings, quotings_old = error
         for buhinname in quotings:
-            self.results[error_codes.MUSTRENEW_NO_OLD].setdefault(
+            self.results[E.MUSTRENEW_NO_OLD.errcode].setdefault(
                 buhinname, []).append(glyphname)
         for buhinname in quotings_old:
-            self.results[error_codes.MUSTRENEW_OLD].setdefault(
+            self.results[E.MUSTRENEW_OLD.errcode].setdefault(
                 buhinname, []).append(glyphname)
 
     def get_result(self):

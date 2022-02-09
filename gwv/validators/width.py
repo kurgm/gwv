@@ -1,22 +1,26 @@
 import re
-from typing import Dict, Tuple, Union
+from typing import Dict, NamedTuple, Tuple, Union
 
 import gwv.filters as filters
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import RE_REGIONS
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    # グループ:NonSpacingGlyphs-Halfwidthに含まれているが全角
-    INCORRECT_NONSPACINGGLYPHS_HALFWIDTH="0",
-    # グループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれているが全角
-    INCORRECT_HALFWIDTHGLYPHS="1",
-    # 半角だがグループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれていない
-    INCORRECT_FULLWIDTHGLYPHS="2",
-)
+class WidthValidatorError(ValidatorErrorEnum):
+    @error_code("0")
+    class INCORRECT_NONSPACINGGLYPHS_HALFWIDTH(NamedTuple):
+        """グループ:NonSpacingGlyphs-Halfwidthに含まれているが全角"""
+    @error_code("1")
+    class INCORRECT_HALFWIDTHGLYPHS(NamedTuple):
+        """グループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれているが全角"""
+    @error_code("2")
+    class INCORRECT_FULLWIDTHGLYPHS(NamedTuple):
+        """半角だがグループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれていない"""
+
+
+E = WidthValidatorError
 
 
 _re_halfWidth = re.compile(r"uff(6[1-9a-f]|[7-9a-d][0-9a-f]|e[8-e])")
@@ -139,5 +143,9 @@ class WidthValidator(Validator):
             return False
         gWidth = getDWidth(ctx.glyph.name)
         if (maxX <= 110 and minX < 90) is not (gWidth != 2):
-            return [str(gWidth)]
+            return (
+                E.INCORRECT_NONSPACINGGLYPHS_HALFWIDTH,
+                E.INCORRECT_HALFWIDTHGLYPHS,
+                E.INCORRECT_FULLWIDTHGLYPHS,
+            )[gWidth]()
         return False

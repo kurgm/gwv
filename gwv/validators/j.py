@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Set
+from typing import Dict, Literal, NamedTuple, Set
 
 from gwv.dump import Dump
 import gwv.filters as filters
@@ -9,20 +9,46 @@ from gwv.helper import load_package_data
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import ErrorCodes
-from gwv.validators import Validator
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    J_NOMARK_DIFFERENT="0",  # uxxxx-j, ja, jv (の実体)と無印(の実体)が違う
-    J_JV_COEXISTENT="1",  # uxxxx-j(a) と jv が共存している
-    NONJV_PART="2",  # -jvに使わない字形の部品が使用されている
-    JV_HAS_JSOURCE="30",  # Jソースがあるのにjv
-    KV_HAS_KSOURCE="31",  # Kソースがあるのにkv
-    NO_SOURCE="40",  # ソースが存在しない地域指定
-    NO_SOURCE_HENKA="41",  # ソースが存在しない地域指定（偏化変形）
-    JV_SOURCE_SEPARATION="5",  # 原規格分離-jv
-)
+class JValidatorError(ValidatorErrorEnum):
+    @error_code("0")
+    class J_NOMARK_DIFFERENT(NamedTuple):
+        """uxxxx-j, ja, jv (の実体)と無印(の実体)が違う"""
+    @error_code("1")
+    class J_JV_COEXISTENT(NamedTuple):
+        """uxxxx-j(a) と jv が共存している"""
+        j_or_ja: Literal["j", "ja"]
+
+    @error_code("2")
+    class NONJV_PART(NamedTuple):
+        """-jvに使わない字形の部品が使用されている"""
+        banned_part: str
+        preferred_part: str
+
+    @error_code("30")
+    class JV_HAS_JSOURCE(NamedTuple):
+        """Jソースがあるのにjv"""
+        source: str
+
+    @error_code("31")
+    class KV_HAS_KSOURCE(NamedTuple):
+        """Kソースがあるのにkv"""
+        source: str
+
+    @error_code("40")
+    class NO_SOURCE(NamedTuple):
+        """ソースが存在しない地域指定"""
+    @error_code("41")
+    class NO_SOURCE_HENKA(NamedTuple):
+        """ソースが存在しない地域指定（偏化変形）"""
+    @error_code("5")
+    class JV_SOURCE_SEPARATION(NamedTuple):
+        """原規格分離-jv"""
+
+
+E = JValidatorError
 
 
 source_separation = GWGroupLazyLoader("原規格分離", isset=True)
@@ -31,7 +57,6 @@ _re_region_opthenka = re.compile(r"-(" + RE_REGIONS + r")(\d{2})?")
 
 
 class JValidator(Validator):
-
 
     def __init__(self):
         Validator.__init__(self)
@@ -63,10 +88,9 @@ class JValidator(Validator):
         for part in used_parts:
             if part in self.jv_no_use_part_replacement:
                 # -jvに使わない字形の部品が使用されている
-                return [
-                    error_codes.NONJV_PART,
+                return E.NONJV_PART(
                     part, self.jv_no_use_part_replacement[part]
-                ]
+                )
         return False
 
     @filters.check_only(+filters.is_of_category({"ucs-kanji", "ext", "bsh"}))
@@ -97,13 +121,13 @@ class JValidator(Validator):
         # Check sources
         if region == "jv":
             if jsource is not None:
-                return [error_codes.JV_HAS_JSOURCE, jsource]  # Jソースがあるのにjv
+                return E.JV_HAS_JSOURCE(jsource)  # Jソースがあるのにjv
             if ucs in source_separation.get_data():
-                return [error_codes.JV_SOURCE_SEPARATION]  # 原規格分離-jv
+                return E.JV_SOURCE_SEPARATION()  # 原規格分離-jv
         elif region == "kv":
             ksource = cjk_sources.get(ucs, cjk_sources.COLUMN_K)
             if ksource is not None:
-                return [error_codes.KV_HAS_KSOURCE, ksource]  # Kソースがあるのにkv
+                return E.KV_HAS_KSOURCE(ksource)  # Kソースがあるのにkv
         elif region in ("gv", "tv", "vv"):
             # TODO
             return False
@@ -111,14 +135,14 @@ class JValidator(Validator):
             if region in ("j", "ja"):
                 if jsource is None:
                     # ソースが存在しない地域指定
-                    return [error_codes.NO_SOURCE_HENKA
-                            if isHenka else error_codes.NO_SOURCE]
+                    return E.NO_SOURCE_HENKA() \
+                        if isHenka else E.NO_SOURCE()
             elif region in cjk_sources.region2index:
                 source = cjk_sources.get(ucs, cjk_sources.region2index[region])
                 if source is None:
                     # ソースが存在しない地域指定
-                    return [error_codes.NO_SOURCE_HENKA
-                            if isHenka else error_codes.NO_SOURCE]
+                    return E.NO_SOURCE_HENKA() \
+                        if isHenka else E.NO_SOURCE()
             else:  # -i, -us, -js
                 return False
 
@@ -133,16 +157,16 @@ class JValidator(Validator):
 
         if entity_name != nomark_entity_name and not isHenka:
             # uxxxx-j, ja, jv (の実体)と無印(の実体)が違う
-            return [error_codes.J_NOMARK_DIFFERENT]
+            return E.J_NOMARK_DIFFERENT()
 
         if region != "jv":
             return False
         if (ucs + "-j") in ctx.dump:
             # uxxxx-jv と uxxxx-j  が共存している
-            return [error_codes.J_JV_COEXISTENT, "j"]
+            return E.J_JV_COEXISTENT("j")
         if (ucs + "-ja") in ctx.dump:
             # uxxxx-jv と uxxxx-ja が共存している
-            return [error_codes.J_JV_COEXISTENT, "ja"]
+            return E.J_JV_COEXISTENT("ja")
         if ucs not in self.jv_no_apply_parts:
             return self.checkJV(ctx.entity.kage)
         return False

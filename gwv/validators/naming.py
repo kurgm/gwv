@@ -1,21 +1,37 @@
 import re
-from typing import Dict, List, Mapping
+from typing import Dict, List, Mapping, NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import GWGroupLazyLoader
 from gwv.helper import load_package_data
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    NAMING_RULE_VIOLATION="0",  # 命名規則違反
-    INVALID_IDS="1",  # 不正なIDS
-    PROHIBITED_GLYPH_NAME="2",  # 禁止されたグリフ名
-    ENCODED_CDP_IN_IDS="3",  # UCSで符号化済みのCDP外字
-    DEPRECATED_NAMING_RULE="4",  # 廃止予定の命名規則
-)
+class NamingValidatorError(ValidatorErrorEnum):
+    @error_code("0")
+    class NAMING_RULE_VIOLATION(NamedTuple):
+        """命名規則違反"""
+    @error_code("1")
+    class INVALID_IDS(NamedTuple):
+        """不正なIDS"""
+        replaced_representation: str
+
+    @error_code("2")
+    class PROHIBITED_GLYPH_NAME(NamedTuple):
+        """禁止されたグリフ名"""
+    @error_code("3")
+    class ENCODED_CDP_IN_IDS(NamedTuple):
+        """UCSで符号化済みのCDP外字"""
+        cdp_char: str
+        ucs_char: str
+
+    @error_code("4")
+    class DEPRECATED_NAMING_RULE(NamedTuple):
+        """廃止予定の命名規則"""
+
+
+E = NamingValidatorError
 
 
 class NamingRules:
@@ -88,16 +104,16 @@ class NamingValidator(Validator):
             isHenka = True
 
         if rules["dont-create"].match(name):
-            return [error_codes.PROHIBITED_GLYPH_NAME]  # 禁止されたグリフ名
+            return E.PROHIBITED_GLYPH_NAME()  # 禁止されたグリフ名
         if _re_gl_glyph.fullmatch(name):
             if not _re_valid_gl.fullmatch(name[-4:]):
                 # 禁止されたグリフ名（不正なGL領域の番号）
-                return [error_codes.PROHIBITED_GLYPH_NAME]
+                return E.PROHIBITED_GLYPH_NAME()
         else:
             for m in _re_cdp.finditer(name):
                 if not _re_valid_cdp.fullmatch(m.group(2)):
                     # 禁止されたグリフ名（不正なCDP番号）
-                    return [error_codes.PROHIBITED_GLYPH_NAME]
+                    return E.PROHIBITED_GLYPH_NAME()
 
         if _re_ids_head.match(name):
             idsReplacedName = name
@@ -108,7 +124,7 @@ class NamingValidator(Validator):
             while _re_ids_kanji.search(idsReplacedName):
                 idsReplacedName = _re_ids_kanji.sub("漢", idsReplacedName)
             if idsReplacedName != "漢":
-                return [error_codes.INVALID_IDS, idsReplacedName]  # 不正なIDS
+                return E.INVALID_IDS(idsReplacedName)  # 不正なIDS
 
             for m in _re_cdp.finditer(name):
                 cdp = m.group(0)
@@ -117,14 +133,14 @@ class NamingValidator(Validator):
                     cdp = "cdp-" + cdp[-4:]
                 if cdp in cdp_dict:
                     # UCSで符号化済みのCDP外字
-                    return [error_codes.ENCODED_CDP_IN_IDS, cdp, cdp_dict[cdp]]
+                    return E.ENCODED_CDP_IN_IDS(cdp, cdp_dict[cdp])
 
             for m in _re_ucs.finditer(name):
                 ucs = m.group(0)
                 if ucs == "u3013":
-                    return [error_codes.INVALID_IDS, idsReplacedName]  # 〓
+                    return E.INVALID_IDS(idsReplacedName)  # 〓
                 if "ue000" <= ucs <= "uf8ff":
-                    return [error_codes.INVALID_IDS, idsReplacedName]  # 私用領域
+                    return E.INVALID_IDS(idsReplacedName)  # 私用領域
             return False
 
         if rules["rule"].match(name):
@@ -138,6 +154,6 @@ class NamingValidator(Validator):
             return False
 
         if rules["deprecated-rule"].match(name):
-            return [error_codes.DEPRECATED_NAMING_RULE]  # 廃止予定の命名規則
+            return E.DEPRECATED_NAMING_RULE()  # 廃止予定の命名規則
 
-        return [error_codes.NAMING_RULE_VIOLATION]  # 命名規則違反
+        return E.NAMING_RULE_VIOLATION()  # 命名規則違反

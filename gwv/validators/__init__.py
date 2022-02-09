@@ -1,5 +1,7 @@
 import abc
+from enum import Enum
 import logging
+from typing import Iterable, NamedTuple, Tuple
 
 from gwv.dump import Dump
 from gwv.validatorctx import ValidatorContext
@@ -53,25 +55,55 @@ class Validator(metaclass=abc.ABCMeta):
         if is_invalid:
             self.record(ctx.glyph.name, is_invalid)
 
-    def record(self, glyphname: str, error):
-        key = str(error[0])
+    def record(self, glyphname: str, error: Tuple[str, Iterable]):
+        key, param = error
+        key = str(key)
+        param = list(param)
         if key not in self.results:
             self.results[key] = []
-        self.results[key].append([glyphname] + error[1:])
+        self.results[key].append([glyphname] + param)
 
     def get_result(self):
         return self.results
 
 
-class ErrorCodes:
+class ErrorCodeAndParams(NamedTuple):
+    errcode: str
+    param: NamedTuple
 
-    def __init__(self, **namemap: str):
-        self._map = namemap
-        self._invmap = {v: k for k, v in namemap.items()}
-        assert len(self._map) == len(self._invmap)
 
-    def __getattr__(self, name: str):
-        return self._map[name]
+class ValidatorErrorFactory(NamedTuple):
+    errcode: str
+    paramcls: type
 
-    def __getitem__(self, key: str):
-        return self._invmap[key]
+    def __call__(self, *args, **kwargs):
+        return ErrorCodeAndParams(self.errcode, self.paramcls(*args, **kwargs))
+
+
+class ValidatorErrorEnum(ValidatorErrorFactory, Enum):
+    """Base class for parameterized validation error.
+
+    Usage::
+
+        class FooValidatorError(ValidatorErrorEnum):
+            @error_code("0")
+            class SomeError(NamedTuple):
+                some_parameter: str
+
+        err = FooValidatorError.SomeError("a")
+        assert err == ("0", ("a",))
+        assert err.errcode == "0"
+        assert err.param.some_parameter == "a"
+
+        assert FooValidatorError.SomeError.errcode == "0"
+        assert FooValidatorError.SomeError in FooValidatorError
+
+        assert isinstance(err.param, FooValidatorError.SomeError.paramcls)
+    """
+    pass
+
+
+def error_code(errcode: str):
+    def decorator(func):
+        return (errcode, func)
+    return decorator

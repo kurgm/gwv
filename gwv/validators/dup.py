@@ -1,21 +1,45 @@
 import math
-from typing import List, Tuple
+from typing import List, NamedTuple, Tuple
 
 import gwv.filters as filters
 from gwv.kagedata import KageLine
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    HORILINE="10",  # 横
-    VERTLINE="11",  # 縦
-    CURVE="2",  # 曲線
-    CCURVE="3",  # 複曲線
-    PART="99",  # 部品
-    PARTPOS="9",  # 部品位置
-)
+class DupError(NamedTuple):
+    line1: list  # kage line number and data
+    line2: list  # kage line number and data
+
+
+class DupErrorAmount(NamedTuple):
+    line1: list  # kage line number and data
+    line2: list  # kage line number and data
+    amount: float
+
+
+class DupValidatorError(ValidatorErrorEnum):
+    @error_code("10")
+    class HORILINE(DupErrorAmount):
+        """横"""
+    @error_code("11")
+    class VERTLINE(DupErrorAmount):
+        """縦"""
+    @error_code("2")
+    class CURVE(DupError):
+        """曲線"""
+    @error_code("3")
+    class CCURVE(DupError):
+        """複曲線"""
+    @error_code("99")
+    class PART(DupError):
+        """部品"""
+    @error_code("9")
+    class PARTPOS(DupError):
+        """部品位置"""
+
+
+E = DupValidatorError
 
 
 _d45 = math.pi / 4.0
@@ -115,13 +139,12 @@ class DupValidator(Validator):
                 if abs(yoko1.angle - yoko2.angle) > 1.0 / 60.0:
                     continue
                 if yoko2.t0 <= yoko1.t1 and yoko1.t0 <= yoko2.t1:
-                    return [
-                        error_codes.HORILINE,
+                    return E.HORILINE(
                         [yoko1.line.line_number, yoko1.line.strdata],
                         [yoko2.line.line_number, yoko2.line.strdata],
                         min(yoko1.t1 - yoko2.t0, yoko2.t1 - yoko1.t0,
                             yoko1.t1 - yoko1.t0, yoko2.t1 - yoko2.t0)
-                    ]  # 横
+                    )  # 横
 
         tate_thresh = 0 if exact_only else 9
         tate.sort(key=lambda r: r.dist)
@@ -132,13 +155,12 @@ class DupValidator(Validator):
                 if abs(tate1.angle - tate2.angle) > 1.0 / 60.0:
                     continue
                 if tate2.t0 < tate1.t1 and tate1.t0 < tate2.t1:
-                    return [
-                        error_codes.VERTLINE,
+                    return E.VERTLINE(
                         [tate1.line.line_number, tate1.line.strdata],
                         [tate2.line.line_number, tate2.line.strdata],
                         min(tate1.t1 - tate2.t0, tate2.t1 - tate1.t0,
                             tate1.t1 - tate1.t0, tate2.t1 - tate2.t0)
-                    ]  # 縦
+                    )  # 縦
 
         thresh = 0 if exact_only else 3
         curve.sort(key=lambda line_coords: line_coords[1][0])
@@ -146,21 +168,19 @@ class DupValidator(Validator):
                 ineighbors(curve):
             if all(-thresh <= curve_1_coords[j] - curve_2_coords[j] <= thresh
                    for j in range(6)):
-                return [
-                    error_codes.CURVE,
+                return E.CURVE(
                     [curve_1.line_number, curve_1.strdata],
                     [curve_2.line_number, curve_2.strdata]
-                ]  # 曲線
+                )  # 曲線
 
         curve2.sort(key=lambda line: line.coords[0][0])
         for curve21, curve22 in ineighbors(curve2):
             if all(-thresh <= curve21.data[j] - curve22.data[j] <= thresh
                    for j in range(3, 11)):
-                return [
-                    error_codes.CCURVE,
+                return E.CCURVE(
                     [curve21.line_number, curve21.strdata],
                     [curve22.line_number, curve22.strdata]
-                ]  # 複曲線
+                )  # 複曲線
 
         buhin.sort(key=lambda line: line.coords[0][0])
         for buhin1, buhin2 in ineighbors(buhin):
@@ -168,20 +188,18 @@ class DupValidator(Validator):
                 continue
             if all(-thresh <= buhin1.data[j] - buhin2.data[j] <= thresh
                    for j in range(3, 7)):
-                return [
-                    error_codes.PART,
+                return E.PART(
                     [buhin1.line_number, buhin1.strdata],
                     [buhin2.line_number, buhin2.strdata]
-                ]  # 部品
+                )  # 部品
 
         buhinIchi.sort(key=lambda line: line.coords[0][0])
         for buhinIchi1, buhinIchi2 in ineighbors(buhinIchi):
             if all(-thresh <= buhinIchi1.data[j] - buhinIchi2.data[j] <= thresh
                    for j in range(3, 7)):
-                return [
-                    error_codes.PARTPOS,
+                return E.PARTPOS(
                     [buhinIchi1.line_number, buhinIchi1.strdata],
                     [buhinIchi2.line_number, buhinIchi2.strdata]
-                ]  # 部品位置
+                )  # 部品位置
 
         return False

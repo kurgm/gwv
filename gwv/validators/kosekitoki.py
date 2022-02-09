@@ -1,14 +1,27 @@
+from typing import NamedTuple
+
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    NOT_ALIAS="0",  # エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）
-    NOT_ALIAS_OF_KOSEKI="1",  # koseki-xxxxx0のエイリアスでない
-    NOT_ALIAS_OF_ENTITY_OF_KOSEKI="2",  # koseki-xxxxx0と異なる実体のエイリアス
-)
+class KosekitokiValidatorError(ValidatorErrorEnum):
+    @error_code("0")
+    class NOT_ALIAS(NamedTuple):
+        """エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）"""
+    @error_code("1")
+    class NOT_ALIAS_OF_KOSEKI(NamedTuple):
+        """koseki-xxxxx0のエイリアスでない"""
+        entity: str
+
+    @error_code("2")
+    class NOT_ALIAS_OF_ENTITY_OF_KOSEKI(NamedTuple):
+        """koseki-xxxxx0と異なる実体のエイリアス"""
+        entity: str
+        koseki_entity: str
+
+
+E = KosekitokiValidatorError
 
 
 class KosekitokiValidator(Validator):
@@ -29,12 +42,11 @@ class KosekitokiValidator(Validator):
         if entity != koseki_entity:
             if not ctx.glyph.is_alias:
                 # エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）
-                return [error_codes.NOT_ALIAS]
+                return E.NOT_ALIAS()
             if koseki_entity == koseki_name:
                 # koseki-xxxxx0のエイリアスでない
-                return [error_codes.NOT_ALIAS_OF_KOSEKI, entity]
+                return E.NOT_ALIAS_OF_KOSEKI(entity)
             # koseki-xxxxx0と異なる実体のエイリアス
-            return [
-                error_codes.NOT_ALIAS_OF_ENTITY_OF_KOSEKI,
-                entity, koseki_entity]
+            return E.NOT_ALIAS_OF_ENTITY_OF_KOSEKI(
+                entity, koseki_entity)
         return False

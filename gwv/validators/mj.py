@@ -1,20 +1,38 @@
 import re
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, NamedTuple, Optional, Tuple, Union
 
 import gwv.filters as filters
 from gwv.helper import isTogoKanji
 from gwv.helper import load_package_data
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    WRONG_ENTITY="0",  # entity_name のエイリアスになっているが entity_expected のエイリアスの間違い
-    WRONG_RELATED="1",  # 関連字に related が設定されているが ucs_expected の間違い
-    RELATED_UNSET="2",  # 関連字未設定であるが ucs_expected である
-    UNDEFINED_MJ="3",  # 欠番のMJ
-)
+class MjValidatorError(ValidatorErrorEnum):
+    @error_code("0")
+    class WRONG_ENTITY(NamedTuple):
+        """entity_name のエイリアスになっているが entity_expected のエイリアスの間違い"""
+        entity: str
+        entity_expected: List[str]
+
+    @error_code("1")
+    class WRONG_RELATED(NamedTuple):
+        """関連字に related が設定されているが ucs_expected の間違い"""
+        related: str
+        related_expected: List[str]
+
+    @error_code("2")
+    class RELATED_UNSET(NamedTuple):
+        """関連字未設定であるが ucs_expected である"""
+        related: None
+        related_expected: List[str]
+
+    @error_code("3")
+    class UNDEFINED_MJ(NamedTuple):
+        """欠番のMJ"""
+
+
+E = MjValidatorError
 
 
 def kuten2gl(ku: int, ten: int):
@@ -207,7 +225,7 @@ class MjValidator(Validator):
         indices = mjtable.search(field, key)
         if not indices:
             if field == MJTable.FIELD_JMJ and key < "090000":  # 変体仮名でない
-                return [error_codes.UNDEFINED_MJ]  # 欠番のMJ
+                return E.UNDEFINED_MJ()  # 欠番のMJ
             return False
 
         if ctx.glyph.entity_name is not None and \
@@ -233,9 +251,8 @@ class MjValidator(Validator):
                     if expected_from_entity and \
                             base not in expected_from_entity:
                         # entity_name のエイリアスになっているが entity_expected のエイリアスの間違い
-                        return [
-                            error_codes.WRONG_ENTITY,
-                            ctx.glyph.entity_name, list(entity_expected)]
+                        return E.WRONG_ENTITY(
+                            ctx.glyph.entity_name, list(entity_expected))
 
         ucs_expected = set()
         for idx in indices:
@@ -252,8 +269,8 @@ class MjValidator(Validator):
                 related = ctx.entity.related
             if related == "u3013":
                 # 関連字未設定であるが ucs_expected である
-                return [error_codes.RELATED_UNSET, None, list(ucs_expected)]
+                return E.RELATED_UNSET(None, list(ucs_expected))
             if related not in ucs_expected:
                 # 関連字に related が設定されているが ucs_expected の間違い
-                return [error_codes.WRONG_RELATED, related, list(ucs_expected)]
+                return E.WRONG_RELATED(related, list(ucs_expected))
         return False

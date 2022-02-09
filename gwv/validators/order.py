@@ -1,20 +1,38 @@
 import re
+from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    RIGHT_PART_FIRST="2",  # 右部品が最初
-    BOTTOM_PART_FIRST="4",  # 下部品が最初
-    INNER_PART_FIRST="6",  # 囲み内側部品が最初
-    LEFT_PART_LAST="11",  # 左部品が最後
-    TOP_PART_LAST="13",  # 上部品が最後
-    OUTER_PART_LAST="15",  # 囲み外側部品が最後
-)
+class OrderError(NamedTuple):
+    part_name: str
+
+
+class OrderValidatorError(ValidatorErrorEnum):
+    @error_code("2")
+    class RIGHT_PART_FIRST(OrderError):
+        """右部品が最初"""
+    @error_code("4")
+    class BOTTOM_PART_FIRST(OrderError):
+        """下部品が最初"""
+    @error_code("6")
+    class INNER_PART_FIRST(OrderError):
+        """囲み内側部品が最初"""
+    @error_code("11")
+    class LEFT_PART_LAST(OrderError):
+        """左部品が最後"""
+    @error_code("13")
+    class TOP_PART_LAST(OrderError):
+        """上部品が最後"""
+    @error_code("15")
+    class OUTER_PART_LAST(OrderError):
+        """囲み外側部品が最後"""
+
+
+E = OrderValidatorError
 
 
 _re_vars = re.compile(
@@ -37,21 +55,21 @@ class OrderValidator(Validator):
             if m:
                 henka = m.group(1)
                 if henka == "02":
-                    return [error_codes.RIGHT_PART_FIRST, fG]  # 右部品が最初
+                    return E.RIGHT_PART_FIRST(fG)  # 右部品が最初
                 if henka in ("04", "14", "24"):
-                    return [error_codes.BOTTOM_PART_FIRST, fG]  # 下部品が最初
+                    return E.BOTTOM_PART_FIRST(fG)  # 下部品が最初
                 if henka == "06":
-                    return [error_codes.INNER_PART_FIRST, fG]  # 囲み内側部品が最初
+                    return E.INNER_PART_FIRST(fG)  # 囲み内側部品が最初
         if last.stroke_type == 99:
             lG = last.part_name
             m = _re_vars.search(lG)
             if m:
                 henka = m.group(1)
                 if henka == "01":
-                    return [error_codes.LEFT_PART_LAST, lG]  # 左部品が最後
+                    return E.LEFT_PART_LAST(lG)  # 左部品が最後
                 if henka == "03":
-                    return [error_codes.TOP_PART_LAST, lG]  # 上部品が最後
+                    return E.TOP_PART_LAST(lG)  # 上部品が最後
                 if henka in ("05", "10", "11", "15"):
-                    return [error_codes.OUTER_PART_LAST, lG]  # 囲み外側部品が最初
+                    return E.OUTER_PART_LAST(lG)  # 囲み外側部品が最初
 
         return False

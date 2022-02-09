@@ -1,12 +1,18 @@
+from typing import List, NamedTuple
+
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    DO_NOT_USE="0",  # do-not-use が引用されている
-)
+class DonotuseValidatorError(ValidatorErrorEnum):
+    @error_code("0")
+    class DO_NOT_USE(NamedTuple):
+        """do-not-use が引用されている"""
+        parts: List[str]
+
+
+E = DonotuseValidatorError
 
 
 class DonotuseValidator(Validator):
@@ -21,5 +27,9 @@ class DonotuseValidator(Validator):
             if part_entry and "do-not-use" in part_entry.gdata:
                 quotings.append(line.part_name)
         if quotings:
-            return [error_codes.DO_NOT_USE] + quotings
+            return E.DO_NOT_USE(quotings)
         return False
+
+    def record(self, glyphname: str, error):
+        key, param = error
+        super().record(glyphname, (key, param.parts))

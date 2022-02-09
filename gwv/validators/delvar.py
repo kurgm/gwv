@@ -1,15 +1,20 @@
 import re
+from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator
-from gwv.validators import ErrorCodes
+from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
-error_codes = ErrorCodes(
-    BASE_NOT_FOUND="0",  # 派生元が無い
-)
+class DelvarValidatorError(ValidatorErrorEnum):
+    @error_code("0")
+    class BASE_NOT_FOUND(NamedTuple):
+        """派生元が無い"""
+        base: str
+
+
+E = DelvarValidatorError
 
 
 _re_var_nnn_henka = re.compile(r"(.+)-(?:(?:var|itaiji)-\d{3}|\d{2})")
@@ -28,5 +33,5 @@ class DelvarValidator(Validator):
         if m:
             prefix = m.group(1)
             if prefix not in ctx.dump:
-                return [error_codes.BASE_NOT_FOUND, prefix]  # 派生元が無い
+                return E.BASE_NOT_FOUND(prefix)  # 派生元が無い
         return None
