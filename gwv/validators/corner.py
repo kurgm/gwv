@@ -1,6 +1,6 @@
 import itertools
 import re
-from typing import Any, List, NamedTuple, Optional
+from typing import Any, List, Literal, NamedTuple, Optional
 
 import gwv.filters as filters
 from gwv.helper import isYoko
@@ -242,7 +242,8 @@ class Segment:
 class Connection:
 
     def __init__(self, tate: Segment, yoko: Segment,
-                 tate_pos: int, yoko_pos: int, errcls: Any):
+                 tate_pos: Literal[0, 1, 2], yoko_pos: Literal[0, 1, 2],
+                 errcls: Any):
         self.tate = tate
         self.yoko = yoko
         self.tate_pos = tate_pos
@@ -250,32 +251,42 @@ class Connection:
         self.errcls = errcls
 
         if tate_pos == 0:
+            if tate.sttConnect is not None and \
+                    tate.sttConnect.errcls is _NO_ERROR:
+                return
+        elif tate_pos == 2:
+            if tate.endConnect is not None and \
+                    tate.endConnect.errcls is _NO_ERROR:
+                return
+
+        if yoko_pos == 0:
+            if yoko.sttConnect is not None and \
+                    yoko.sttConnect.errcls is _NO_ERROR:
+                return
+        elif yoko_pos == 2:
+            if yoko.endConnect is not None and \
+                    yoko.endConnect.errcls is _NO_ERROR:
+                return
+
+        if tate_pos == 0:
             if tate.sttConnect is not None:
-                if tate.sttConnect.errcls is _NO_ERROR:
-                    return
                 tate.sttConnect.disconnect()
             tate.sttConnect = self
         elif tate_pos == 1:
             tate.midConnect.append(self)
         elif tate_pos == 2:
             if tate.endConnect is not None:
-                if tate.endConnect.errcls is _NO_ERROR:
-                    return
                 tate.endConnect.disconnect()
             tate.endConnect = self
 
         if yoko_pos == 0:
             if yoko.sttConnect is not None:
-                if yoko.sttConnect.errcls is _NO_ERROR:
-                    return
                 yoko.sttConnect.disconnect()
             yoko.sttConnect = self
         elif yoko_pos == 1:
             yoko.midConnect.append(self)
         elif yoko_pos == 2:
             if yoko.endConnect is not None:
-                if yoko.endConnect.errcls is _NO_ERROR:
-                    return
                 yoko.endConnect.disconnect()
             yoko.endConnect = self
 
