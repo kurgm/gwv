@@ -1,6 +1,6 @@
 import itertools
 import re
-from typing import Any, Dict, List, Literal, NamedTuple, Optional, Set, Tuple
+from typing import Any, Dict, List, Literal, NamedTuple, Optional, Tuple
 
 import gwv.filters as filters
 from gwv.helper import isYoko
@@ -466,6 +466,95 @@ def _try_connect_corner(
     return True
 
 
+def _try_connect_yoko_middle(
+        tate: Segment, yoko: Segment, tate_pos: Literal[0, 2],
+        yoko_limit_offsets: Tuple[int, int]):
+    if not (yoko.mid_connectable and yoko.isHori()):
+        return False
+    yoko_y = yoko.y0
+
+    tate_type = tate.start_type if tate_pos == 0 else tate.end_type
+    if tate_type == _STYLE_NO_END:
+        return False
+    tate_conn = tate.sttConnect if tate_pos == 0 else tate.endConnect
+    if tate_conn is not None and tate_conn.yoko == yoko:
+        return False
+
+    tate_x = tate.x0 if tate_pos == 0 else tate.x1
+    tate_y = tate.y0 if tate_pos == 0 else tate.y1
+
+    y_dif = yoko_y - tate_y
+    if not (-5 <= y_dif <= 5):
+        return False
+
+    yoko_limit_off0, yoko_limit_off1 = yoko_limit_offsets
+    if yoko.start_type == _STYLE_NO_END or yoko.sttConnect is not None:
+        yoko_limit_off0 = 0
+    if yoko.end_type == _STYLE_NO_END or yoko.endConnect is not None:
+        yoko_limit_off1 = 0
+
+    if not (yoko.x0 + yoko_limit_off0 < tate_x < yoko.x1 - yoko_limit_off1):
+        return False
+
+    if tate_type in _CORNER_ON_VERTCONN_ERRCLS:
+        errcls = _CORNER_ON_VERTCONN_ERRCLS[tate_type]
+    elif tate_type == 0 and (tate_pos == 2 or y_dif >= 2):
+        errcls = E.OPEN_ON_VERTCONN
+    elif y_dif == 0:
+        errcls = _NO_ERROR
+    elif tate_type != 0:
+        errcls = E.DISCONNECTED_VERTCONN
+    else:
+        return False
+
+    connect(tate, yoko, tate_pos, 1, errcls)
+    return True
+
+
+def _try_connect_tate_middle(
+        tate: Segment, yoko: Segment, yoko_pos: Literal[0, 2]):
+    if not (tate.mid_connectable and tate.isVert()):
+        return False
+    tate_x = tate.x0
+
+    yoko_type = yoko.start_type if yoko_pos == 0 else yoko.end_type
+    if yoko_type == _STYLE_NO_END:
+        return False
+    yoko_conn = yoko.sttConnect if yoko_pos == 0 else yoko.endConnect
+    if yoko_conn is not None and yoko_conn.tate == tate:
+        return False
+
+    yoko_x = yoko.x0 if yoko_pos == 0 else yoko.x1
+    yoko_y = yoko.y0 if yoko_pos == 0 else yoko.y1
+
+    x_dif = yoko_x - tate_x
+    if not (-7 <= x_dif <= 7):
+        return False
+
+    tate_limit_off0 = 6
+    tate_limit_off1 = 19
+    if tate.start_type == _STYLE_NO_END or tate.sttConnect is not None:
+        tate_limit_off0 = 0
+    if tate.end_type == _STYLE_NO_END or tate.endConnect is not None:
+        tate_limit_off1 = 0
+
+    if not (tate.y0 + tate_limit_off0 < yoko_y < tate.y1 - tate_limit_off1):
+        return False
+
+    if yoko_pos == 2 and yoko_type == 0 and x_dif >= 0:
+        errcls = E.OPEN_ON_HORICONN
+    elif x_dif == 0:
+        # 頭形状「開放」と「接続(横)」は同一視する
+        errcls = _NO_ERROR
+    elif yoko_pos == 0 or yoko_type == 2:
+        errcls = E.DISCONNECTED_HORICONN
+    else:
+        return False
+
+    connect(tate, yoko, 1, yoko_pos, errcls)
+    return True
+
+
 class CornerValidator(Validator):
 
     @filters.check_only(-filters.is_alias)
@@ -568,100 +657,19 @@ class CornerValidator(Validator):
                     }, 0)
 
             for y in yoko:
-                if not (y.mid_connectable and y.isHori()):
-                    continue
                 # T
-                tx0_min = y.x0 + 7 \
-                    if y.start_type != _STYLE_NO_END and y.sttConnect is None \
-                    else y.x0
-                tx0_max = y.x1 - 9 \
-                    if y.end_type != _STYLE_NO_END and y.endConnect is None \
-                    else y.x1
-                if (t.sttConnect is None or t.sttConnect.yoko != y) and \
-                        t.start_type != _STYLE_NO_END and \
-                        y.y0 - 5 <= t.y0 <= y.y0 + 5 and \
-                        tx0_min < t.x0 < tx0_max:
-                    errcls = None
-                    if y.y0 == t.y0:
-                        errcls = _NO_ERROR
-                    elif t.start_type != 0:
-                        errcls = E.DISCONNECTED_VERTCONN  # 接続(縦)近い
-                    if t.start_type is not None and \
-                            t.start_type in _CORNER_ON_VERTCONN_ERRCLS:
-                        # 接続(縦)にカド型
-                        errcls = _CORNER_ON_VERTCONN_ERRCLS[t.start_type]
-                    elif t.start_type == 0 and t.y0 <= y.y0 - 2:
-                        errcls = E.OPEN_ON_VERTCONN  # 接続(縦)に開放型
-                    if errcls is not None:
-                        connect(t, y, 0, 1, errcls)
-
+                _try_connect_yoko_middle(t, y, 0, (7, 9))
                 # ⊥
-                tx1_min = y.x0 + 8 \
-                    if y.start_type != _STYLE_NO_END and y.sttConnect is None \
-                    else y.x0
-                tx1_max = y.x1 - 8 \
-                    if y.end_type != _STYLE_NO_END and y.endConnect is None \
-                    else y.x1
-                if (t.endConnect is None or t.endConnect.yoko != y) and \
-                        t.end_type != _STYLE_NO_END and \
-                        y.y0 - 5 <= t.y1 <= y.y0 + 5 and \
-                        tx1_min < t.x1 < tx1_max:
-                    if y.y0 == t.y1:
-                        errcls = _NO_ERROR
-                    else:
-                        errcls = E.DISCONNECTED_VERTCONN  # 接続(縦)近い
-                    if t.end_type is not None and \
-                            t.end_type in _CORNER_ON_VERTCONN_ERRCLS:
-                        # 接続(縦)にカド型
-                        errcls = _CORNER_ON_VERTCONN_ERRCLS[t.end_type]
-                    elif t.end_type == 0:
-                        errcls = E.OPEN_ON_VERTCONN  # 接続(縦)に開放型
-                    connect(t, y, 2, 1, errcls)
+                _try_connect_yoko_middle(t, y, 2, (8, 8))
 
         for y in yoko:
             if y.stroke.stype in (2, 6, 7):
                 continue
             for t in tate:
-                if not (t.mid_connectable and t.isVert()):
-                    continue
                 # |-
-                yy0_min = t.y0 + 6 \
-                    if t.start_type != _STYLE_NO_END and t.sttConnect is None \
-                    else t.y0
-                yy0_max = t.y1 - 19 \
-                    if t.end_type != _STYLE_NO_END and t.endConnect is None \
-                    else t.y1
-                if (y.sttConnect is None or y.sttConnect.tate != t) and \
-                        y.start_type != _STYLE_NO_END and \
-                        t.x0 - 7 <= y.x0 <= t.x0 + 7 and \
-                        yy0_min < y.y0 < yy0_max:
-                    if t.x0 == y.x0:
-                        # 頭形状「開放」と「接続(横)」は同一視する
-                        errcls = _NO_ERROR
-                    else:
-                        errcls = E.DISCONNECTED_HORICONN  # 接続(横)近い
-                    connect(t, y, 1, 0, errcls)
-
+                _try_connect_tate_middle(t, y, 0)
                 # -|
-                yy1_min = t.y0 + 6 \
-                    if t.start_type != _STYLE_NO_END and t.sttConnect is None \
-                    else t.y0
-                yy1_max = t.y1 - 19 \
-                    if t.end_type != _STYLE_NO_END and t.endConnect is None \
-                    else t.y1
-                if (y.endConnect is None or y.endConnect.tate != t) and \
-                        y.end_type != _STYLE_NO_END and \
-                        t.x0 - 7 <= y.x1 <= t.x0 + 7 and \
-                        yy1_min < y.y1 < yy1_max:
-                    errcls = None
-                    if t.x0 == y.x1:
-                        errcls = _NO_ERROR
-                    elif y.end_type == 2:
-                        errcls = E.DISCONNECTED_HORICONN  # 接続(横)近い
-                    if y.end_type == 0 and t.x0 <= y.x1:
-                        errcls = E.OPEN_ON_HORICONN  # 接続(横)に開放型
-                    if errcls is not None:
-                        connect(t, y, 1, 2, errcls)
+                _try_connect_tate_middle(t, y, 2)
 
         results = []
         for y in yoko:
