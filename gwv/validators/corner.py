@@ -1,6 +1,6 @@
 import itertools
 import re
-from typing import Any, List, Literal, NamedTuple, Optional
+from typing import Any, Dict, List, Literal, NamedTuple, Optional, Set, Tuple
 
 import gwv.filters as filters
 from gwv.helper import isYoko
@@ -29,10 +29,10 @@ class CornerValidatorError(ValidatorErrorEnum):
         """右下近い"""
     @error_code("44")
     class DISCONNECTED_BOTTOMLEFTZHOLD(CornerError):
-        """左下近い"""
+        """左下zh用旧近い"""
     @error_code("66")
     class DISCONNECTED_BOTTOMLEFTZHNEW(CornerError):
-        """左下近い"""
+        """左下zh用新近い"""
     @error_code("77")
     class DISCONNECTED_HORICONN(CornerError):
         """接続(横)近い"""
@@ -117,7 +117,7 @@ class CornerValidatorError(ValidatorErrorEnum):
     class OPEN_ON_TOPRIGHT(CornerError):
         """右上に開放型"""
     @error_code("38")
-    class OPEN_ON_BOTTOMRIGHTHT(CornerError):
+    class OPEN_ON_BOTTOMRIGHT(CornerError):
         """右下に開放型"""
     @error_code("48")
     class OPEN_ON_BOTTOMLEFTZHOLD(CornerError):
@@ -134,20 +134,20 @@ class CornerValidatorError(ValidatorErrorEnum):
         """左上に接続型"""
     @error_code("19")
     class VERTCONN_ON_BOTTOMLEFT(CornerError):
-        """左下に接続型"""
+        """左下に接続型 | 左下zh用旧かも？"""
     @error_code("29")
     class VERTCONN_ON_TOPRIGHT(CornerError):
         """右上に接続型"""
     @error_code("39")
-    class VERTCONN_ON_BOTTOMRIGHTHT(CornerError):
+    class VERTCONN_ON_BOTTOMRIGHT(CornerError):
         """右下に接続型"""
 
     @error_code("1a")
     class BOTTOMRIGHTHT_ON_BOTTOMLEFT(CornerError):
-        """左下に右下H/T"""
+        """左下に右下H/T型"""
     @error_code("9a")
     class BOTTOMRIGHTHT_ON_VERTCONN(CornerError):
-        """接続(縦)に右下H/T"""
+        """接続(縦)に右下H/T型"""
 
 
 E = CornerValidatorError
@@ -433,6 +433,39 @@ _STYLE_NO_END = -1
 _NO_ERROR = object()
 
 
+def _try_connect_corner(
+        tate: Segment, yoko: Segment,
+        tate_pos: Literal[0, 2], yoko_pos: Literal[0, 2],
+        type_map: Dict[int, List[
+            Tuple[Any, Tuple[int, int], Tuple[int, int]]]],
+        yoko_open_error_limit: Optional[int] = None):
+
+    tate_type = tate.start_type if tate_pos == 0 else tate.end_type
+    if tate_type not in type_map:
+        return False
+    yoko_type = yoko.start_type if yoko_pos == 0 else yoko.end_type
+    if yoko_type == _STYLE_NO_END:
+        return False
+
+    x_dif = (yoko.x0 if yoko_pos == 0 else yoko.x1) - \
+        (tate.x0 if tate_pos == 0 else tate.x1)
+    y_dif = (yoko.y0 if yoko_pos == 0 else yoko.y1) - \
+        (tate.y0 if tate_pos == 0 else tate.y1)
+
+    for errcls, (x_min, x_max), (y_min, y_max) in type_map[tate_type]:
+        if x_min <= x_dif <= x_max and y_min <= y_dif <= y_max:
+            break
+    else:
+        return False
+
+    if yoko_pos == 2 and yoko_type == 0 and (
+            yoko_open_error_limit is None or yoko_open_error_limit <= x_dif):
+        errcls = E.OPEN_ON_HORICONN
+
+    connect(tate, yoko, tate_pos, yoko_pos, errcls)
+    return True
+
+
 class CornerValidator(Validator):
 
     @filters.check_only(-filters.is_alias)
@@ -455,168 +488,84 @@ class CornerValidator(Validator):
                 if t.stroke.stype in (2, 6) and y.stroke.stype in (2, 6, 7):
                     continue
 
-                if t.start_type in (0, 12, 22, 32):
-                    # 左上
-                    errcls = None
-                    xDif = y.x0 - t.x0
-                    yDif = y.y0 - t.y0
-                    if y.start_type != _STYLE_NO_END and -7 <= xDif <= 9:
-                        if t.start_type == 12:
-                            if 0 == xDif == yDif or \
-                                    y.stroke.stype in (2, 6, 7):
-                                errcls = _NO_ERROR
-                            elif -5 <= yDif <= 3:
-                                # 左上近い
-                                errcls = E.DISCONNECTED_TOPLEFT
-                        elif t.start_type == 22:
-                            if -5 <= yDif <= 5:
-                                # 左上に右上型
-                                errcls = E.TOPRIGHT_ON_TOPLEFT
-                        elif t.start_type == 0:
-                            if 0 <= yDif <= 6:
-                                # 左上に開放型
-                                errcls = E.OPEN_ON_TOPLEFT
-                        elif t.start_type == 32:
-                            if -5 <= yDif <= 0:
-                                # 左上に接続型
-                                errcls = E.VERTCONN_ON_TOPLEFT
-                    if errcls is not None:
-                        connect(t, y, 0, 0, errcls)
+                # 左上
+                if y.stroke.stype in (2, 6, 7) and \
+                        y.start_type != _STYLE_NO_END and \
+                        t.start_type == 12 and \
+                        -7 <= y.x0 - t.x0 <= 9:
+                    # bug: missing constraint on yDif
+                    connect(t, y, 0, 0, _NO_ERROR)
+                else:
+                    _try_connect_corner(t, y, 0, 0, {
+                        12: [
+                            (_NO_ERROR, (0, 0), (0, 0)),
+                            (E.DISCONNECTED_TOPLEFT, (-7, 9), (-5, 3)),
+                        ],
+                        22: [(E.TOPRIGHT_ON_TOPLEFT, (-7, 9), (-5, 5))],
+                        0: [(E.OPEN_ON_TOPLEFT, (-7, 9), (0, 6))],
+                        32: [(E.VERTCONN_ON_TOPLEFT, (-7, 9), (-5, 0))],
+                    })
 
-                    # 右上
-                    errcls = None
-                    xDif = y.x1 - t.x0
-                    yDif = y.y1 - t.y0
-                    if y.end_type != _STYLE_NO_END and -7 <= xDif <= 9:
-                        if t.start_type == 12:
-                            if -5 <= yDif <= 3:
-                                # 右上に左上型
-                                errcls = E.TOPLEFT_ON_TOPRIGHT
-                        elif t.start_type == 22:
-                            if 0 == xDif == yDif:
-                                errcls = _NO_ERROR
-                            elif -5 <= yDif <= 5:
-                                # 右上近い
-                                errcls = E.DISCONNECTED_TOPRIGHT
-                        elif t.start_type == 0:
-                            if 0 <= yDif <= 6:
-                                # 右上に開放型
-                                errcls = E.OPEN_ON_TOPRIGHT
-                        elif t.start_type == 32:
-                            if -5 <= yDif <= 0:
-                                # 右上に接続型
-                                errcls = E.VERTCONN_ON_TOPRIGHT
-                    if errcls is not None:
-                        if y.end_type == 0:
-                            # 接続(横)に開放型
-                            errcls = E.OPEN_ON_HORICONN
-                        connect(t, y, 0, 2, errcls)
+                # 右上
+                _try_connect_corner(t, y, 0, 2, {
+                    12: [(E.TOPLEFT_ON_TOPRIGHT, (-7, 9), (-5, 3))],
+                    22: [
+                        (_NO_ERROR, (0, 0), (0, 0)),
+                        (E.DISCONNECTED_TOPRIGHT, (-7, 9), (-5, 5)),
+                    ],
+                    0: [(E.OPEN_ON_TOPRIGHT, (-7, 9), (0, 6))],
+                    32: [(E.VERTCONN_ON_TOPRIGHT, (-7, 9), (-5, 0))],
+                })
 
-                if t.end_type in (0, 13, 313, 413, 23, 24, 32):
-                    # 左下
-                    errcls = None
-                    xDif = y.x0 - t.x1
-                    yDif = y.y0 - t.y1
-                    if y.start_type != _STYLE_NO_END and -8 <= xDif <= 8:
-                        if t.end_type == 13:
-                            if 0 == xDif == yDif:
-                                errcls = _NO_ERROR
-                            elif -2 <= yDif <= 4:
-                                # 左下近い
-                                errcls = E.DISCONNECTED_BOTTOMLEFT
-                        elif t.end_type == 313:
-                            if 0 == xDif == yDif:
-                                if isGdesign:
-                                    # 左下zh用新に左下zh用旧型
-                                    errcls = E.\
-                                        BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW
-                                else:
-                                    errcls = _NO_ERROR
-                            elif -14 <= yDif <= 4:
-                                errcls = E.\
-                                    DISCONNECTED_BOTTOMLEFTZHOLD  # 左下zh用旧近い
-                        elif t.end_type == 413:
-                            if 0 == xDif == yDif:
-                                if isTdesign:
-                                    # 左下zh用旧に左下zh用新型
-                                    errcls = E.\
-                                        BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD
-                                else:
-                                    errcls = _NO_ERROR
-                            elif -14 <= yDif <= 4:
-                                errcls = E.\
-                                    DISCONNECTED_BOTTOMLEFTZHNEW  # 左下zh用新近い
-                        elif t.end_type == 23:
-                            if -6 <= yDif <= 4:
-                                errcls = E.\
-                                    BOTTOMRIGHT_ON_BOTTOMLEFT  # 左下に右下型
-                        elif t.end_type == 24:
-                            if -6 <= yDif <= 4:
-                                errcls = E.\
-                                    BOTTOMRIGHTHT_ON_BOTTOMLEFT  # 左下に右下H/T型
-                        elif t.end_type == 0:
-                            if -19 <= yDif <= -2:
-                                # 左下に開放型
-                                errcls = E.OPEN_ON_BOTTOMLEFT
-                            elif -1 <= yDif <= 4:
-                                # 左下zh用旧に開放型
-                                errcls = E.OPEN_ON_BOTTOMLEFTZHOLD
-                        elif t.end_type == 32:
-                            if 0 <= yDif <= 4:
-                                # 左下に接続型 | 左下zh用かも？
-                                errcls = E.VERTCONN_ON_BOTTOMLEFT
-                    if errcls is not None:
-                        connect(t, y, 2, 0, errcls)
+                # 左下
+                _try_connect_corner(t, y, 2, 0, {
+                    13: [
+                        (_NO_ERROR, (0, 0), (0, 0)),
+                        (E.DISCONNECTED_BOTTOMLEFT, (-8, 8), (-2, 4)),
+                    ],
+                    313: [
+                        (E.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW if isGdesign else
+                         _NO_ERROR,
+                         (0, 0), (0, 0)),
+                        (E.DISCONNECTED_BOTTOMLEFTZHOLD, (-8, 8), (-14, 4)),
+                    ],
+                    413: [
+                        (E.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD if isTdesign else
+                         _NO_ERROR,
+                         (0, 0), (0, 0)),
+                        (E.DISCONNECTED_BOTTOMLEFTZHNEW, (-8, 8), (-14, 4)),
+                    ],
+                    23: [(E.BOTTOMRIGHT_ON_BOTTOMLEFT, (-8, 8), (-6, 4))],
+                    24: [(E.BOTTOMRIGHTHT_ON_BOTTOMLEFT, (-8, 8), (-6, 4))],
+                    0: [
+                        (E.OPEN_ON_BOTTOMLEFT, (-8, 8), (-19, -2)),
+                        (E.OPEN_ON_BOTTOMLEFTZHOLD, (-8, 8), (-1, 4))
+                    ],
+                    32: [(E.VERTCONN_ON_BOTTOMLEFT, (-8, 8), (0, 4))],
+                })
 
-                    # 右下
-                    errcls = None
-                    xDif = y.x1 - t.x1
-                    yDif = y.y1 - t.y1
-                    if y.end_type == 0 and t.end_type == 32 and \
-                            6 <= xDif <= 18 and 0 <= yDif <= 8:
-                        # 右下H/Tに擬似右下H/T型
-                        errcls = E.\
-                            PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT
-                    elif y.end_type != _STYLE_NO_END and -8 <= xDif <= 8:
-                        if t.end_type == 13:
-                            if -2 <= yDif <= 4:
-                                errcls = E.\
-                                    BOTTOMLEFT_ON_BOTTOMRIGHT  # 右下に左下型
-                        elif t.end_type == 313:
-                            if -14 <= yDif <= 4:
-                                errcls = E.\
-                                    BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT  # 右下に左下zh用旧
-                        elif t.end_type == 413:
-                            if -14 <= yDif <= 4:
-                                errcls = E.\
-                                    BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT  # 右下に左下zh用新
-                        elif t.end_type == 23:
-                            if 0 == xDif == yDif:
-                                errcls = _NO_ERROR
-                            elif -6 <= yDif <= 4:
-                                errcls = E.\
-                                    DISCONNECTED_BOTTOMRIGHT  # 右下近い
-                        elif t.end_type == 24:
-                            if 0 == xDif == yDif:
-                                errcls = _NO_ERROR
-                            elif -6 <= yDif <= 4:
-                                errcls = E.\
-                                    DISCONNECTED_BOTTOMRIGHTHT  # 右下H/T近い
-                        elif t.end_type == 0:
-                            if -19 <= yDif <= -2:
-                                # 右下に開放型
-                                errcls = E.OPEN_ON_BOTTOMRIGHTHT
-                        elif t.end_type == 32:
-                            if -19 <= yDif <= 0:
-                                errcls = E.\
-                                    VERTCONN_ON_BOTTOMRIGHTHT  # 右下に接続型
-                    if errcls is not None:
-                        if y.end_type == 0 and 0 <= xDif and \
-                                errcls != E.\
-                                PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT:
-                            # 接続(横)に開放型
-                            errcls = E.OPEN_ON_HORICONN
-                        connect(t, y, 2, 2, errcls)
+                # 右下
+                if y.end_type == 0 and t.end_type == 32 and \
+                        6 <= y.x1 - t.x1 <= 18 and 0 <= y.y1 - t.y1 <= 8:
+                    connect(t, y, 2, 2, E.PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT)
+                else:
+                    _try_connect_corner(t, y, 2, 2, {
+                        13: [(E.BOTTOMLEFT_ON_BOTTOMRIGHT, (-8, 8), (-2, 4))],
+                        313: [(E.BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT,
+                               (-8, 8), (-14, 4))],
+                        413: [(E.BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT,
+                               (-8, 8), (-14, 4))],
+                        23: [
+                            (_NO_ERROR, (0, 0), (0, 0)),
+                            (E.DISCONNECTED_BOTTOMRIGHT, (-8, 8), (-6, 4)),
+                        ],
+                        24: [
+                            (_NO_ERROR, (0, 0), (0, 0)),
+                            (E.DISCONNECTED_BOTTOMRIGHTHT, (-8, 8), (-6, 4)),
+                        ],
+                        0: [(E.OPEN_ON_BOTTOMRIGHT, (-8, 8), (-19, -2))],
+                        32: [(E.VERTCONN_ON_BOTTOMRIGHT, (-8, 8), (-19, 0))],
+                    }, 0)
 
             for y in yoko:
                 if not (y.mid_connectable and y.isHori()):
