@@ -158,82 +158,65 @@ class Stroke:
     def __init__(self, line: KageLine):
         self.line = line
         self.stype = line.stroke_type
-        self.tate = None
-        self.yoko = None
 
-    def setSegments(self, tate, tate_vert, yoko, yoko_hori):
-        if len(self.line.data) <= 2:
-            return
-        sttType = self.line.head_type
-        endType = self.line.tail_type
-        coords = self.line.coords
 
-        if self.stype == 1:
-            # 直線
-            seg = Segment(self, sttType, endType,
-                          coords[0][0], coords[0][1],
-                          coords[1][0], coords[1][1])
-            seg.reverseIfNecessary()
-            if seg.isYoko():
-                if seg.isHori():
-                    yoko_hori.append(seg)
-                self.yoko = seg
-                yoko.append(seg)
-            else:
-                if seg.isVert():
-                    tate_vert.append(seg)
-                self.tate = seg
-                tate.append(seg)
+def setSegments(stroke: Stroke, tate: List["Segment"], yoko: List["Segment"]):
+    if len(stroke.line.data) <= 2:
+        return
+    sttType = stroke.line.head_type
+    endType = stroke.line.tail_type
+    coords = stroke.line.coords
 
-        elif self.stype in (2, 6):
-            # 曲線, 複曲線
-            stt = coords[0]
-            end = coords[2] if self.stype == 2 else coords[3]
-            if sttType in (12, 22, 32):
-                # 左上カド, 右上カド, 接続
-                seg = Segment(self, sttType, _STYLE_NO_END,
-                              stt[0], stt[1], end[0], end[1])
-                self.tate = seg
-                tate.append(seg)
-            if endType == 7 and stt[0] > end[0]:
-                # 左払い(「臼」の左上などを横画と同一視する)
-                seg = Segment(self, 2, _STYLE_NO_END,
-                              end[0], end[1], stt[0], stt[1])
-                self.yoko = seg
-                yoko.append(seg)
+    if stroke.stype == 1:
+        # 直線
+        seg = Segment(stroke, sttType, endType, *coords[0], *coords[1])
+        if seg.isYoko():
+            yoko.append(seg)
+        else:
+            tate.append(seg)
 
-        elif self.stype in (3, 4, 7):
-            # 折れ, 乙線, 縦払い
-            seg = Segment(self, sttType, _STYLE_NO_END,
-                          coords[0][0], coords[0][1],
-                          coords[1][0], coords[1][1])
-            seg.reverseIfNecessary()
-            if seg.isYoko():
-                if seg.isHori():
-                    yoko_hori.append(seg)
-                self.yoko = seg
-                yoko.append(seg)
-            else:
-                if seg.isVert():
-                    tate_vert.append(seg)
-                self.tate = seg
-                tate.append(seg)
+    elif stroke.stype in (2, 6):
+        # 曲線, 複曲線
+        stt = coords[0]
+        end = coords[2] if stroke.stype == 2 else coords[3]
+        if sttType in (12, 22, 32):
+            # 左上カド, 右上カド, 接続
+            seg = Segment(stroke, sttType, _STYLE_NO_END, *stt, *end, False)
+            tate.append(seg)
+        if endType == 7 and stt[0] > end[0]:
+            # 左払い(「臼」の左上などを横画と同一視する)
+            seg = Segment(stroke, 2, _STYLE_NO_END, *end, *stt, False)
+            yoko.append(seg)
 
-            if self.stype == 7 and endType == 7 and \
-                    coords[1][0] > coords[3][0]:
-                # 左払い(「臼」の左上などを横画と同一視する)
-                seg = Segment(self, 2, _STYLE_NO_END,
-                              coords[3][0], coords[3][1],
-                              coords[1][0], coords[1][1])
-                self.yoko = seg
-                yoko.append(seg)
+    elif stroke.stype in (3, 4, 7):
+        # 折れ, 乙線, 縦払い
+        seg = Segment(stroke, sttType, _STYLE_NO_END, *coords[0], *coords[1])
+        if seg.isYoko():
+            yoko.append(seg)
+        else:
+            tate.append(seg)
+
+        if stroke.stype == 7 and endType == 7 and \
+                coords[1][0] > coords[3][0]:
+            # 左払い(「臼」の左上などを横画と同一視する)
+            seg = Segment(
+                stroke, 2, _STYLE_NO_END, *coords[3], *coords[1], False)
+            yoko.append(seg)
 
 
 class Segment:
 
     def __init__(self, stroke: Stroke,
                  start_type: int, end_type: int,
-                 x0: int, y0: int, x1: int, y1: int):
+                 x0: int, y0: int, x1: int, y1: int,
+                 is_straight_line: bool = True):
+
+        if is_straight_line:
+            if x1 < x0 if isYoko(x0, y0, x1, y1) else y1 < y0:
+                start_type, end_type = end_type, start_type
+                x0, x1 = x1, x0
+                y0, y1 = y1, y0
+
         self.stroke = stroke
         self.start_type = start_type
         self.end_type = end_type
@@ -241,23 +224,10 @@ class Segment:
         self.y0 = y0
         self.x1 = x1
         self.y1 = y1
+        self.mid_connectable = is_straight_line
         self.sttConnect: Optional[Connection] = None
         self.midConnect: List[Connection] = []
         self.endConnect: Optional[Connection] = None
-
-    def reverse(self):
-        self.start_type, self.end_type = self.end_type, self.start_type
-        self.x0, self.x1 = self.x1, self.x0
-        self.y0, self.y1 = self.y1, self.y0
-        self.sttConnect, self.endConnect = self.endConnect, self.sttConnect
-
-    def reverseIfNecessary(self):
-        if self.isYoko():
-            if self.x1 < self.x0:
-                self.reverse()
-        else:
-            if self.y1 < self.y0:
-                self.reverse()
 
     def isVert(self):
         return self.x0 == self.x1
@@ -463,14 +433,12 @@ class CornerValidator(Validator):
         strokes = []
         tate: List[Segment] = []
         yoko: List[Segment] = []
-        tate_vert: List[Segment] = []
-        yoko_hori: List[Segment] = []
         isGdesign = bool(_re_gdesign.fullmatch(ctx.glyph.name))
         isTdesign = bool(_re_tdesign.fullmatch(ctx.glyph.name))
 
         strokes = [Stroke(line) for line in ctx.glyph.kage.lines]
         for stroke in strokes:
-            stroke.setSegments(tate, tate_vert, yoko, yoko_hori)
+            setSegments(stroke, tate, yoko)
 
         for t in tate:
             for y in yoko:
@@ -640,7 +608,9 @@ class CornerValidator(Validator):
                             errcls = E.OPEN_ON_HORICONN
                         Connection(t, y, 2, 2, errcls)
 
-            for y in yoko_hori:
+            for y in yoko:
+                if not (y.mid_connectable and y.isHori()):
+                    continue
                 # T
                 tx0_min = y.x0 + 7 \
                     if y.start_type != _STYLE_NO_END and y.sttConnect is None \
@@ -692,7 +662,9 @@ class CornerValidator(Validator):
         for y in yoko:
             if y.stroke.stype in (2, 6, 7):
                 continue
-            for t in tate_vert:
+            for t in tate:
+                if not (t.mid_connectable and t.isVert()):
+                    continue
                 # |-
                 yy0_min = t.y0 + 6 \
                     if t.start_type != _STYLE_NO_END and t.sttConnect is None \
