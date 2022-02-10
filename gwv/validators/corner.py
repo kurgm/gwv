@@ -652,8 +652,7 @@ class CornerValidator(Validator):
                 if y.stroke.stype in (2, 6, 7) and \
                         y.start_type != _STYLE_NO_END and \
                         t.start_type == 12 and \
-                        -7 <= y.x0 - t.x0 <= 9:
-                    # bug: missing constraint on yDif
+                        -7 <= y.x0 - t.x0 <= 9 and -5 <= y.y0 - t.y0 <= 3:
                     connect(t, y, 0, 0, _NO_ERROR)
                 else:
                     _try_connect_corner(t, y, 0, 0, type_maps[0, 0])
