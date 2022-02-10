@@ -239,71 +239,70 @@ class Segment:
         return isYoko(self.x0, self.y0, self.x1, self.y1)
 
 
-class Connection:
+class Connection(NamedTuple):
+    tate: Segment
+    yoko: Segment
+    tate_pos: Literal[0, 1, 2]
+    yoko_pos: Literal[0, 1, 2]
+    errcls: Any
 
-    def __init__(self, tate: Segment, yoko: Segment,
-                 tate_pos: Literal[0, 1, 2], yoko_pos: Literal[0, 1, 2],
-                 errcls: Any):
-        self.tate = tate
-        self.yoko = yoko
-        self.tate_pos = tate_pos
-        self.yoko_pos = yoko_pos
-        self.errcls = errcls
 
-        if tate_pos == 0:
-            if tate.sttConnect is not None and \
-                    tate.sttConnect.errcls is _NO_ERROR:
-                return
-        elif tate_pos == 2:
-            if tate.endConnect is not None and \
-                    tate.endConnect.errcls is _NO_ERROR:
-                return
+def connect(tate: Segment, yoko: Segment,
+            tate_pos: Literal[0, 1, 2], yoko_pos: Literal[0, 1, 2],
+            errcls: Any):
 
-        if yoko_pos == 0:
-            if yoko.sttConnect is not None and \
-                    yoko.sttConnect.errcls is _NO_ERROR:
-                return
-        elif yoko_pos == 2:
-            if yoko.endConnect is not None and \
-                    yoko.endConnect.errcls is _NO_ERROR:
-                return
+    if tate_pos == 0:
+        if tate.sttConnect is not None and tate.sttConnect.errcls is _NO_ERROR:
+            return
+    elif tate_pos == 2:
+        if tate.endConnect is not None and tate.endConnect.errcls is _NO_ERROR:
+            return
 
-        if tate_pos == 0:
-            if tate.sttConnect is not None:
-                tate.sttConnect.disconnect()
-            tate.sttConnect = self
-        elif tate_pos == 1:
-            tate.midConnect.append(self)
-        elif tate_pos == 2:
-            if tate.endConnect is not None:
-                tate.endConnect.disconnect()
-            tate.endConnect = self
+    if yoko_pos == 0:
+        if yoko.sttConnect is not None and yoko.sttConnect.errcls is _NO_ERROR:
+            return
+    elif yoko_pos == 2:
+        if yoko.endConnect is not None and yoko.endConnect.errcls is _NO_ERROR:
+            return
 
-        if yoko_pos == 0:
-            if yoko.sttConnect is not None:
-                yoko.sttConnect.disconnect()
-            yoko.sttConnect = self
-        elif yoko_pos == 1:
-            yoko.midConnect.append(self)
-        elif yoko_pos == 2:
-            if yoko.endConnect is not None:
-                yoko.endConnect.disconnect()
-            yoko.endConnect = self
+    connection = Connection(tate, yoko, tate_pos, yoko_pos, errcls)
 
-    def disconnect(self):
-        if self.tate_pos == 0:
-            self.tate.sttConnect = None
-        elif self.tate_pos == 1:
-            self.tate.midConnect.remove(self)
-        elif self.tate_pos == 2:
-            self.tate.endConnect = None
+    def disconnect(old_connection: Connection):
+        if old_connection.tate_pos == 0:
+            old_connection.tate.sttConnect = None
+        elif old_connection.tate_pos == 1:
+            old_connection.tate.midConnect.remove(old_connection)
+        elif old_connection.tate_pos == 2:
+            old_connection.tate.endConnect = None
 
-        if self.yoko_pos == 0:
-            self.yoko.sttConnect = None
-        elif self.yoko_pos == 1:
-            self.yoko.midConnect.remove(self)
-        elif self.yoko_pos == 2:
-            self.yoko.endConnect = None
+        if old_connection.yoko_pos == 0:
+            old_connection.yoko.sttConnect = None
+        elif old_connection.yoko_pos == 1:
+            old_connection.yoko.midConnect.remove(old_connection)
+        elif old_connection.yoko_pos == 2:
+            old_connection.yoko.endConnect = None
+
+    if tate_pos == 0:
+        if tate.sttConnect is not None:
+            disconnect(tate.sttConnect)
+        tate.sttConnect = connection
+    elif tate_pos == 1:
+        tate.midConnect.append(connection)
+    elif tate_pos == 2:
+        if tate.endConnect is not None:
+            disconnect(tate.endConnect)
+        tate.endConnect = connection
+
+    if yoko_pos == 0:
+        if yoko.sttConnect is not None:
+            disconnect(yoko.sttConnect)
+        yoko.sttConnect = connection
+    elif yoko_pos == 1:
+        yoko.midConnect.append(connection)
+    elif yoko_pos == 2:
+        if yoko.endConnect is not None:
+            disconnect(yoko.endConnect)
+        yoko.endConnect = connection
 
 
 def is_ZH_corner(t: Segment, yoko: List[Segment], _tate: List[Segment]):
@@ -482,7 +481,7 @@ class CornerValidator(Validator):
                                 # 左上に接続型
                                 errcls = E.VERTCONN_ON_TOPLEFT
                     if errcls is not None:
-                        Connection(t, y, 0, 0, errcls)
+                        connect(t, y, 0, 0, errcls)
 
                     # 右上
                     errcls = None
@@ -511,7 +510,7 @@ class CornerValidator(Validator):
                         if y.end_type == 0:
                             # 接続(横)に開放型
                             errcls = E.OPEN_ON_HORICONN
-                        Connection(t, y, 0, 2, errcls)
+                        connect(t, y, 0, 2, errcls)
 
                 if t.end_type in (0, 13, 313, 413, 23, 24, 32):
                     # 左下
@@ -567,7 +566,7 @@ class CornerValidator(Validator):
                                 # 左下に接続型 | 左下zh用かも？
                                 errcls = E.VERTCONN_ON_BOTTOMLEFT
                     if errcls is not None:
-                        Connection(t, y, 2, 0, errcls)
+                        connect(t, y, 2, 0, errcls)
 
                     # 右下
                     errcls = None
@@ -617,7 +616,7 @@ class CornerValidator(Validator):
                                 PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT:
                             # 接続(横)に開放型
                             errcls = E.OPEN_ON_HORICONN
-                        Connection(t, y, 2, 2, errcls)
+                        connect(t, y, 2, 2, errcls)
 
             for y in yoko:
                 if not (y.mid_connectable and y.isHori()):
@@ -645,7 +644,7 @@ class CornerValidator(Validator):
                     elif t.start_type == 0 and t.y0 <= y.y0 - 2:
                         errcls = E.OPEN_ON_VERTCONN  # 接続(縦)に開放型
                     if errcls is not None:
-                        Connection(t, y, 0, 1, errcls)
+                        connect(t, y, 0, 1, errcls)
 
                 # ⊥
                 tx1_min = y.x0 + 8 \
@@ -668,7 +667,7 @@ class CornerValidator(Validator):
                         errcls = _CORNER_ON_VERTCONN_ERRCLS[t.end_type]
                     elif t.end_type == 0:
                         errcls = E.OPEN_ON_VERTCONN  # 接続(縦)に開放型
-                    Connection(t, y, 2, 1, errcls)
+                    connect(t, y, 2, 1, errcls)
 
         for y in yoko:
             if y.stroke.stype in (2, 6, 7):
@@ -692,7 +691,7 @@ class CornerValidator(Validator):
                         errcls = _NO_ERROR
                     else:
                         errcls = E.DISCONNECTED_HORICONN  # 接続(横)近い
-                    Connection(t, y, 1, 0, errcls)
+                    connect(t, y, 1, 0, errcls)
 
                 # -|
                 yy1_min = t.y0 + 6 \
@@ -713,7 +712,7 @@ class CornerValidator(Validator):
                     if y.end_type == 0 and t.x0 <= y.x1:
                         errcls = E.OPEN_ON_HORICONN  # 接続(横)に開放型
                     if errcls is not None:
-                        Connection(t, y, 1, 2, errcls)
+                        connect(t, y, 1, 2, errcls)
 
         results = []
         for y in yoko:
