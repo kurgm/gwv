@@ -433,6 +433,75 @@ _STYLE_NO_END = -1
 _NO_ERROR = object()
 
 
+def _get_connect_corner_type_maps(isGdesign: bool, isTdesign: bool) -> Dict[
+        Tuple[Literal[0, 2], Literal[0, 2]],
+        Dict[int, List[Tuple[Any, Tuple[int, int], Tuple[int, int]]]]]:
+    return {
+        # 左上
+        (0, 0): {
+            12: [
+                (_NO_ERROR, (0, 0), (0, 0)),
+                (E.DISCONNECTED_TOPLEFT, (-7, 9), (-5, 3)),
+            ],
+            22: [(E.TOPRIGHT_ON_TOPLEFT, (-7, 9), (-5, 5))],
+            0: [(E.OPEN_ON_TOPLEFT, (-7, 9), (0, 6))],
+            32: [(E.VERTCONN_ON_TOPLEFT, (-7, 9), (-5, 0))],
+        },
+        # 右上
+        (0, 2): {
+            12: [(E.TOPLEFT_ON_TOPRIGHT, (-7, 9), (-5, 3))],
+            22: [
+                (_NO_ERROR, (0, 0), (0, 0)),
+                (E.DISCONNECTED_TOPRIGHT, (-7, 9), (-5, 5)),
+            ],
+            0: [(E.OPEN_ON_TOPRIGHT, (-7, 9), (0, 6))],
+            32: [(E.VERTCONN_ON_TOPRIGHT, (-7, 9), (-5, 0))],
+        },
+        # 左下
+        (2, 0): {
+            13: [
+                (_NO_ERROR, (0, 0), (0, 0)),
+                (E.DISCONNECTED_BOTTOMLEFT, (-8, 8), (-2, 4)),
+            ],
+            313: [
+                (E.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW if isGdesign else
+                 _NO_ERROR,
+                 (0, 0), (0, 0)),
+                (E.DISCONNECTED_BOTTOMLEFTZHOLD, (-8, 8), (-14, 4)),
+            ],
+            413: [
+                (E.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD if isTdesign else
+                 _NO_ERROR,
+                 (0, 0), (0, 0)),
+                (E.DISCONNECTED_BOTTOMLEFTZHNEW, (-8, 8), (-14, 4)),
+            ],
+            23: [(E.BOTTOMRIGHT_ON_BOTTOMLEFT, (-8, 8), (-6, 4))],
+            24: [(E.BOTTOMRIGHTHT_ON_BOTTOMLEFT, (-8, 8), (-6, 4))],
+            0: [
+                (E.OPEN_ON_BOTTOMLEFT, (-8, 8), (-19, -2)),
+                (E.OPEN_ON_BOTTOMLEFTZHOLD, (-8, 8), (-1, 4))
+            ],
+            32: [(E.VERTCONN_ON_BOTTOMLEFT, (-8, 8), (0, 4))],
+        },
+        # 右下
+        (2, 2): {
+            13: [(E.BOTTOMLEFT_ON_BOTTOMRIGHT, (-8, 8), (-2, 4))],
+            313: [(E.BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT, (-8, 8), (-14, 4))],
+            413: [(E.BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT, (-8, 8), (-14, 4))],
+            23: [
+                (_NO_ERROR, (0, 0), (0, 0)),
+                (E.DISCONNECTED_BOTTOMRIGHT, (-8, 8), (-6, 4)),
+            ],
+            24: [
+                (_NO_ERROR, (0, 0), (0, 0)),
+                (E.DISCONNECTED_BOTTOMRIGHTHT, (-8, 8), (-6, 4)),
+            ],
+            0: [(E.OPEN_ON_BOTTOMRIGHT, (-8, 8), (-19, -2))],
+            32: [(E.VERTCONN_ON_BOTTOMRIGHT, (-8, 8), (-19, 0))],
+        }
+    }
+
+
 def _try_connect_corner(
         tate: Segment, yoko: Segment,
         tate_pos: Literal[0, 2], yoko_pos: Literal[0, 2],
@@ -572,6 +641,8 @@ class CornerValidator(Validator):
         for stroke in strokes:
             setSegments(stroke, tate, yoko)
 
+        type_maps = _get_connect_corner_type_maps(isGdesign, isTdesign)
+
         for t in tate:
             for y in yoko:
                 if t.stroke.stype in (2, 6) and y.stroke.stype in (2, 6, 7):
@@ -585,76 +656,20 @@ class CornerValidator(Validator):
                     # bug: missing constraint on yDif
                     connect(t, y, 0, 0, _NO_ERROR)
                 else:
-                    _try_connect_corner(t, y, 0, 0, {
-                        12: [
-                            (_NO_ERROR, (0, 0), (0, 0)),
-                            (E.DISCONNECTED_TOPLEFT, (-7, 9), (-5, 3)),
-                        ],
-                        22: [(E.TOPRIGHT_ON_TOPLEFT, (-7, 9), (-5, 5))],
-                        0: [(E.OPEN_ON_TOPLEFT, (-7, 9), (0, 6))],
-                        32: [(E.VERTCONN_ON_TOPLEFT, (-7, 9), (-5, 0))],
-                    })
+                    _try_connect_corner(t, y, 0, 0, type_maps[0, 0])
 
                 # 右上
-                _try_connect_corner(t, y, 0, 2, {
-                    12: [(E.TOPLEFT_ON_TOPRIGHT, (-7, 9), (-5, 3))],
-                    22: [
-                        (_NO_ERROR, (0, 0), (0, 0)),
-                        (E.DISCONNECTED_TOPRIGHT, (-7, 9), (-5, 5)),
-                    ],
-                    0: [(E.OPEN_ON_TOPRIGHT, (-7, 9), (0, 6))],
-                    32: [(E.VERTCONN_ON_TOPRIGHT, (-7, 9), (-5, 0))],
-                })
+                _try_connect_corner(t, y, 0, 2, type_maps[0, 2])
 
                 # 左下
-                _try_connect_corner(t, y, 2, 0, {
-                    13: [
-                        (_NO_ERROR, (0, 0), (0, 0)),
-                        (E.DISCONNECTED_BOTTOMLEFT, (-8, 8), (-2, 4)),
-                    ],
-                    313: [
-                        (E.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW if isGdesign else
-                         _NO_ERROR,
-                         (0, 0), (0, 0)),
-                        (E.DISCONNECTED_BOTTOMLEFTZHOLD, (-8, 8), (-14, 4)),
-                    ],
-                    413: [
-                        (E.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD if isTdesign else
-                         _NO_ERROR,
-                         (0, 0), (0, 0)),
-                        (E.DISCONNECTED_BOTTOMLEFTZHNEW, (-8, 8), (-14, 4)),
-                    ],
-                    23: [(E.BOTTOMRIGHT_ON_BOTTOMLEFT, (-8, 8), (-6, 4))],
-                    24: [(E.BOTTOMRIGHTHT_ON_BOTTOMLEFT, (-8, 8), (-6, 4))],
-                    0: [
-                        (E.OPEN_ON_BOTTOMLEFT, (-8, 8), (-19, -2)),
-                        (E.OPEN_ON_BOTTOMLEFTZHOLD, (-8, 8), (-1, 4))
-                    ],
-                    32: [(E.VERTCONN_ON_BOTTOMLEFT, (-8, 8), (0, 4))],
-                })
+                _try_connect_corner(t, y, 2, 0, type_maps[2, 0])
 
                 # 右下
                 if y.end_type == 0 and t.end_type == 32 and \
                         6 <= y.x1 - t.x1 <= 18 and 0 <= y.y1 - t.y1 <= 8:
                     connect(t, y, 2, 2, E.PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT)
                 else:
-                    _try_connect_corner(t, y, 2, 2, {
-                        13: [(E.BOTTOMLEFT_ON_BOTTOMRIGHT, (-8, 8), (-2, 4))],
-                        313: [(E.BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT,
-                               (-8, 8), (-14, 4))],
-                        413: [(E.BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT,
-                               (-8, 8), (-14, 4))],
-                        23: [
-                            (_NO_ERROR, (0, 0), (0, 0)),
-                            (E.DISCONNECTED_BOTTOMRIGHT, (-8, 8), (-6, 4)),
-                        ],
-                        24: [
-                            (_NO_ERROR, (0, 0), (0, 0)),
-                            (E.DISCONNECTED_BOTTOMRIGHTHT, (-8, 8), (-6, 4)),
-                        ],
-                        0: [(E.OPEN_ON_BOTTOMRIGHT, (-8, 8), (-19, -2))],
-                        32: [(E.VERTCONN_ON_BOTTOMRIGHT, (-8, 8), (-19, 0))],
-                    }, 0)
+                    _try_connect_corner(t, y, 2, 2, type_maps[2, 2], 0)
 
             for y in yoko:
                 # T
