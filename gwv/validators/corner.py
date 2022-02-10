@@ -686,23 +686,12 @@ class CornerValidator(Validator):
                 # -|
                 _try_connect_tate_middle(t, y, 2)
 
-        results = []
-        for y in yoko:
-            if y.sttConnect is not None and \
-                    y.sttConnect.errcls is not _NO_ERROR:
-                results.append([y.sttConnect.errcls,
-                                y.sttConnect.tate.stroke.line.line_number,
-                                y.stroke.line.line_number])
-            if y.endConnect is not None and \
-                    y.endConnect.errcls is not _NO_ERROR:
-                results.append([y.endConnect.errcls,
-                                y.endConnect.tate.stroke.line.line_number,
-                                y.stroke.line.line_number])
-            for conn in y.midConnect:
-                if conn.errcls is not _NO_ERROR:
-                    results.append([conn.errcls,
-                                    conn.tate.stroke.line.line_number,
-                                    y.stroke.line.line_number])
+        results = [
+            (conn.errcls, conn.tate.stroke.line, y.stroke.line)
+            for y in yoko
+            for conn in (y.sttConnect, y.endConnect, *y.midConnect)
+            if conn is not None and conn.errcls is not _NO_ERROR
+        ]
 
         if isGdesign or isTdesign:
             for t in tate:
@@ -723,14 +712,12 @@ class CornerValidator(Validator):
                         if isGdesign else \
                         E.BOTTOMLEFT_ON_BOTTOMLEFTZHOLD  # 左下zh用に左下型
                 if errcls is not None:
-                    results.append([errcls,
-                                    t.stroke.line.line_number,
-                                    y.stroke.line.line_number])
+                    results.append((errcls, t.stroke.line, y.stroke.line))
 
         if results:
             # 離れているだけの接続より形状がおかしい接続を優先してエラーとする
             # 左下zh用の新旧よりその他の形状がおかしい接続を優先してエラーとする
-            result = max(
+            errcls, tateline, yokoline = max(
                 results,
                 key=lambda r: 0 if r[0].errcode[0] == r[0].errcode[1] else
                 50 if r[0] in (
@@ -738,10 +725,9 @@ class CornerValidator(Validator):
                     E.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW
                 ) else 100
             )
-            glines = ctx.glyph.gdata.split("$")
-            return result[0](
-                [result[1], glines[result[1]]],
-                [result[2], glines[result[2]]],
+            return errcls(
+                [tateline.line_number, tateline.strdata],
+                [yokoline.line_number, yokoline.strdata],
             )
 
         return False
