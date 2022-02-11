@@ -305,10 +305,13 @@ def connect(tate: Segment, yoko: Segment,
         yoko.endConnect = connection
 
 
-def is_ZH_corner(t: Segment, yoko: List[Segment], _tate: List[Segment]):
-    # 縦画tの終端が左下zh用カドであるべきかどうかを周辺の画の接続関係から推測する
+def is_ZH_corner(conn: Connection, yoko: List[Segment], _tate: List[Segment]):
+    # 縦画の終端が左下zh用カドであるべきかどうかを周辺の画の接続関係から推測する
     # 参照: https://twitter.com/kurgm/status/545573760267329537
-    y = t.endConnect.yoko
+    if conn.tate_pos != 2 or conn.yoko_pos != 0:
+        return False
+    t = conn.tate
+    y = conn.yoko
 
     # 　┐
     # └┘
@@ -694,11 +697,12 @@ class CornerValidator(Validator):
 
         if isGdesign or isTdesign:
             for t in tate:
-                if t.endConnect is None or t.endConnect.yoko_pos != 0 or \
+                conn = t.endConnect
+                if conn is None or conn.yoko_pos != 0 or \
                         t.end_type not in (13, 313, 413):
                     continue
-                y = t.endConnect.yoko
-                isZH = is_ZH_corner(t, yoko, tate)
+                y = conn.yoko
+                isZH = is_ZH_corner(conn, yoko, tate)
                 errcls = None
                 if not isZH and t.end_type == 313:
                     # 左下に左下zh用旧型
