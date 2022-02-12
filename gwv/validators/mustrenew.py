@@ -1,4 +1,4 @@
-from typing import List, NamedTuple, Set
+from typing import Dict, List, NamedTuple, Set
 
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
@@ -17,38 +17,41 @@ class MustrenewValidatorError(ValidatorErrorEnum):
 E = MustrenewValidatorError
 
 
+class QuoterInfo(NamedTuple):
+    is_old: bool
+    quoters: Set[str]
+
+
 class MustrenewValidator(Validator):
 
     def __init__(self, *args, **kwargs):
         super(MustrenewValidator, self).__init__(*args, **kwargs)
-        self.results[E.MUSTRENEW_NO_OLD.errcode] = {}
-        self.results[E.MUSTRENEW_OLD.errcode] = {}
+        self.mustrenew_quoters: Dict[str, QuoterInfo] = {}
 
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, ctx: ValidatorContext):
-        quotings: Set[str] = set()
-        quotings_old: Set[str] = set()  # 最新版が旧部品を引用している部品の旧版
         for line in ctx.glyph.kage.lines:
-            if line.stroke_type == 99 and "@" in line.part_name:
-                quoted: str = line.part_name.split("@")[0]
-                if quoted in ctx.dump and "@" in ctx.dump[quoted].gdata:
-                    quotings_old.add(line.part_name)
-                else:
-                    quotings.add(line.part_name)
-        return [quotings, quotings_old] if quotings or quotings_old else False
-
-    def record(self, glyphname: str, error: List[Set[str]]):
-        quotings, quotings_old = error
-        for buhinname in quotings:
-            self.results[E.MUSTRENEW_NO_OLD.errcode].setdefault(
-                buhinname, []).append(glyphname)
-        for buhinname in quotings_old:
-            self.results[E.MUSTRENEW_OLD.errcode].setdefault(
-                buhinname, []).append(glyphname)
+            if line.stroke_type != 99 or "@" not in line.part_name:
+                continue
+            part_name = line.part_name
+            if part_name not in self.mustrenew_quoters:
+                quoted = line.part_name.split("@", 1)[0]
+                is_old = quoted in ctx.dump and "@" in ctx.dump[quoted].gdata
+                self.mustrenew_quoters[part_name] = QuoterInfo(is_old, set())
+            self.mustrenew_quoters[part_name].quoters.add(ctx.glyph.name)
+        return False
 
     def get_result(self):
+        no_old: List[List[str]] = []
+        old: List[List[str]] = []
+        for part_name in sorted(self.mustrenew_quoters.keys()):
+            is_old, quoters = self.mustrenew_quoters[part_name]
+            if is_old:
+                old.append([part_name] + sorted(quoters))
+            else:
+                no_old.append([part_name] + sorted(quoters))
         return {
-            key: [[quoted] + val[quoted] for quoted in sorted(val.keys())]
-            for key, val in self.results.items()
+            E.MUSTRENEW_NO_OLD.errcode: no_old,
+            E.MUSTRENEW_OLD.errcode: old,
         }

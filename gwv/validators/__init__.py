@@ -35,7 +35,7 @@ all_validator_names = [
 class Validator(metaclass=abc.ABCMeta):
 
     def __init__(self):
-        self.results: Dict[str, Any] = {}
+        self.results: Dict[str, List[Any]] = {}
 
     def setup(self, dump: Dump):
         pass
