@@ -54,6 +54,8 @@ class SkewValidator(Validator):
         for line in ctx.glyph.kage.lines:
             stype = line.stroke_type
             coords = line.coords
+            if coords is None:
+                continue
             if stype == 1:
                 xDif = abs(coords[0][0] - coords[1][0])
                 yDif = abs(coords[0][1] - coords[1][1])

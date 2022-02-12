@@ -1,5 +1,6 @@
+import itertools
 import math
-from typing import List, NamedTuple, Tuple
+from typing import Iterable, Iterator, List, NamedTuple, Tuple, TypeVar
 
 import gwv.filters as filters
 from gwv.kagedata import KageLine
@@ -81,7 +82,10 @@ def addLine(line: KageLine, tate: List[LineSegment], yoko: List[LineSegment],
         tate.append(LineSegment(line, dist, angle + math.pi, y1, y0))
 
 
-def ineighbors(iterable):
+T = TypeVar("T")
+
+
+def ineighbors(iterable: Iterable[T]) -> Iterator[Tuple[T, T]]:
     iterator = iter(iterable)
     try:
         p = next(iterator)
@@ -104,31 +108,33 @@ class DupValidator(Validator):
         tate: List[LineSegment] = []
         yoko: List[LineSegment] = []
         curve: List[Tuple[KageLine, List[int]]] = []
-        curve2: List[KageLine] = []
-        buhin: List[KageLine] = []
-        buhinIchi: List[KageLine] = []
+        curve2: List[Tuple[KageLine, List[int]]] = []
+        buhin: List[Tuple[KageLine, List[int]]] = []
+        buhinIchi: List[Tuple[KageLine, List[int]]] = []
 
         for line in ctx.glyph.kage.lines:
             stype = line.stroke_type
             coords = line.coords
+            if coords is None:
+                continue
             if stype == 0:
                 pass
             elif stype == 1:
                 addLine(line, tate, yoko, *coords[0], *coords[1])
             elif stype == 2:
-                curve.append((line, [*coords[0], *coords[1], *coords[2]]))
+                curve.append((line, list(itertools.chain(*coords[0:3]))))
             elif stype in (3, 4):
                 addLine(line, tate, yoko, *coords[0], *coords[1])
                 addLine(line, tate, yoko, *coords[1], *coords[2])
             elif stype == 6:
-                curve2.append(line)
+                curve2.append((line, list(itertools.chain(*coords[0:4]))))
             elif stype == 7:
                 addLine(line, tate, yoko, *coords[0], *coords[1])
-                curve.append((line, [*coords[1], *coords[2], *coords[3]]))
+                curve.append((line, list(itertools.chain(*coords[1:4]))))
             elif stype == 9:
-                buhinIchi.append(line)
+                buhinIchi.append((line, list(itertools.chain(*coords[0:2]))))
             elif stype == 99:
-                buhin.append(line)
+                buhin.append((line, list(itertools.chain(*coords))))
 
         yoko_thresh = 0 if exact_only else 4
         yoko.sort(key=lambda r: r.dist)
@@ -166,37 +172,41 @@ class DupValidator(Validator):
         curve.sort(key=lambda line_coords: line_coords[1][0])
         for (curve_1, curve_1_coords), (curve_2, curve_2_coords) in \
                 ineighbors(curve):
-            if all(-thresh <= curve_1_coords[j] - curve_2_coords[j] <= thresh
-                   for j in range(6)):
+            if all(abs(coord1 - coord2) <= thresh
+                   for coord1, coord2 in zip(curve_1_coords, curve_2_coords)):
                 return E.CURVE(
                     [curve_1.line_number, curve_1.strdata],
                     [curve_2.line_number, curve_2.strdata]
                 )  # 曲線
 
-        curve2.sort(key=lambda line: line.coords[0][0])
-        for curve21, curve22 in ineighbors(curve2):
-            if all(-thresh <= curve21.data[j] - curve22.data[j] <= thresh
-                   for j in range(3, 11)):
+        curve2.sort(key=lambda line_coords: line_coords[1][0])
+        for (curve21, curve21_coords), (curve22, curve22_coords) in \
+                ineighbors(curve2):
+            if all(abs(coord1 - coord2) <= thresh
+                   for coord1, coord2 in zip(curve21_coords, curve22_coords)):
                 return E.CCURVE(
                     [curve21.line_number, curve21.strdata],
                     [curve22.line_number, curve22.strdata]
                 )  # 複曲線
 
-        buhin.sort(key=lambda line: line.coords[0][0])
-        for buhin1, buhin2 in ineighbors(buhin):
+        buhin.sort(key=lambda line_coords: line_coords[1][0])
+        for (buhin1, buhin1_coords), (buhin2, buhin2_coords) in \
+                ineighbors(buhin):
             if buhin1.part_name != buhin2.part_name:
                 continue
-            if all(-thresh <= buhin1.data[j] - buhin2.data[j] <= thresh
-                   for j in range(3, 7)):
+            if all(abs(coord1 - coord2) <= thresh
+                   for coord1, coord2 in zip(buhin1_coords, buhin2_coords)):
                 return E.PART(
                     [buhin1.line_number, buhin1.strdata],
                     [buhin2.line_number, buhin2.strdata]
                 )  # 部品
 
-        buhinIchi.sort(key=lambda line: line.coords[0][0])
-        for buhinIchi1, buhinIchi2 in ineighbors(buhinIchi):
-            if all(-thresh <= buhinIchi1.data[j] - buhinIchi2.data[j] <= thresh
-                   for j in range(3, 7)):
+        buhinIchi.sort(key=lambda line_coords: line_coords[1][0])
+        for (buhinIchi1, buhinIchi1_coords), (buhinIchi2, buhinIchi2_coords) \
+                in ineighbors(buhinIchi):
+            if all(abs(coord1 - coord2) <= thresh
+                   for coord1, coord2 in
+                   zip(buhinIchi1_coords, buhinIchi2_coords)):
                 return E.PARTPOS(
                     [buhinIchi1.line_number, buhinIchi1.strdata],
                     [buhinIchi2.line_number, buhinIchi2.strdata]

@@ -166,6 +166,8 @@ def setSegments(stroke: Stroke, tate: List["Segment"], yoko: List["Segment"]):
     sttType = stroke.line.head_type
     endType = stroke.line.tail_type
     coords = stroke.line.coords
+    if sttType is None or endType is None or coords is None:
+        return
 
     if stroke.stype == 1:
         # 直線

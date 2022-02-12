@@ -106,15 +106,16 @@ class WidthValidator(Validator):
             minX = pinf
             maxX = ninf
             for line in ctx.glyph.kage.lines:
-                if line.stroke_type == 0:
+                coords = line.coords
+                if line.stroke_type == 0 or coords is None:
                     continue
                 if line.stroke_type != 99:
-                    xs = [x for x, _y in line.coords if x is not None]
+                    xs = [x for x, _y in coords if x is not None]
                     if xs:
                         minX = min(minX, *xs)
                         maxX = max(maxX, *xs)
                 else:
-                    (xL, _yL), (xR, _yR) = line.coords
+                    (xL, _yL), (xR, _yR) = coords
                     w = xR - xL
                     gn: str = line.part_name.split("@")[0]
                     if gn in buhinWidths:

@@ -92,7 +92,10 @@ class IdsValidator(Validator):
 
         if not (kage.lines[0].stroke_type == 99 and kage.len > 1):
             return False
-        (x1, y1), (x2, y2) = kage.lines[0].coords
+        coords = kage.lines[0].coords
+        if coords is None:
+            return False
+        (x1, y1), (x2, y2) = coords
         f_part_name = kage.lines[0].part_name
         if y1 == y2:
             aspect = float("inf")

@@ -131,9 +131,12 @@ class IllegalValidator(Validator):
             coords = line.coords
 
             if ctx.is_hikanji:
-                stype = stype % 100 if stype >= 0 else stype
-                sttType = sttType % 100 if sttType >= 0 else sttType
-                endType = endType % 100 if endType >= 0 else endType
+                if stype is not None and stype >= 0:
+                    stype %= 100
+                if sttType is not None and sttType >= 0:
+                    sttType %= 100
+                if endType is not None and endType >= 0:
+                    endType %= 100
 
             if stype == 99:
                 if lendata not in (8, 11):
@@ -150,7 +153,7 @@ class IllegalValidator(Validator):
                     return E.WRONG_NUMBER_OF_COLUMNS(
                         [line.line_number, line.strdata])
             else:
-                if stype not in datalens:
+                if stype is None or stype not in datalens:
                     # 未定義の筆画
                     return E.UNKNOWN_STROKE_TYPE(
                         [line.line_number, line.strdata])
@@ -173,11 +176,14 @@ class IllegalValidator(Validator):
                     # 不正なデータ（0）
                     return E.INVALID_DATA_0(
                         [line.line_number, line.strdata])
-            elif stype == 1:
-                if sttType in (2, 12, 22, 32) or \
-                        endType in (2, 32, 13, 23, 24, 313, 413):
+            elif stype == 9:
+                # 部品位置
+                return E.BUHIN_ICHI([line.line_number, line.strdata])
+            if coords is not None:
+                if stype == 1:
                     if isYoko(*coords[0], *coords[1]):
-                        if sttType > 2 or endType > 2:  # not in (0, 2)
+                        if sttType in (12, 22, 32) or \
+                                endType in (32, 13, 23, 24, 313, 413):
                             # 横画に接続(縦)型
                             return E.VERTCONN_IN_HORI_LINE(
                                 [line.line_number, line.strdata])
@@ -185,29 +191,24 @@ class IllegalValidator(Validator):
                         # 縦画に接続(横)型
                         return E.HORICONN_IN_VERT_LINE(
                             [line.line_number, line.strdata])
-            elif stype == 9:
-                # 部品位置
-                return E.BUHIN_ICHI([line.line_number, line.strdata])
-            elif stype == 2:
-                pass
-            elif stype == 3:
-                if isYoko(*coords[0], *coords[1]):
-                    # 折れの前半が横
-                    return E.HORIZONTAL_ORE_FIRST(
-                        [line.line_number, line.strdata])
-                if line.tail_type == 5 and coords[2][0] - coords[1][0] == 0:
-                    # 折れの後半が縦
-                    return E.VERTICAL_ORE_LAST(
-                        [line.line_number, line.strdata])
-            elif stype == 4:
-                if isYoko(*coords[0], *coords[1]):
-                    # 乙の前半が横
-                    return E.HORIZONTAL_OTSU_FIRST(
-                        [line.line_number, line.strdata])
-                if line.tail_type == 5 and coords[2][0] - coords[1][0] <= 0:
-                    # 乙の後半が左向き
-                    return E.LEFTWARD_OTSU_LAST(
-                        [line.line_number, line.strdata])
+                elif stype == 3:
+                    if isYoko(*coords[0], *coords[1]):
+                        # 折れの前半が横
+                        return E.HORIZONTAL_ORE_FIRST(
+                            [line.line_number, line.strdata])
+                    if line.tail_type == 5 and coords[2][0] == coords[1][0]:
+                        # 折れの後半が縦
+                        return E.VERTICAL_ORE_LAST(
+                            [line.line_number, line.strdata])
+                elif stype == 4:
+                    if isYoko(*coords[0], *coords[1]):
+                        # 乙の前半が横
+                        return E.HORIZONTAL_OTSU_FIRST(
+                            [line.line_number, line.strdata])
+                    if line.tail_type == 5 and coords[2][0] <= coords[1][0]:
+                        # 乙の後半が左向き
+                        return E.LEFTWARD_OTSU_LAST(
+                            [line.line_number, line.strdata])
             if stype != 99:
                 strokeKeijo = (stype, sttType, endType)
 

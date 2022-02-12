@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, cast
 
 
 _alias_prefix = "99:0:0:0:0:200:200:"
@@ -53,6 +53,12 @@ class KageData:
             for line in self.lines)
 
 
+def _check_coords(coords: List[Tuple[Optional[int], Optional[int]]]):
+    if any(x is None or y is None for x, y in coords):
+        return None
+    return cast(List[Tuple[int, int]], coords)
+
+
 class KageLine:
 
     def __init__(self, line_number: int, data: str):
@@ -61,32 +67,37 @@ class KageLine:
         sdata = data.split(":")
         if kageIntSuppressError(sdata[0]) == 99:
             self.data = tuple([
-                kageIntSuppressError(x) if i != 7 else x
+                kageIntSuppressError(x) if i != 7 else None
                 for i, x in enumerate(sdata)])
+            if len(sdata) >= 8:
+                self._part_name = sdata[7]
         else:
             self.data = tuple([kageIntSuppressError(x) for x in sdata])
 
     @property
-    def stroke_type(self) -> int:
+    def stroke_type(self) -> Optional[int]:
         return self.data[0]
 
     @property
-    def head_type(self) -> int:
+    def head_type(self) -> Optional[int]:
         return self.data[1]
 
     @property
-    def tail_type(self) -> int:
+    def tail_type(self) -> Optional[int]:
         return self.data[2]
 
     @property
     def part_name(self) -> str:
         if self.stroke_type != 99:
             raise ValueError("tried to get part name of non-part KageLine")
-        return self.data[7]
+        return self._part_name
 
     @property
-    def coords(self) -> List[Tuple[int, int]]:
+    def coords(self) -> Optional[List[Tuple[int, int]]]:
         if self.stroke_type == 99:
-            return [(self.data[3], self.data[4]), (self.data[5], self.data[6])]
+            return _check_coords([
+                (self.data[3], self.data[4]),
+                (self.data[5], self.data[6]),
+            ])
 
-        return list(zip(self.data[3::2], self.data[4::2]))
+        return _check_coords(list(zip(self.data[3::2], self.data[4::2])))
