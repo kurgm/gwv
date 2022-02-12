@@ -3,7 +3,7 @@ from typing import List, NamedTuple, Optional
 
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
-from gwv.kagedata import KageData
+from gwv.kagedata import KageData, KageLine
 from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
@@ -13,11 +13,11 @@ class IdsErrorBeginningWrongTypePart(NamedTuple):
 
 
 class IdsErrorFirstNotBeginning(NamedTuple):
-    middle_line: list  # kage line number and data
+    middle_line: KageLine
 
 
 class IdsErrorBeginningWrongAspectPart(NamedTuple):
-    first_line: list  # kage line number and data
+    first_line: KageLine
 
 
 class IdsValidatorError(ValidatorErrorEnum):
@@ -128,13 +128,11 @@ class IdsValidator(Validator):
             if not isComplicated and firstBuhinType not in ("01", "08") and \
                     aspect > 1.8:
                 # 左右のIDSだが最初の部品が横長の配置
-                return E.FIRST_PART_LANDSCAPE_IN_LR_IDS(
-                    [0, kage.lines[0].strdata])
+                return E.FIRST_PART_LANDSCAPE_IN_LR_IDS(kage.lines[0])
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
                 # 左右のIDSだが左の字が最初でない
-                return E.LEFT_PART_NOT_FIRST_IN_LR_IDS(
-                    [fkline.line_number, fkline.strdata])
+                return E.LEFT_PART_NOT_FIRST_IN_LR_IDS(fkline)
         elif sname[0] in ("u2ff1", "u2ff3"):
             # [-03] + [-04] or [-03] + [-03] + [-04]
             if firstBuhinType in ("01", "02", "08") and \
@@ -147,13 +145,11 @@ class IdsValidator(Validator):
             if not isComplicated and firstBuhinType not in ("03", "09") and \
                     aspect < 0.65:
                 # 上下のIDSだが最初の部品が縦長の配置
-                return E.FIRST_PART_PORTRAIT_IN_TB_IDS(
-                    [0, kage.lines[0].strdata])
+                return E.FIRST_PART_PORTRAIT_IN_TB_IDS(kage.lines[0])
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
                 # 上下のIDSだが上の字が最初でない
-                return E.TOP_PART_NOT_FIRST_IN_TB_IDS(
-                    [fkline.line_number, fkline.strdata])
+                return E.TOP_PART_NOT_FIRST_IN_TB_IDS(fkline)
         elif sname[0] in (
                 "u2ff4", "u2ff5", "u2ff6", "u2ff7", "u2ff8", "u2ff9", "u2ffa"):
             # [-05] + [-06]
@@ -163,14 +159,12 @@ class IdsValidator(Validator):
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
                 # 囲みIDSだが外の字が最初でない
-                return E.OUTER_PART_NOT_FIRST_IN_SURROUND_IDS(
-                    [fkline.line_number, fkline.strdata])
+                return E.OUTER_PART_NOT_FIRST_IN_SURROUND_IDS(fkline)
         elif sname[0] == "u2ffb":
             fkline = indexOfFirstKanjiBuhinLine(sname, kage)
             if fkline is not None and fkline.line_number != 0:
                 # 重ねIDSだがIDSで最初の字が最初でない
-                return E.FIRST_PART_NOT_FIRST_IN_OVERLAP_IDS(
-                    [fkline.line_number, fkline.strdata])
+                return E.FIRST_PART_NOT_FIRST_IN_OVERLAP_IDS(fkline)
         else:
             return E.UNKNOWN_IDC(sname[0])  # 未定義のIDC
 

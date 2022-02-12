@@ -9,13 +9,13 @@ from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
 class DupError(NamedTuple):
-    line1: list  # kage line number and data
-    line2: list  # kage line number and data
+    line1: KageLine
+    line2: KageLine
 
 
 class DupErrorAmount(NamedTuple):
-    line1: list  # kage line number and data
-    line2: list  # kage line number and data
+    line1: KageLine
+    line2: KageLine
     amount: float
 
 
@@ -143,8 +143,7 @@ class DupValidator(Validator):
                     continue
                 if yoko2.t0 <= yoko1.t1 and yoko1.t0 <= yoko2.t1:
                     return E.HORILINE(
-                        [yoko1.line.line_number, yoko1.line.strdata],
-                        [yoko2.line.line_number, yoko2.line.strdata],
+                        yoko1.line, yoko2.line,
                         min(yoko1.t1 - yoko2.t0, yoko2.t1 - yoko1.t0,
                             yoko1.t1 - yoko1.t0, yoko2.t1 - yoko2.t0)
                     )  # 横
@@ -159,8 +158,7 @@ class DupValidator(Validator):
                     continue
                 if tate2.t0 < tate1.t1 and tate1.t0 < tate2.t1:
                     return E.VERTLINE(
-                        [tate1.line.line_number, tate1.line.strdata],
-                        [tate2.line.line_number, tate2.line.strdata],
+                        tate1.line, tate2.line,
                         min(tate1.t1 - tate2.t0, tate2.t1 - tate1.t0,
                             tate1.t1 - tate1.t0, tate2.t1 - tate2.t0)
                     )  # 縦
@@ -171,20 +169,14 @@ class DupValidator(Validator):
                 ineighbors(curve):
             if all(abs(coord1 - coord2) <= thresh
                    for coord1, coord2 in zip(curve_1_coords, curve_2_coords)):
-                return E.CURVE(
-                    [curve_1.line_number, curve_1.strdata],
-                    [curve_2.line_number, curve_2.strdata]
-                )  # 曲線
+                return E.CURVE(curve_1, curve_2)  # 曲線
 
         curve2.sort(key=lambda line_coords: line_coords[1][0])
         for (curve21, curve21_coords), (curve22, curve22_coords) in \
                 ineighbors(curve2):
             if all(abs(coord1 - coord2) <= thresh
                    for coord1, coord2 in zip(curve21_coords, curve22_coords)):
-                return E.CCURVE(
-                    [curve21.line_number, curve21.strdata],
-                    [curve22.line_number, curve22.strdata]
-                )  # 複曲線
+                return E.CCURVE(curve21, curve22)  # 複曲線
 
         buhin.sort(key=lambda line_coords: line_coords[1][0])
         for (buhin1, buhin1_coords), (buhin2, buhin2_coords) in \
@@ -193,10 +185,7 @@ class DupValidator(Validator):
                 continue
             if all(abs(coord1 - coord2) <= thresh
                    for coord1, coord2 in zip(buhin1_coords, buhin2_coords)):
-                return E.PART(
-                    [buhin1.line_number, buhin1.strdata],
-                    [buhin2.line_number, buhin2.strdata]
-                )  # 部品
+                return E.PART(buhin1, buhin2)  # 部品
 
         buhinIchi.sort(key=lambda line_coords: line_coords[1][0])
         for (buhinIchi1, buhinIchi1_coords), (buhinIchi2, buhinIchi2_coords) \
@@ -204,9 +193,6 @@ class DupValidator(Validator):
             if all(abs(coord1 - coord2) <= thresh
                    for coord1, coord2 in
                    zip(buhinIchi1_coords, buhinIchi2_coords)):
-                return E.PARTPOS(
-                    [buhinIchi1.line_number, buhinIchi1.strdata],
-                    [buhinIchi2.line_number, buhinIchi2.strdata]
-                )  # 部品位置
+                return E.PARTPOS(buhinIchi1, buhinIchi2)  # 部品位置
 
         return False

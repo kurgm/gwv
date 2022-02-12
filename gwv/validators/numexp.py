@@ -1,12 +1,12 @@
 import re
-from typing import NamedTuple
+from typing import NamedTuple, Tuple
 
 from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
 class NumexpError(NamedTuple):
-    line: list  # kage line number and data
+    line: Tuple[int, str]  # kage line number and daata
 
 
 class NumexpValidatorError(ValidatorErrorEnum):
@@ -35,9 +35,9 @@ class NumexpValidator(Validator):
     def is_invalid(self, ctx: ValidatorContext):
         for i, line in enumerate(ctx.glyph.gdata.split("$")):
             if line == "":
-                return E.BLANK_LINE([i, line])  # 空行
+                return E.BLANK_LINE((i, line))  # 空行
             if _re_invalid_chars.search(line):
-                return E.INVALID_CHAR([i, line])  # 不正な文字
+                return E.INVALID_CHAR((i, line))  # 不正な文字
             data = line.split(":")
             for j, col in enumerate(data):
                 if j == 7 and data[0] == "99":
@@ -45,8 +45,8 @@ class NumexpValidator(Validator):
                 try:
                     numdata = int(col)
                 except ValueError:
-                    return E.NOT_AN_INT([i, line])  # 整数として解釈できない
+                    return E.NOT_AN_INT((i, line))  # 整数として解釈できない
                 if str(numdata) != col:
                     # 不正な数値の表現
-                    return E.NONNORMALIZED_NUMBER_EXPRESSION([i, line])
+                    return E.NONNORMALIZED_NUMBER_EXPRESSION((i, line))
         return False

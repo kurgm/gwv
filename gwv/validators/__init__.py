@@ -4,6 +4,7 @@ import logging
 from typing import Any, Dict, Iterable, List, NamedTuple, Tuple
 
 from gwv.dump import Dump
+from gwv.kagedata import KageLine
 from gwv.validatorctx import ValidatorContext
 
 logging.basicConfig()
@@ -57,11 +58,13 @@ class Validator(metaclass=abc.ABCMeta):
 
     def record(self, glyphname: str, error: Tuple[str, Iterable]):
         key, param = error
-        key = str(key)
-        param = list(param)
-        if key not in self.results:
-            self.results[key] = []
-        self.results[key].append([glyphname] + param)
+        param = [self.param_to_serializable(p) for p in param]
+        self.results.setdefault(str(key), []).append([glyphname] + param)
+
+    def param_to_serializable(self, p: Any) -> Any:
+        if isinstance(p, KageLine):
+            return (p.line_number, p.strdata)
+        return p
 
     def get_result(self) -> Dict[str, List[Any]]:
         return self.results

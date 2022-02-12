@@ -10,8 +10,8 @@ from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
 class CornerError(NamedTuple):
-    vertline: list  # kage line number and data
-    horiline: list  # kage line number and data
+    vertline: KageLine
+    horiline: KageLine
 
 
 class CornerValidatorError(ValidatorErrorEnum):
@@ -730,9 +730,6 @@ class CornerValidator(Validator):
                     E.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW
                 ) else 100
             )
-            return errcls(
-                [tateline.line_number, tateline.strdata],
-                [yokoline.line_number, yokoline.strdata],
-            )
+            return errcls(tateline, yokoline)
 
         return False
