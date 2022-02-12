@@ -1,6 +1,7 @@
 import itertools
 import math
-from typing import Iterable, Iterator, List, NamedTuple, Tuple, TypeVar
+import operator
+from typing import Dict, Iterable, Iterator, List, NamedTuple, Tuple, TypeVar
 
 import gwv.filters as filters
 from gwv.kagedata import KageLine
@@ -79,6 +80,23 @@ def addLine(line: KageLine, tate: List[LineSegment], yoko: List[LineSegment],
         tate.append(LineSegment(line, dist, angle + math.pi, y1, y0))
 
 
+def dup_line_segments(
+        segments: List[LineSegment], thresh: float, inclusive: bool):
+    comp_op = operator.le if inclusive else operator.lt
+    segments.sort(key=lambda r: r.dist)
+    for i, seg1 in enumerate(segments):
+        for seg2 in segments[i + 1:]:
+            if seg2.dist - seg1.dist > thresh:
+                break
+            if abs(seg1.angle - seg2.angle) > 1.0 / 60.0:
+                continue
+            if comp_op(seg2.t0, seg1.t1) and comp_op(seg1.t0, seg2.t1):
+                amount = min(seg1.t1 - seg2.t0, seg2.t1 - seg1.t0,
+                             seg1.t1 - seg1.t0, seg2.t1 - seg2.t0)
+                return (seg1, seg2, amount)
+    return None
+
+
 T = TypeVar("T")
 
 
@@ -94,6 +112,15 @@ def ineighbors(iterable: Iterable[T]) -> Iterator[Tuple[T, T]]:
         return
 
 
+def dup_coords(elems: List[Tuple[KageLine, List[int]]], thresh: int):
+    elems.sort(key=lambda elem: elem[1][0])
+    for (line1, coords1), (line2, coords2) in ineighbors(elems):
+        if all(abs(coord1 - coord2) <= thresh
+               for coord1, coord2 in zip(coords1, coords2)):
+            return (line1, line2)
+    return None
+
+
 class DupValidator(Validator):
 
     @filters.check_only(-filters.is_alias)
@@ -106,7 +133,7 @@ class DupValidator(Validator):
         yoko: List[LineSegment] = []
         curve: List[Tuple[KageLine, List[int]]] = []
         curve2: List[Tuple[KageLine, List[int]]] = []
-        buhin: List[Tuple[KageLine, List[int]]] = []
+        buhin: Dict[str, List[Tuple[KageLine, List[int]]]] = {}
         buhinIchi: List[Tuple[KageLine, List[int]]] = []
 
         for line in ctx.glyph.kage.lines:
@@ -131,68 +158,32 @@ class DupValidator(Validator):
             elif stype == 9:
                 buhinIchi.append((line, list(itertools.chain(*coords[0:2]))))
             elif stype == 99:
-                buhin.append((line, list(itertools.chain(*coords))))
+                buhin.setdefault(line.part_name, []).append(
+                    (line, list(itertools.chain(*coords))))
 
-        yoko_thresh = 0 if exact_only else 4
-        yoko.sort(key=lambda r: r.dist)
-        for i, yoko1 in enumerate(yoko):
-            for yoko2 in yoko[i + 1:]:
-                if yoko2.dist - yoko1.dist > yoko_thresh:
-                    break
-                if abs(yoko1.angle - yoko2.angle) > 1.0 / 60.0:
-                    continue
-                if yoko2.t0 <= yoko1.t1 and yoko1.t0 <= yoko2.t1:
-                    return E.HORILINE(
-                        yoko1.line, yoko2.line,
-                        min(yoko1.t1 - yoko2.t0, yoko2.t1 - yoko1.t0,
-                            yoko1.t1 - yoko1.t0, yoko2.t1 - yoko2.t0)
-                    )  # 横
+        yoko_thresh = 0.0 if exact_only else 4.0
+        if param := dup_line_segments(yoko, yoko_thresh, True):
+            yoko1, yoko2, amount = param
+            return E.HORILINE(yoko1.line, yoko2.line, amount)
 
-        tate_thresh = 0 if exact_only else 9
-        tate.sort(key=lambda r: r.dist)
-        for i, tate1 in enumerate(tate):
-            for tate2 in tate[i + 1:]:
-                if tate2.dist - tate1.dist > tate_thresh:
-                    break
-                if abs(tate1.angle - tate2.angle) > 1.0 / 60.0:
-                    continue
-                if tate2.t0 < tate1.t1 and tate1.t0 < tate2.t1:
-                    return E.VERTLINE(
-                        tate1.line, tate2.line,
-                        min(tate1.t1 - tate2.t0, tate2.t1 - tate1.t0,
-                            tate1.t1 - tate1.t0, tate2.t1 - tate2.t0)
-                    )  # 縦
+        tate_thresh = 0.0 if exact_only else 9.0
+        if param := dup_line_segments(tate, tate_thresh, False):
+            tate1, tate2, amount = param
+            return E.VERTLINE(tate1.line, tate2.line, amount)
 
         thresh = 0 if exact_only else 3
-        curve.sort(key=lambda line_coords: line_coords[1][0])
-        for (curve_1, curve_1_coords), (curve_2, curve_2_coords) in \
-                ineighbors(curve):
-            if all(abs(coord1 - coord2) <= thresh
-                   for coord1, coord2 in zip(curve_1_coords, curve_2_coords)):
-                return E.CURVE(curve_1, curve_2)  # 曲線
 
-        curve2.sort(key=lambda line_coords: line_coords[1][0])
-        for (curve21, curve21_coords), (curve22, curve22_coords) in \
-                ineighbors(curve2):
-            if all(abs(coord1 - coord2) <= thresh
-                   for coord1, coord2 in zip(curve21_coords, curve22_coords)):
-                return E.CCURVE(curve21, curve22)  # 複曲線
+        if line12 := dup_coords(curve, thresh):
+            return E.CURVE(*line12)
 
-        buhin.sort(key=lambda line_coords: line_coords[1][0])
-        for (buhin1, buhin1_coords), (buhin2, buhin2_coords) in \
-                ineighbors(buhin):
-            if buhin1.part_name != buhin2.part_name:
-                continue
-            if all(abs(coord1 - coord2) <= thresh
-                   for coord1, coord2 in zip(buhin1_coords, buhin2_coords)):
-                return E.PART(buhin1, buhin2)  # 部品
+        if line12 := dup_coords(curve2, thresh):
+            return E.CCURVE(*line12)
 
-        buhinIchi.sort(key=lambda line_coords: line_coords[1][0])
-        for (buhinIchi1, buhinIchi1_coords), (buhinIchi2, buhinIchi2_coords) \
-                in ineighbors(buhinIchi):
-            if all(abs(coord1 - coord2) <= thresh
-                   for coord1, coord2 in
-                   zip(buhinIchi1_coords, buhinIchi2_coords)):
-                return E.PARTPOS(buhinIchi1, buhinIchi2)  # 部品位置
+        for buhin_sub in buhin.values():
+            if line12 := dup_coords(buhin_sub, thresh):
+                return E.PART(*line12)
+
+        if line12 := dup_coords(buhinIchi, thresh):
+            return E.PARTPOS(*line12)
 
         return False
