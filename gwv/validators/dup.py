@@ -46,15 +46,12 @@ E = DupValidatorError
 _d45 = math.pi / 4.0
 
 
-class LineSegment:
-
-    def __init__(self, line: KageLine, dist: float, angle: float,
-                 t0: int, t1: int):
-        self.line = line
-        self.dist = dist  # (0, 0)と直線との距離
-        self.angle = angle  # yoko: -pi/4 < theta < pi/4; tate: 0 < theta < pi
-        self.t0 = t0
-        self.t1 = t1
+class LineSegment(NamedTuple):
+    line: KageLine
+    dist: float  # (0, 0)と直線との距離
+    angle: float  # yoko: -pi/4 < theta < pi/4; tate: 0 < theta < pi
+    t0: int
+    t1: int
 
 
 def addLine(line: KageLine, tate: List[LineSegment], yoko: List[LineSegment],

@@ -1,7 +1,7 @@
 import abc
 from enum import Enum
 import logging
-from typing import Iterable, NamedTuple, Tuple
+from typing import Any, Dict, Iterable, List, NamedTuple, Tuple
 
 from gwv.dump import Dump
 from gwv.validatorctx import ValidatorContext
@@ -34,13 +34,13 @@ all_validator_names = [
 class Validator(metaclass=abc.ABCMeta):
 
     def __init__(self):
-        self.results = {}
+        self.results: Dict[str, Any] = {}
 
     def setup(self, dump: Dump):
         pass
 
     @abc.abstractmethod
-    def is_invalid(self, ctx: ValidatorContext):
+    def is_invalid(self, ctx: ValidatorContext) -> Any:
         raise NotImplementedError
 
     def validate(self, ctx: ValidatorContext):
@@ -63,7 +63,7 @@ class Validator(metaclass=abc.ABCMeta):
             self.results[key] = []
         self.results[key].append([glyphname] + param)
 
-    def get_result(self):
+    def get_result(self) -> Dict[str, List[Any]]:
         return self.results
 
 
