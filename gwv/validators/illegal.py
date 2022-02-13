@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Set, Tuple
 
 import gwv.filters as filters
 from gwv.helper import isYoko
@@ -63,43 +63,104 @@ class IllegalValidatorError(ValidatorErrorEnum):
 E = IllegalValidatorError
 
 
-keijoKumiawase = {
-    tuple([int(x) for x in keijoStr.split(":")])
-    for keijoStr in (
-        "0:0:0,0:-1:-1,0:99:1,0:99:2,0:99:3,0:98:0,0:97:0,"
+keijoKumiawase: Set[Tuple[int, int, int]] = {
+    # https://github.com/kurgm/kage-editor/blob/master/src/kageUtils/stroketype.ts
+    (1, 0, 0),
+    (1, 0, 2),
+    (1, 0, 32),
+    (1, 0, 13),
+    (1, 0, 23),
+    (1, 0, 4),
+    (1, 0, 313),
+    (1, 0, 413),
+    (1, 0, 24),
+    (1, 2, 0),
+    (1, 2, 2),
+    (1, 32, 0),
+    (1, 32, 32),
+    (1, 32, 13),
+    (1, 32, 23),
+    (1, 32, 4),
+    (1, 32, 313),
+    (1, 32, 413),
+    (1, 32, 24),
+    (1, 12, 0),
+    (1, 12, 32),
+    (1, 12, 13),
+    (1, 12, 23),
+    (1, 12, 313),
+    (1, 12, 413),
+    (1, 12, 24),
+    (1, 22, 0),
+    (1, 22, 32),
+    (1, 22, 13),
+    (1, 22, 23),
+    (1, 22, 4),
+    (1, 22, 313),
+    (1, 22, 413),
+    (1, 22, 24),
+    (2, 0, 7),
+    (2, 0, 5),
+    (2, 32, 7),
+    (2, 32, 4),
+    (2, 32, 5),
+    (2, 12, 7),
+    (2, 22, 7),
+    (2, 22, 4),
+    (2, 22, 5),
+    (2, 7, 0),
+    (2, 7, 8),
+    (2, 7, 4),
+    (2, 27, 0),
+    (3, 0, 0),
+    (3, 0, 5),
+    (3, 0, 32),
+    (3, 32, 0),
+    (3, 32, 5),
+    (3, 32, 32),
+    (3, 12, 0),
+    (3, 12, 5),
+    (3, 12, 32),
+    (3, 22, 0),
+    (3, 22, 5),
+    (3, 22, 32),
+    (4, 0, 0),
+    (4, 0, 5),
+    (4, 22, 0),
+    (4, 22, 5),
+    (6, 0, 7),
+    (6, 0, 5),
+    (6, 32, 7),
+    (6, 32, 4),
+    (6, 32, 5),
+    (6, 12, 7),
+    (6, 22, 7),
+    (6, 22, 4),
+    (6, 22, 5),
+    (6, 7, 0),
+    (6, 7, 8),
+    (6, 7, 4),
+    (6, 27, 0),
+    (7, 0, 7),
+    (7, 32, 7),
+    (7, 12, 7),
+    (7, 22, 7),
 
-        "1:0:0,1:0:13,1:0:2,1:0:23,1:0:24,1:0:313,1:0:32,1:0:4,1:12:0,1:12:13,"
-        "1:12:23,1:12:24,1:12:313,1:12:32,1:12:413,1:2:0,1:2:2,1:22:0,1:22:13,"
-        "1:22:23,1:22:24,1:22:313,1:22:32,1:22:4,1:22:413,1:32:0,1:32:13,"
-        "1:32:23,1:32:24,1:32:313,1:32:32,1:32:4,1:32:413,"
-
-        "2:0:5,2:0:7,2:12:7,2:22:4,2:22:5,2:22:7,2:32:4,2:32:5,2:32:7,2:7:0,"
-        "2:7:4,2:7:8,"
-
-        "3:0:0,3:0:5,3:12:0,3:12:5,3:22:5,3:32:0,3:32:5,"
-
-        "4:0:0,4:0:5,4:22:0,4:22:5,"
-
-        "6:0:5,6:0:7,6:12:7,6:22:4,6:22:5,6:22:7,6:32:4,6:32:5,6:32:7,6:7:0,"
-        "6:7:4,6:7:8,"
-
-        "7:0:7,7:12:7,7:32:7,"
-
-        "9:0:0"
-
-        ",7:22:7,3:22:0,1:0:413"  # グリフエディタではエラーになるが……
-        ",2:27:0,6:27:0"  # 屋根付き細入り
-    ).split(",")
+    (0, 0, 0),
+    (0, -1, -1),
+    (0, 99, 1),
+    (0, 99, 2),
+    (0, 99, 3),
+    (0, 98, 0),
+    (0, 97, 0),
+    (9, 0, 0),
 }
 
-hikanjiKeijoKumiawase = {
-    tuple([int(x) for x in keijoStr.split(":")])
-    for keijoStr in [
-        "2:32:0",  # 曲線、接続→右払い
-        "6:32:0",  # 複曲線、接続→右払い
-        "2:32:8",  # 曲線、接続→止め
-        "6:32:8"   # 複曲線、接続→止め
-    ]
+hikanjiKeijoKumiawase: Set[Tuple[int, int, int]] = {
+    (2, 32, 0),  # 曲線、接続→右払い
+    (6, 32, 0),  # 複曲線、接続→右払い
+    (2, 32, 8),  # 曲線、接続→止め
+    (6, 32, 8),  # 複曲線、接続→止め
 }
 
 # {筆画タイプ: データ列数}
@@ -118,6 +179,9 @@ class IllegalValidator(Validator):
 
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, ctx: ValidatorContext):
+        allowed_shape_types = keijoKumiawase
+        if ctx.is_hikanji:
+            allowed_shape_types = allowed_shape_types | hikanjiKeijoKumiawase
         for line in ctx.glyph.kage.lines:
             lendata = len(line.data)
             stype = line.stroke_type
@@ -197,11 +261,7 @@ class IllegalValidator(Validator):
                         # 乙の後半が左向き
                         return E.LEFTWARD_OTSU_LAST(line)
             if stype != 99:
-                strokeKeijo = (stype, sttType, endType)
-
-                if strokeKeijo not in keijoKumiawase and not (
-                        ctx.is_hikanji and
-                        strokeKeijo in hikanjiKeijoKumiawase):
+                if (stype, sttType, endType) not in allowed_shape_types:
                     # 未定義の形状の組み合わせ
                     return E.UNKNOWN_STROKE_FORM(line)
         return False
