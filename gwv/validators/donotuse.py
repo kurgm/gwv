@@ -1,4 +1,4 @@
-from typing import List, NamedTuple
+from typing import Any, List, NamedTuple, Tuple
 
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
@@ -30,6 +30,6 @@ class DonotuseValidator(Validator):
             return E.DO_NOT_USE(quotings)
         return False
 
-    def record(self, glyphname: str, error):
+    def record(self, glyphname: str, error: Tuple[str, Any]):
         key, param = error
         super().record(glyphname, (key, param.parts))
