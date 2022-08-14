@@ -128,7 +128,7 @@ class JValidator(Validator):
             ksource = cjk_sources.get(ucs, cjk_sources.COLUMN_K)
             if ksource is not None:
                 return E.KV_HAS_KSOURCE(ksource)  # Kソースがあるのにkv
-        elif region in ("gv", "tv", "vv"):
+        elif region in ("gv", "tv", "vv", "hv"):
             # TODO
             return False
         else:  # not 仮想字形
