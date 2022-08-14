@@ -5,7 +5,8 @@ import gwv.filters as filters
 from gwv.helper import isYoko
 from gwv.kagedata import KageLine
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import Validator, ValidatorErrorEnum, \
+    ValidatorErrorTupleRecorder, error_code
 
 
 class SkewError(NamedTuple):
@@ -47,7 +48,18 @@ class SkewValidatorError(ValidatorErrorEnum):
 E = SkewValidatorError
 
 
+class SkewValidatorErrorRecorder(ValidatorErrorTupleRecorder):
+    def get_result(self):
+        for key, val in self._results.items():
+            if key != E.HORI_TATEBARAI_FIRST.errcode:
+                # 歪み角度が大きい順にソート
+                val.sort(key=lambda r: r[2], reverse=True)
+        return super().get_result()
+
+
 class SkewValidator(Validator):
+
+    recorder_cls = SkewValidatorErrorRecorder
 
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
@@ -117,10 +129,3 @@ class SkewValidator(Validator):
                         line,
                         round(abs(90 - theta1 * 180 / math.pi), 1))
         return False
-
-    def get_result(self):
-        for key, val in self.results.items():
-            if key != E.HORI_TATEBARAI_FIRST.errcode:
-                # 歪み角度が大きい順にソート
-                val.sort(key=lambda r: r[2], reverse=True)
-        return super(SkewValidator, self).get_result()

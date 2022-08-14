@@ -1,7 +1,8 @@
 import abc
+from collections import defaultdict
 from enum import Enum
 import logging
-from typing import Any, Dict, Iterable, List, NamedTuple, Tuple
+from typing import Any, Dict, Iterable, List, NamedTuple, Tuple, Type
 
 from gwv.dump import Dump
 from gwv.kagedata import KageLine
@@ -32,10 +33,40 @@ all_validator_names = [
 ]
 
 
+class ValidatorErrorRecorder(abc.ABC):
+    @abc.abstractmethod
+    def record(self, glyphname: str, error: Tuple[str, Any]):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_result(self) -> Dict[str, List[Any]]:
+        raise NotImplementedError()
+
+
+class ValidatorErrorTupleRecorder(ValidatorErrorRecorder):
+    def __init__(self):
+        self._results: Dict[str, List[List]] = defaultdict(lambda: [])
+
+    def record(self, glyphname: str, error: Tuple[str, Iterable]):
+        key, param = error
+        param = [self.param_to_serializable(p) for p in param]
+        self._results[key].append([glyphname] + list(param))
+
+    def param_to_serializable(self, p: Any) -> Any:
+        if isinstance(p, KageLine):
+            return (p.line_number, p.strdata)
+        return p
+
+    def get_result(self) -> Dict[str, List[List]]:
+        return dict(self._results)
+
+
 class Validator(metaclass=abc.ABCMeta):
 
+    recorder_cls: Type[ValidatorErrorRecorder] = ValidatorErrorTupleRecorder
+
     def __init__(self):
-        self.results: Dict[str, List[Any]] = {}
+        self.recorder = self.recorder_cls()
 
     def setup(self, dump: Dump):
         pass
@@ -56,18 +87,11 @@ class Validator(metaclass=abc.ABCMeta):
         if is_invalid:
             self.record(ctx.glyph.name, is_invalid)
 
-    def record(self, glyphname: str, error: Tuple[str, Iterable]):
-        key, param = error
-        param = [self.param_to_serializable(p) for p in param]
-        self.results.setdefault(str(key), []).append([glyphname] + param)
-
-    def param_to_serializable(self, p: Any) -> Any:
-        if isinstance(p, KageLine):
-            return (p.line_number, p.strdata)
-        return p
+    def record(self, glyphname: str, error: Tuple[str, Any]):
+        self.recorder.record(glyphname, error)
 
     def get_result(self) -> Dict[str, List[Any]]:
-        return self.results
+        return self.recorder.get_result()
 
 
 class ErrorCodeAndParams(NamedTuple):

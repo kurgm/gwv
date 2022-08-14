@@ -4,7 +4,8 @@ import gwv.filters as filters
 from gwv.helper import isYoko
 from gwv.kagedata import KageData, KageLine
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import Validator, ValidatorErrorEnum, \
+    ValidatorErrorTupleRecorder, error_code
 
 
 class IllegalLineError(NamedTuple):
@@ -311,7 +312,17 @@ def validate_stroke_line(ctx: ValidatorContext, line: KageLine):
     return False
 
 
+class IllegalValidatorErrorRecorder(ValidatorErrorTupleRecorder):
+    def get_result(self):
+        for val in self._results.values():
+            if val and len(val[0]) >= 3 and type(val[0][1]) is str:
+                val.sort(key=lambda r: r[1])
+        return super().get_result()
+
+
 class IllegalValidator(Validator):
+
+    recorder_cls = IllegalValidatorErrorRecorder
 
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, ctx: ValidatorContext):
@@ -342,9 +353,3 @@ class IllegalValidator(Validator):
             )))
         else:
             super().record(glyphname, error)
-
-    def get_result(self):
-        for val in self.results.values():
-            if val and len(val[0]) >= 3 and type(val[0][1]) is str:
-                val.sort(key=lambda r: r[1])
-        return super().get_result()
