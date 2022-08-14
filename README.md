@@ -35,6 +35,7 @@ gwv /path/to/dump_newest_only.txt
 ```
   -h, --help            show this help message and exit
   -o OUT, --out OUT     File to write the output JSON to
+  --ignore-error        Ignore runtime errors and resume validation of next glyph
   -n [NAMES ...], --names [NAMES ...]
                         Names of validators
   -v, --version         show program's version number and exit

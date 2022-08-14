@@ -67,6 +67,7 @@ class Validator(metaclass=abc.ABCMeta):
 
     def __init__(self):
         self.recorder = self.recorder_cls()
+        self.ignore_error = False
 
     def setup(self, dump: Dump):
         pass
@@ -82,7 +83,9 @@ class Validator(metaclass=abc.ABCMeta):
             log.exception(
                 "Exception while %s is validating %s",
                 type(self).__name__, ctx.glyph.name)
-            return
+            if self.ignore_error:
+                return
+            raise
 
         if is_invalid:
             self.record(ctx.glyph.name, is_invalid)

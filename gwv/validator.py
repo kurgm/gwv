@@ -16,7 +16,9 @@ def get_validator_class(name: str) -> Type[validators.Validator]:
     return validator_class
 
 
-def validate(dump: Dump, validator_names: Optional[List[str]] = None):
+def validate(
+        dump: Dump, validator_names: Optional[List[str]] = None,
+        *, ignore_error: bool = False):
     if validator_names is None:
         validator_names = validators.all_validator_names
 
@@ -26,6 +28,7 @@ def validate(dump: Dump, validator_names: Optional[List[str]] = None):
     }
 
     for val in validator_instances.values():
+        val.ignore_error = ignore_error
         val.setup(dump)
 
     for glyphname in sorted(dump.keys()):
