@@ -1,15 +1,12 @@
 import abc
 from collections import defaultdict
 from enum import Enum
-import logging
 from typing import Any, Dict, Iterable, List, NamedTuple, Tuple, Type
 
 from gwv.dump import Dump
 from gwv.kagedata import KageLine
 from gwv.validatorctx import ValidatorContext
 
-logging.basicConfig()
-log = logging.getLogger(__name__)
 
 all_validator_names = [
     "corner",
@@ -67,7 +64,6 @@ class Validator(metaclass=abc.ABCMeta):
 
     def __init__(self):
         self.recorder = self.recorder_cls()
-        self.ignore_error = False
 
     def setup(self, dump: Dump):
         pass
@@ -77,15 +73,7 @@ class Validator(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     def validate(self, ctx: ValidatorContext):
-        try:
-            is_invalid = self.is_invalid(ctx)
-        except Exception:
-            log.exception(
-                "Exception while %s is validating %s",
-                type(self).__name__, ctx.glyph.name)
-            if self.ignore_error:
-                return
-            raise
+        is_invalid = self.is_invalid(ctx)
 
         if is_invalid:
             self.record(ctx.glyph.name, is_invalid)

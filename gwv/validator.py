@@ -1,8 +1,12 @@
+import logging
 from typing import List, Optional, Type
 
 from gwv.dump import Dump
 from gwv import validators
 from gwv.validatorctx import ValidatorContext
+
+
+log = logging.getLogger(__name__)
 
 
 def get_validator_name(name: str) -> str:
@@ -28,14 +32,20 @@ def validate(
     }
 
     for val in validator_instances.values():
-        val.ignore_error = ignore_error
         val.setup(dump)
 
     for glyphname in sorted(dump.keys()):
         entry = dump[glyphname]
         ctx = ValidatorContext(dump, entry)
         for val in validator_instances.values():
-            val.validate(ctx)
+            try:
+                val.validate(ctx)
+            except Exception:
+                log.exception(
+                    "Exception while %s is validating %s",
+                    type(val).__name__, ctx.glyph.name)
+                if not ignore_error:
+                    raise
 
     return {
         val_name: {
