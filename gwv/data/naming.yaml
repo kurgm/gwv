@@ -56,9 +56,7 @@ rule:
   - katakana-twtone\d{2}
   - kkdjg-kokuji-[abc]\d{4}
   - kokuji-no-jiten-\d{4}
-  - kp1-[\da-f]{4}
   - kumimoji-.+
-  - kx-\d{7}
   - nihonjin-no-tsukutta-kanji-\d{3}(ks?)?
   - nyukan-[ef][\da-f]{3}
   - obuso-\d{4}(-jv)?
@@ -82,8 +80,6 @@ rule:
   - z-sat\d{5}
   - zihai-\d{6}
 
-  # Group:prefix-N5112作業用@4
-  - (k|kp|t)u-[023][\da-f]{4}
   # Group:prefix-ac1@2
   - ac1-\d{5}
   # Group:prefix-aj2@3
@@ -120,13 +116,19 @@ rule:
   - irg20(15|17|21)-\d{5}
   # Group:prefix-k@1
   - k[\da-f]-[\da-f]{4}
+  - ku-[023][\da-f]{4}
   # Group:prefix-kikkou@1
   - kikkou-[a-z]+2?
   # Group:prefix-kinhd@1
   - kinhd-\d{5}
   # Group:prefix-kokuji@2
   - kokuji-[a-z]+-\d{3}
+  # Group:prefix-kp@1
+  - kp[01]-[\da-f]{4}
+  - kpu-[023][\da-f]{4}
   # Group:prefix-kumimoji@5
+  # Group:prefix-kx@4
+  - kx-\d{7}
   # Group:prefix-lgccc@4
   - lgccc-\d{4}
   # Group:prefix-m@1
@@ -153,18 +155,19 @@ rule:
   - pinyin-[0-2][a-z]{1,7}[0-5]
   # Group:prefix-proposal@5
   - proposal-(n\d{4}|l2-\d{2}-\d{3})-.+
-  # Group:prefix-s17stdkanjiv@5
+  # Group:prefix-s17stdkanjiv@6
   - s17stdkanjiv-u[\da-f]{4,5}
   # Group:prefix-sawno@6
   # Group:prefix-sdjt@1
   - sdjt-\d{5}
   # Group:prefix-shincho@1
   - shincho-\d{5}
-  # Group:prefix-t@2
+  # Group:prefix-t@3
   # Group:prefix-tf@1
   # Group:prefix-t12@1
   - t[1-79a-f]-[\da-f]{4}
   - t1[1-3]-[\da-f]{4}
+  - tu-[023][\da-f]{4}
   # Group:prefix-tb@1
   # Group:prefix-tc@1
   # Group:prefix-taiwanese@4
@@ -173,13 +176,20 @@ rule:
   - tdcntd-\d{6}
   # Group:prefix-tenrei@4
   - tenrei-[1-6]\d{3}[ab]\d{2,3}
+  # # Group:prefix-tensho@2
+  # - tensho-(sho|dai)-u[23]?[\da-f]{4}
+  # Group:prefix-tokinet@4
+  - tokinet-(00(e[\da-f]|f[0-8])|(0f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-ttz@3
   - ttz-\d{3}-\d{2}-[a-z]+
   # Group:prefix-u@8
+  # Group:prefix-ucsur@1
   # Group:prefix-uk@5
   - uk-\d{5}
-  # Group:prefix-unstable@10
+  # Group:prefix-unstable@11
   - unstable-bsh-[\da-f]{4}
+  - unstable-kreative-(f[6-8]|ff[01])[\da-f]{2}
+  - unstable-mufi-(e[\da-f]|f[0-8])[\da-f]{2}
   - unstable-nishiki-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-v@5
   - v[0-4]-[\da-f]{4}
