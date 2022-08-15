@@ -32,7 +32,7 @@ all_validator_names = [
 
 class ValidatorErrorRecorder(abc.ABC):
     @abc.abstractmethod
-    def record(self, glyphname: str, error: Tuple[str, Any]):
+    def record(self, glyphname: str, error: Any) -> None:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -44,7 +44,7 @@ class ValidatorErrorTupleRecorder(ValidatorErrorRecorder):
     def __init__(self):
         self._results: Dict[str, List[List]] = defaultdict(lambda: [])
 
-    def record(self, glyphname: str, error: Tuple[str, Iterable]):
+    def record(self, glyphname: str, error: Tuple[str, Iterable]) -> None:
         key, param = error
         param = [self.param_to_serializable(p) for p in param]
         self._results[key].append([glyphname] + list(param))
@@ -78,7 +78,7 @@ class Validator(metaclass=abc.ABCMeta):
         if is_invalid:
             self.record(ctx.glyph.name, is_invalid)
 
-    def record(self, glyphname: str, error: Tuple[str, Any]):
+    def record(self, glyphname: str, error: Any):
         self.recorder.record(glyphname, error)
 
     def get_result(self) -> Dict[str, List[Any]]:
