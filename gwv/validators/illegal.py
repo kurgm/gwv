@@ -1,4 +1,4 @@
-from typing import Iterable, NamedTuple, Set, Tuple
+from typing import NamedTuple, Set, Tuple
 
 import gwv.filters as filters
 from gwv.helper import isYoko
@@ -233,17 +233,17 @@ def validate_99_line(ctx: ValidatorContext, line: KageLine):
     data_len = len(line.data)
     if data_len not in (8, 11):
         return E.WRONG_NUMBER_OF_COLUMNS(line)
-    return False
+    return None
 
 
 def validate_0_line(ctx: ValidatorContext, line: KageLine):
     if line.data in ((0, 0, 0, 0), (0, -1, -1, -1)):
-        return False
+        return None
     if line.data[:3] in (
             (0, 99, 1), (0, 99, 2), (0, 99, 3), (0, 98, 0), (0, 97, 0)):
         if len(line.data) != 7:
             return E.WRONG_NUMBER_OF_COLUMNS(line)
-        return False
+        return None
 
     if len(line.data) not in (4, 7):
         return E.WRONG_NUMBER_OF_COLUMNS(line)
@@ -309,7 +309,7 @@ def validate_stroke_line(ctx: ValidatorContext, line: KageLine):
         allowed_shape_types = hikanjiKeijoKumiawase
     if (stype, shape0, shape1) not in allowed_shape_types:
         return E.UNKNOWN_STROKE_FORM(line)
-    return False
+    return None
 
 
 class IllegalValidatorErrorRecorder(ValidatorErrorTupleRecorder):
@@ -325,26 +325,27 @@ class IllegalValidator(Validator):
     recorder_cls = IllegalValidatorErrorRecorder
 
     @filters.check_only(-filters.is_of_category({"user-owned"}))
-    def is_invalid(self, ctx: ValidatorContext):
+    def validate(self, ctx: ValidatorContext) -> None:
         for line in ctx.glyph.kage.lines:
             stype = line.stroke_type
             if stype == 99:
                 if err := validate_99_line(ctx, line):
-                    return err
+                    self.record(ctx.glyph.name, err)
             elif stype == 0:
                 if err := validate_0_line(ctx, line):
-                    return err
+                    self.record(ctx.glyph.name, err)
             else:
                 if err := validate_stroke_line(ctx, line):
-                    return err
+                    self.record(ctx.glyph.name, err)
 
         if not ctx.glyph.is_alias and is_alias_like(ctx.glyph.kage):
-            return E.ALIAS_LIKE()
+            err = E.ALIAS_LIKE()
+            self.record(ctx.glyph.name, err)
         if is_blank_like(ctx.glyph.kage) and ctx.glyph.gdata != "0:-1:-1:-1":
-            return E.BLANK_LIKE()
-        return False
+            err = E.BLANK_LIKE()
+            self.record(ctx.glyph.name, err)
 
-    def record(self, glyphname: str, error: Tuple[str, Iterable]):
+    def record(self, glyphname: str, error):
         key, param = error
         if isinstance(param, IllegalLineError):
             super().record(glyphname, (key, (

@@ -68,7 +68,6 @@ class Validator(metaclass=abc.ABCMeta):
     def setup(self, dump: Dump):
         pass
 
-    @abc.abstractmethod
     def is_invalid(self, ctx: ValidatorContext) -> Any:
         raise NotImplementedError
 

@@ -635,7 +635,7 @@ class CornerValidator(Validator):
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.is_hikanji)
     @filters.check_only(-filters.has_transform)
-    def is_invalid(self, ctx: ValidatorContext):
+    def validate(self, ctx: ValidatorContext) -> None:
         strokes = []
         tate: List[Segment] = []
         yoko: List[Segment] = []
@@ -719,17 +719,5 @@ class CornerValidator(Validator):
                 if errcls is not None:
                     results.append((errcls, t.stroke.line, y.stroke.line))
 
-        if results:
-            # 離れているだけの接続より形状がおかしい接続を優先してエラーとする
-            # 左下zh用の新旧よりその他の形状がおかしい接続を優先してエラーとする
-            errcls, tateline, yokoline = max(
-                results,
-                key=lambda r: 0 if r[0].errcode[0] == r[0].errcode[1] else
-                50 if r[0] in (
-                    E.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD,
-                    E.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW
-                ) else 100
-            )
-            return errcls(tateline, yokoline)
-
-        return False
+        for errcls, tateline, yokoline in results:
+            self.record(ctx.glyph.name, errcls(tateline, yokoline))

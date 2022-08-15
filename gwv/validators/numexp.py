@@ -32,12 +32,14 @@ _re_invalid_chars = re.compile(r"[^\da-z_\:@-]")
 
 class NumexpValidator(Validator):
 
-    def is_invalid(self, ctx: ValidatorContext):
+    def validate(self, ctx: ValidatorContext) -> None:
         for i, line in enumerate(ctx.glyph.gdata.split("$")):
             if line == "":
-                return E.BLANK_LINE((i, line))  # 空行
+                self.record(ctx.glyph.name, E.BLANK_LINE((i, line)))  # 空行
+                continue
             if _re_invalid_chars.search(line):
-                return E.INVALID_CHAR((i, line))  # 不正な文字
+                self.record(ctx.glyph.name, E.INVALID_CHAR((i, line)))  # 不正な文字
+                continue
             data = line.split(":")
             for j, col in enumerate(data):
                 if j == 7 and data[0] == "99":
@@ -45,8 +47,11 @@ class NumexpValidator(Validator):
                 try:
                     numdata = int(col)
                 except ValueError:
-                    return E.NOT_AN_INT((i, line))  # 整数として解釈できない
+                    err = E.NOT_AN_INT((i, line))  # 整数として解釈できない
+                    self.record(ctx.glyph.name, err)
+                    break
                 if str(numdata) != col:
                     # 不正な数値の表現
-                    return E.NONNORMALIZED_NUMBER_EXPRESSION((i, line))
-        return False
+                    err = E.NONNORMALIZED_NUMBER_EXPRESSION((i, line))
+                    self.record(ctx.glyph.name, err)
+                    break

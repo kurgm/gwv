@@ -63,69 +63,86 @@ class SkewValidator(Validator):
 
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
-    def is_invalid(self, ctx: ValidatorContext):
+    def validate(self, ctx: ValidatorContext) -> None:
         for line in ctx.glyph.kage.lines:
-            stype = line.stroke_type
-            coords = line.coords
-            if coords is None:
-                continue
-            if stype == 1:
-                xDif = abs(coords[0][0] - coords[1][0])
-                yDif = abs(coords[0][1] - coords[1][1])
-                if xDif <= yDif and xDif != 0 and xDif <= 3:
-                    # 歪んだ垂直
-                    return E.SKEWED_VERT_LINE(
-                        line,
-                        round(math.atan2(xDif, yDif) * 180 / math.pi, 1))
-                if xDif > yDif and yDif != 0 and yDif <= 3:
-                    # 歪んだ水平
-                    return E.SKEWED_HORI_LINE(
-                        line,
-                        round(math.atan2(yDif, xDif) * 180 / math.pi, 1))
-            elif stype == 3:
-                xDif1 = abs(coords[0][0] - coords[1][0])
-                yDif1 = abs(coords[0][1] - coords[1][1])
-                if xDif1 != 0 and xDif1 <= 3:
-                    # 折れの前半が歪んだ垂直
-                    return E.SKEWED_VERT_ORE_FIRST(
-                        line,
-                        round(math.atan2(xDif1, yDif1) * 180 / math.pi, 1))
-                xDif2 = abs(coords[1][0] - coords[2][0])
-                yDif2 = abs(coords[1][1] - coords[2][1])
-                if yDif2 != 0 and yDif2 <= 3:
-                    # 折れの後半が歪んだ水平
-                    return E.SKEWED_HORI_ORE_LAST(
-                        line,
-                        round(math.atan2(yDif2, xDif2) * 180 / math.pi, 1))
-            elif stype == 4:
-                xDif = abs(coords[1][0] - coords[2][0])
-                yDif = abs(coords[1][1] - coords[2][1])
-                if yDif != 0 and yDif <= 3:
-                    # 乙の後半が歪んだ水平
-                    return E.SKEWED_HORI_OTSU_LAST(
-                        line,
-                        round(math.atan2(yDif, xDif) * 180 / math.pi, 1))
-            elif stype == 7:
-                if isYoko(*coords[0], *coords[1]):
-                    # 縦払いの直線部分が横
-                    return E.HORI_TATEBARAI_FIRST(line)
-                xDif1 = coords[1][0] - coords[0][0]
-                yDif1 = coords[1][1] - coords[0][1]
-                theta1 = math.atan2(yDif1, xDif1)
-                if xDif1 == 0 and yDif1 == 0:
-                    theta1 = math.pi / 2
-                xDif2 = coords[2][0] - coords[1][0]
-                yDif2 = coords[2][1] - coords[1][1]
-                theta2 = math.atan2(yDif2, xDif2)
-                if (xDif1 == 0 and xDif2 != 0) or \
-                        abs(theta1 - theta2) * 60 > 3:
-                    # 曲がった縦払い
-                    return E.SNAPPED_TATEBARAI(
-                        line,
-                        round(abs(theta1 - theta2) * 180 / math.pi, 1))
-                if xDif1 != 0 and -3 <= xDif1 <= 3:
-                    # 縦払いの直線部分が歪んだ垂直
-                    return E.SKEWED_VERT_TATEBARAI_FIRST(
-                        line,
-                        round(abs(90 - theta1 * 180 / math.pi), 1))
-        return False
+            self._validate_line(ctx, line)
+
+    def _validate_line(self, ctx: ValidatorContext, line: KageLine) -> None:
+        stype = line.stroke_type
+        coords = line.coords
+        if coords is None:
+            return
+        if stype == 1:
+            xDif = abs(coords[0][0] - coords[1][0])
+            yDif = abs(coords[0][1] - coords[1][1])
+            if xDif <= yDif and xDif != 0 and xDif <= 3:
+                # 歪んだ垂直
+                err = E.SKEWED_VERT_LINE(
+                    line,
+                    round(math.atan2(xDif, yDif) * 180 / math.pi, 1))
+                self.record(ctx.glyph.name, err)
+                return
+            if xDif > yDif and yDif != 0 and yDif <= 3:
+                # 歪んだ水平
+                err = E.SKEWED_HORI_LINE(
+                    line,
+                    round(math.atan2(yDif, xDif) * 180 / math.pi, 1))
+                self.record(ctx.glyph.name, err)
+                return
+        elif stype == 3:
+            xDif1 = abs(coords[0][0] - coords[1][0])
+            yDif1 = abs(coords[0][1] - coords[1][1])
+            if xDif1 != 0 and xDif1 <= 3:
+                # 折れの前半が歪んだ垂直
+                err = E.SKEWED_VERT_ORE_FIRST(
+                    line,
+                    round(math.atan2(xDif1, yDif1) * 180 / math.pi, 1))
+                self.record(ctx.glyph.name, err)
+                return
+            xDif2 = abs(coords[1][0] - coords[2][0])
+            yDif2 = abs(coords[1][1] - coords[2][1])
+            if yDif2 != 0 and yDif2 <= 3:
+                # 折れの後半が歪んだ水平
+                err = E.SKEWED_HORI_ORE_LAST(
+                    line,
+                    round(math.atan2(yDif2, xDif2) * 180 / math.pi, 1))
+                self.record(ctx.glyph.name, err)
+                return
+        elif stype == 4:
+            xDif = abs(coords[1][0] - coords[2][0])
+            yDif = abs(coords[1][1] - coords[2][1])
+            if yDif != 0 and yDif <= 3:
+                # 乙の後半が歪んだ水平
+                err = E.SKEWED_HORI_OTSU_LAST(
+                    line,
+                    round(math.atan2(yDif, xDif) * 180 / math.pi, 1))
+                self.record(ctx.glyph.name, err)
+                return
+        elif stype == 7:
+            if isYoko(*coords[0], *coords[1]):
+                # 縦払いの直線部分が横
+                err = E.HORI_TATEBARAI_FIRST(line)
+                self.record(ctx.glyph.name, err)
+                return
+            xDif1 = coords[1][0] - coords[0][0]
+            yDif1 = coords[1][1] - coords[0][1]
+            theta1 = math.atan2(yDif1, xDif1)
+            if xDif1 == 0 and yDif1 == 0:
+                theta1 = math.pi / 2
+            xDif2 = coords[2][0] - coords[1][0]
+            yDif2 = coords[2][1] - coords[1][1]
+            theta2 = math.atan2(yDif2, xDif2)
+            if (xDif1 == 0 and xDif2 != 0) or abs(theta1 - theta2) * 60 > 3:
+                # 曲がった縦払い
+                err = E.SNAPPED_TATEBARAI(
+                    line,
+                    round(abs(theta1 - theta2) * 180 / math.pi, 1))
+                self.record(ctx.glyph.name, err)
+                return
+            if xDif1 != 0 and -3 <= xDif1 <= 3:
+                # 縦払いの直線部分が歪んだ垂直
+                err = E.SKEWED_VERT_TATEBARAI_FIRST(
+                    line,
+                    round(abs(90 - theta1 * 180 / math.pi), 1))
+                self.record(ctx.glyph.name, err)
+                return
