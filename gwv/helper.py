@@ -17,11 +17,12 @@ _togo_ranges = [
     range_inclusive(0x3400, 0x4dbf),    # Ext A
     range_inclusive(0x4e00, 0x9fff),    # URO
     range_inclusive(0x20000, 0x2a6df),  # Ext B
-    range_inclusive(0x2a700, 0x2b738),  # Ext C
+    range_inclusive(0x2a700, 0x2b739),  # Ext C
     range_inclusive(0x2b740, 0x2b81d),  # Ext D
     range_inclusive(0x2b820, 0x2cea1),  # Ext E
     range_inclusive(0x2ceb0, 0x2ebe0),  # Ext F
     range_inclusive(0x30000, 0x3134a),  # Ext G
+    range_inclusive(0x31350, 0x323af),  # Ext H
 ]
 
 _togo_in_compat = {
