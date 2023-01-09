@@ -90,11 +90,11 @@ rule:
   - c([1-9a-f]|1[13])-[\da-f]{4}
   # Group:prefix-fudemame@1
   - fudemame-e[\da-f]{3}
-  # Group:prefix-g@22
+  # Group:prefix-g@24
   - g[013578eks]-[\da-f]{4}
   - gfz-[\da-f]{4}
   - gh-\d{4}
-  - g-(gfc|gfz|idc|ocd|xhz)\d{3}
+  - g-(ce|gfc|gfz|idc|ocd|xhz)\d{3}
   - g-(cy|lgyj|pglg|t|xc)\d{4}
   - g-(4k|cyy|dm|fzc|gjz|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw|zys)\d{5}
   - g-(bk|ch|cy|dz|gh|hc|kx|rm|wz|xc|xh|zh)\d{6}
@@ -108,8 +108,8 @@ rule:
   # Group:prefix-heisei@4
   # Group:prefix-hka@3
   - hka-[\da-f]{4}
-  # Group:prefix-hokke@3
-  - hokke-\d{3}[1-6]{2}[12]?
+  # Group:prefix-hokke@4
+  - hokke-\d{3}[1-6]{2}[ab]?
   # Group:prefix-irg2015@1
   # Group:prefix-irg2017@1
   # Group:prefix-irg2021@1
@@ -117,6 +117,8 @@ rule:
   # Group:prefix-k@1
   - k[\da-f]-[\da-f]{4}
   - ku-[023][\da-f]{4}
+  # Group:prefix-kanjikai@1
+  - kanjikai-\d{6}
   # Group:prefix-kikkou@1
   - kikkou-[a-z]+2?
   # Group:prefix-kinhd@1
@@ -136,7 +138,7 @@ rule:
   - m(a|b[12])-[\da-f]{4}
   - mdh?-[23]?[\da-f]{4}
   - me-[23]?[\da-f]{4}\d{3}
-  # Group:prefix-misc@18
+  # Group:prefix-misc@20
   - misc-.+
   # Group:prefix-myogisho-z@2
   - myogisho-z-\d{5}[ab]?
@@ -186,7 +188,7 @@ rule:
   # Group:prefix-ucsur@1
   # Group:prefix-uk@5
   - uk-\d{5}
-  # Group:prefix-unstable@11
+  # Group:prefix-unstable@12
   - unstable-bsh-[\da-f]{4}
   - unstable-kreative-(f[6-8]|ff[01])[\da-f]{2}
   - unstable-mufi-(e[\da-f]|f[0-8])[\da-f]{2}
@@ -493,7 +495,7 @@ dont-create:
   - dkw-49878
   - dkw-49901
 
-  # Group-talk:GTコード@41#GTコード欠番一覧
+  # Group-talk:GTコード@45#GTコード欠番一覧
   - gt-00176
   - gt-04099
   - gt-05145
