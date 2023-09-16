@@ -19,6 +19,7 @@ rule-nohenka:
   regex:
   - u[1-3]?[\da-f]{4}(-u[1-3]?[\da-f]{4})*-vert
   - u[1-3]?[\da-f]{4}(-u[1-3]?[\da-f]{4})*-(full|half)width
+  - u1?[\da-f]{4}(-u1?[\da-f]{4})*-italic
 
 rule:
   # var/itaiji も偏化変形も許容する
@@ -38,7 +39,6 @@ rule:
   - dkw-[\dh]\d{4}d{0,2}
   - ext[df]-\d{5}
   - gt-k?\d{5}
-  - heisei-((ft|hg|ia|ib|ja|jb|jc|jd)\d{4}|(ip|jt)[\da-f]{4}|ks\d{6}|tk\d{8})s?
   - hentaigana-u[4-9][\da-f]{3}-[a-z]{1,3}-\d{3}
   - hiragana-[a-z]+
   - hitsujun-[\da-z]+(-\d{3}){1,2}
@@ -85,7 +85,7 @@ rule:
   - aj2-\d{4}
   # Group:prefix-bouyei@1
   - bouyei-\d{5}
-  # Group:prefix-c@3
+  # Group:prefix-c@4
   - c([1-9a-f]|1[13])-[\da-f]{4}
   # Group:prefix-fudemame@1
   - fudemame-e[\da-f]{3}
@@ -93,18 +93,22 @@ rule:
   - g[013578eks]-[\da-f]{4}
   - gfz-[\da-f]{4}
   - gh-\d{4}
+  - gidc23-\d{3}
   - g-(ce|gfc|gfz|idc|ocd|xhz)\d{3}
   - g-(cy|lgyj|pglg|t|xc)\d{4}
-  - g-(4k|cyy|dm|fzc|gjz|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw|zys)\d{5}
+  - g-(4k|cyy|dm|fzc|gjz|gt|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw|zys)\d{5}
   - g-(bk|ch|cy|dz|gh|hc|kx|rm|wz|xc|xh|zh)\d{6}
   - g-(h|hzr?|kx|z)\d{7}
   - gu-[023][\da-f]{4}
-  # Group:prefix-h@1
+  # Group:prefix-gsunicode@1
+  - gsunicode-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
+  # Group:prefix-h@3
   - h-[\da-f]{4}
   - h(b[0-2]|[de])-[\da-f]{4}
   - hc-\d{4}
   - hu-[023][\da-f]{4}
-  # Group:prefix-heisei@4
+  # Group:prefix-heisei@5
+  - heisei-((ft|hg|ia|ib|ja|jb|jc|jd)\d{4}|(ip|jt)[\da-f]{4}|ks\d{6}|tk\d{8})s{0,2}
   # Group:prefix-hka@3
   - hka-[\da-f]{4}
   # Group:prefix-hokke@4
@@ -132,11 +136,14 @@ rule:
   - kx-\d{7}
   # Group:prefix-lgccc@4
   - lgccc-\d{4}
-  # Group:prefix-m@1
+  # Group:prefix-m@2
   - mac-\d{5}
   - m(a|b[12])-[\da-f]{4}
   - mdh?-[23]?[\da-f]{4}
   - me-[23]?[\da-f]{4}\d{3}
+  # Group:prefix-mathematical@2
+  - mathematical-sans-serif(-italic)?-(capital|small)-[a-z]+
+  - mathematical-double-struck-italic-(capital|small)-[a-z]
   # Group:prefix-misc@20
   - misc-.+
   # Group:prefix-myogisho-z@2
@@ -179,15 +186,15 @@ rule:
   - tenrei-[1-6]\d{3}[ab]\d{2,3}
   # # Group:prefix-tensho@2
   # - tensho-(sho|dai)-u[23]?[\da-f]{4}
-  # Group:prefix-tokinet@4
+  # Group:prefix-tokinet@3
   - tokinet-(00(e[\da-f]|f[0-8])|(0f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-ttz@3
   - ttz-\d{3}-\d{2}-[a-z]+
-  # Group:prefix-u@8
+  # Group:prefix-u@11
   # Group:prefix-ucsur@1
   # Group:prefix-uk@5
   - uk-\d{5}
-  # Group:prefix-unstable@12
+  # Group:prefix-unstable@15
   - unstable-bsh-[\da-f]{4}
   - unstable-kreative-(f[6-8]|ff[01])[\da-f]{2}
   - unstable-mufi-(e[\da-f]|f[0-8])[\da-f]{2}
