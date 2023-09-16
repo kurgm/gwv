@@ -27,7 +27,7 @@ rule:
   - u[1-3]?[\da-f]{4}(-u[1-3]?[\da-f]{4})*-sans
   - ue0[01][\da-f]{2}
 
-  # based on Group:prefix@24
+  # based on Group:prefix@25
   - koseki-\d{6}
   - a[jk]1-\d{5}
   - b-[\da-f]{4}
@@ -56,7 +56,6 @@ rule:
   - katakana-twtone\d{2}
   - kkdjg-kokuji-[abc]\d{4}
   - kokuji-no-jiten-\d{4}
-  - kumimoji-.+
   - nihonjin-no-tsukutta-kanji-\d{3}(ks?)?
   - nyukan-[ef][\da-f]{3}
   - obuso-\d{4}(-jv)?
@@ -128,7 +127,7 @@ rule:
   # Group:prefix-kp@1
   - kp[01]-[\da-f]{4}
   - kpu-[023][\da-f]{4}
-  # Group:prefix-kumimoji@5
+  # Group:prefix-kumimoji@8
   # Group:prefix-kx@4
   - kx-\d{7}
   # Group:prefix-lgccc@4

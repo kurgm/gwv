@@ -76,7 +76,7 @@ _re_cdp = re.compile(r"\bcdp([on]?)-([\da-f]{4})\b")
 _re_valid_cdp = re.compile(
     r"(8[1-9a-f]|9[\da-f]|a0|c[67])(a[1-9a-f]|[4-6b-e][\da-f]|[7f][\da-e])")
 
-_re_ids_head = re.compile(r"(u2ff[\da-f]|u31ef)-")
+_re_ids_head = re.compile(r"(kumimoji|u2ff[\da-f]|u31ef)-")
 _re_idc_1 = re.compile(r"\bu2ff[ef]\b")
 _re_idc_2 = re.compile(r"\b(u2ff[014-9a-d]|u31ef)\b")
 _re_idc_3 = re.compile(r"\bu2ff[23]\b")
@@ -118,6 +118,8 @@ class NamingValidator(Validator):
 
         if _re_ids_head.match(name):
             idsReplacedName = name
+            if idsReplacedName.startswith("kumimoji-"):
+                idsReplacedName = idsReplacedName[9:]
             idsReplacedName = _re_idc_1.sub("１", idsReplacedName)
             idsReplacedName = _re_idc_2.sub("２", idsReplacedName)
             idsReplacedName = _re_idc_3.sub("３", idsReplacedName)
