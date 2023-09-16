@@ -21,6 +21,7 @@ _togo_ranges = [
     range_inclusive(0x2b740, 0x2b81d),  # Ext D
     range_inclusive(0x2b820, 0x2cea1),  # Ext E
     range_inclusive(0x2ceb0, 0x2ebe0),  # Ext F
+    range_inclusive(0x2ebf0, 0x2ee5d),  # Ext I
     range_inclusive(0x30000, 0x3134a),  # Ext G
     range_inclusive(0x31350, 0x323af),  # Ext H
 ]
