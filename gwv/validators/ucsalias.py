@@ -38,7 +38,7 @@ E = UcsaliasValidatorError
 _re_sources = re.compile(r"-" + RE_REGIONS)
 _re_tail_var_itaiji = re.compile(r"-(var|itaiji)-\d{3}")
 _re_ucs_ = re.compile(r"u[\da-f]+(-|$)")
-_re_ids = re.compile(r"u2ff.-")
+_re_ids = re.compile(r"(u2ff[\da-f]|u31ef)-")
 
 
 class UcsaliasValidator(Validator):

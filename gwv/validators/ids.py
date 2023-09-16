@@ -63,7 +63,7 @@ class IdsValidatorError(ValidatorErrorEnum):
 E = IdsValidatorError
 
 
-_re_idc = re.compile(r"u2ff[\dab]")
+_re_idc = re.compile(r"u2ff[\da-f]|u31ef")
 _re_vars = re.compile(
     r"-" + RE_REGIONS + r"?(\d{2})(?:-(?:var|itaiji)-\d{3})?(?=@|$)")
 
@@ -151,7 +151,8 @@ class IdsValidator(Validator):
                 # 上下のIDSだが上の字が最初でない
                 return E.TOP_PART_NOT_FIRST_IN_TB_IDS(fkline)
         elif sname[0] in (
-                "u2ff4", "u2ff5", "u2ff6", "u2ff7", "u2ff8", "u2ff9", "u2ffa"):
+                "u2ff4", "u2ff5", "u2ff6", "u2ff7", "u2ff8", "u2ff9", "u2ffa",
+                "u2ffc", "u2ffd"):
             # [-05] + [-06]
             if firstBuhinType in ("02", "06", "07"):
                 # 囲むIDSだが内側部品が最初
@@ -165,6 +166,8 @@ class IdsValidator(Validator):
             if fkline is not None and fkline.line_number != 0:
                 # 重ねIDSだがIDSで最初の字が最初でない
                 return E.FIRST_PART_NOT_FIRST_IN_OVERLAP_IDS(fkline)
+        elif sname[0] in ("u2ffe, u2fff", "u31ef"):
+            pass
         else:
             return E.UNKNOWN_IDC(sname[0])  # 未定義のIDC
 

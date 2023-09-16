@@ -49,7 +49,7 @@ def gl2kuten(gl_: str):
 _re_ivs = re.compile(r"u[0-9a-f]{4,6}-ue01[0-9a-f]{2}")
 _re_svs = re.compile(r"u[0-9a-f]{4,6}-ufe0[0-9a-f]")
 _re_ucs = re.compile(r"u([0-9a-f]{4,6})(?:-.+)?")
-_re_ids = re.compile(r"u2ff[\dab]-.+")
+_re_ids = re.compile(r"(?:u2ff[\da-f]|u31ef)-.+")
 _re_koseki = re.compile(r"koseki-(\d{6})")
 _re_jmj = re.compile(r"jmj-(\d{6})")
 _re_juki = re.compile(r"juki-([0-9a-f]{4})")

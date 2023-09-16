@@ -75,7 +75,7 @@ def isGokanKanji(name: str):
 
 
 _re_categorize = re.compile(r"""
-    (?P<ids>    u2ff[\dab]-.+)|
+    (?P<ids>    (?:u2ff[\da-f]|u31ef)-.+)|
     (?P<UCS>    u([\da-f]{4,6})((?:-.+)?))|
     (?P<cdp>    (cdp[on]?)-([\da-f]{4})(?:(-.+)?))|
     (?P<koseki> koseki-(\d{6}))|
