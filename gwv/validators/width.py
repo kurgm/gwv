@@ -40,6 +40,7 @@ halflists = [
     GWGroupLazyLoader("HalfwidthGlyphs-BMP", isset=True),
     GWGroupLazyLoader("HalfwidthGlyphs-SMP", isset=True),
     GWGroupLazyLoader("HalfwidthGlyphs-nonUCS", isset=True),
+    GWGroupLazyLoader("HalfwidthGlyphs-sans", isset=True),
 ]
 nonspacinghalflist = GWGroupLazyLoader(
     "NonSpacingGlyphs-Halfwidth", isset=True)
