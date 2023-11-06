@@ -89,7 +89,7 @@ rule:
   - c([1-9a-f]|1[13])-[\da-f]{4}
   # Group:prefix-fudemame@1
   - fudemame-e[\da-f]{3}
-  # Group:prefix-g@24
+  # Group:prefix-g@30
   - g[013578eks]-[\da-f]{4}
   - gfz-[\da-f]{4}
   - gh-\d{4}
