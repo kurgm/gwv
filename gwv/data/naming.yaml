@@ -102,7 +102,7 @@ rule:
   - gu-[023][\da-f]{4}
   # Group:prefix-gsunicode@1
   - gsunicode-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
-  # Group:prefix-h@3
+  # Group:prefix-h@4
   - h-[\da-f]{4}
   - h(b[0-2]|[de])-[\da-f]{4}
   - hc-\d{4}
