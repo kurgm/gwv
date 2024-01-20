@@ -63,10 +63,11 @@ def parseMjxlsx(mjxlsx: IO[bytes]):
             mjrow[6].add(chtext[2:].lower())  # strip "U+"
         chtext = rowdata["実装したMoji_JohoコレクションIVS"]
         if chtext:
-            seq = chtext.split("_")
-            mjrow[6].add(seq[0].lower())
-            # XXXX_E01YY -> uxxxx-ue01yy
-            mjrow[7].add("-".join("u" + cp.lower() for cp in seq))
+            for ivs in chtext.split(";"):
+                seq = ivs.split("_")
+                mjrow[6].add(seq[0].lower())
+                # XXXX_E01YY -> uxxxx-ue01yy
+                mjrow[7].add("-".join("u" + cp.lower() for cp in seq))
         chtext = rowdata["実装したSVS"]
         if chtext:
             seq = chtext.split("_")
