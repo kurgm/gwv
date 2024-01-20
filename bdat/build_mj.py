@@ -5,17 +5,14 @@ import json
 import logging
 import os
 from urllib.request import urlretrieve
-import shutil
-import tempfile
-from typing import Any, Dict, List
-import zipfile
+from typing import Any, Dict, IO, List
 
 from .strict_xlsx import iterxlsx
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
 
-MJ_ZIP_URL = "https://moji.or.jp/wp-content/mojikiban/oscdl/mji.00601-xlsx.zip"
+MJ_XLSX_URL = "https://moji.or.jp/wp-content/uploads/2024/01/mji.00602.xlsx"
 MJ_JSON_FILENAME = "mj.json"
 
 
@@ -24,7 +21,7 @@ def kuten2gl(ku: int, ten: int):
     return "{:02x}{:02x}".format(ku + 32, ten + 32)
 
 
-def parseMjxlsx(mjxlsx):
+def parseMjxlsx(mjxlsx: IO[bytes]):
     mjdat: List[List] = []
     mjit = iterxlsx(mjxlsx, "sheet1")
     header = next(mjit)
@@ -116,16 +113,12 @@ def main(mjjson_path: str = mjjson_path):
         return
     os.makedirs(os.path.dirname(mjjson_path), exist_ok=True)
 
-    log.info("Downloading %s", MJ_ZIP_URL)
-    filename, _headers = urlretrieve(MJ_ZIP_URL)
+    log.info("Downloading %s", MJ_XLSX_URL)
+    filename, _headers = urlretrieve(MJ_XLSX_URL)
     log.info("Download completed")
 
-    with tempfile.TemporaryFile() as mjxlsx_seekable:
-        with zipfile.ZipFile(filename) as mjzip:
-            with mjzip.open("mji.00601.xlsx") as mjxlsx:
-                shutil.copyfileobj(mjxlsx, mjxlsx_seekable)
-
-        mjdat = parseMjxlsx(mjxlsx_seekable)
+    with open(filename, "rb") as mjxlsx:
+        mjdat = parseMjxlsx(mjxlsx)
 
     with open(mjjson_path, "w") as mjjson_file:
         json.dump(mjdat, mjjson_file, separators=(",", ":"))

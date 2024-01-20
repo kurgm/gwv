@@ -93,7 +93,10 @@ def _itersheet(sheet: IO[bytes], strs: List[str]) -> Iterator[Dict[int, Any]]:
             columnnum, _rownum = _parse_coordinate(cellelem.get("r"))
             vtype = cellelem.get("t", "n")
 
-            value = cellelem.find(OOXML_NS + "v").text
+            velem = cellelem.find(OOXML_NS + "v")
+            if velem is None:
+                continue
+            value: Any = velem.text
             if vtype == "n":
                 value = parse_numeric(value)
             elif vtype == "s":
