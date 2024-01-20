@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import functools
 import re
 from xml.etree.ElementTree import iterparse
@@ -48,6 +41,7 @@ def _get_strings(sstf):
 
 def _memoize(f):
     memo = {}
+
     @functools.wraps(f)
     def wrapper(*args):
         key = tuple(args)
