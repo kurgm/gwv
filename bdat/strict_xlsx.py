@@ -1,13 +1,17 @@
 import functools
 import re
-from xml.etree.ElementTree import iterparse
+from typing import Any, Callable, Dict, IO, Iterator, List, Tuple, TypeVar, \
+    Union
+from xml.etree.ElementTree import Element, iterparse
 import zipfile
 
 OOXML_NS = "{http://purl.oclc.org/ooxml/spreadsheetml/main}"
 
 
-def _iterchildren(xmlf, pred):
+def _iterchildren(xmlf: IO[bytes], pred: Callable[[Element], bool]) -> \
+        Iterator[Element]:
     it = iterparse(xmlf, ("start", "end"))
+    elem: Element
     for evt, elem in it:
         if evt == "start" and pred(elem):
             break
@@ -28,19 +32,22 @@ def _iterchildren(xmlf, pred):
                 return
 
 
-def _tag_is(tagname):
+def _tag_is(tagname: str) -> Callable[[Element], bool]:
     return lambda elem: elem.tag == tagname
 
 
-def _get_strings(sstf):
+def _get_strings(sstf: IO[bytes]) -> List[str]:
     return [
         elem.find(OOXML_NS + "t").text
         for elem in _iterchildren(sstf, _tag_is(OOXML_NS + "sst"))
     ]
 
 
-def _memoize(f):
-    memo = {}
+T = TypeVar("T")
+
+
+def _memoize(f: Callable[..., T]) -> Callable[..., T]:
+    memo: Dict[Tuple, T] = {}
 
     @functools.wraps(f)
     def wrapper(*args):
@@ -52,7 +59,7 @@ def _memoize(f):
 
 
 @_memoize
-def column_to_int(column):
+def column_to_int(column: str) -> int:
     result = 0
     for c in column:
         result *= 26
@@ -64,7 +71,7 @@ def column_to_int(column):
 RE_COORD = re.compile(r"^([A-Z]{1,3})(\d+)$")
 
 
-def _parse_coordinate(coord):
+def _parse_coordinate(coord: str) -> Tuple[int, int]:
     m = RE_COORD.match(coord)
     if not m:
         raise ValueError("invalid coordinate {!r}".format(coord))
@@ -72,16 +79,16 @@ def _parse_coordinate(coord):
     return column_to_int(column), int(row)
 
 
-def parse_numeric(s):
+def parse_numeric(s: str) -> Union[int, float]:
     try:
         return int(s)
     except ValueError:
         return float(s)
 
 
-def _itersheet(sheet, strs):
+def _itersheet(sheet: IO[bytes], strs: List[str]) -> Iterator[Dict[int, Any]]:
     for rowelem in _iterchildren(sheet, _tag_is(OOXML_NS + "sheetData")):
-        row = {}
+        row: Dict[int, Any] = {}
         for cellelem in rowelem:
             columnnum, _rownum = _parse_coordinate(cellelem.get("r"))
             vtype = cellelem.get("t", "n")
@@ -99,7 +106,7 @@ def _itersheet(sheet, strs):
         yield row
 
 
-def iterxlsx(xlsx, sheetname):
+def iterxlsx(xlsx: Union[str, IO[bytes]], sheetname: str):
     archive = zipfile.ZipFile(xlsx)
 
     sstf = archive.open("xl/sharedStrings.xml")

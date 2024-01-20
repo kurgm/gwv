@@ -7,6 +7,7 @@ import os
 from urllib.request import urlretrieve
 import shutil
 import tempfile
+from typing import Any, Dict, List
 import zipfile
 
 from .strict_xlsx import iterxlsx
@@ -24,11 +25,11 @@ def kuten2gl(ku: int, ten: int):
 
 
 def parseMjxlsx(mjxlsx):
-    mjdat = []
+    mjdat: List[List] = []
     mjit = iterxlsx(mjxlsx, "sheet1")
     header = next(mjit)
     for row in mjit:
-        rowdata = defaultdict(lambda: None, {
+        rowdata: Dict[str, Any] = defaultdict(lambda: None, {
             header[col]: value
             for col, value in row.items()
         })
