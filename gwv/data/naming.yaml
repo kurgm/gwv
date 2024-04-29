@@ -87,12 +87,15 @@ rule:
   - bouyei-\d{5}
   # Group:prefix-c@4
   - c([1-9a-f]|1[13])-[\da-f]{4}
+  # Group:prefix-cangjie@1
+  - cangjie-[a-z]\d{2}
   # Group:prefix-fudemame@1
   - fudemame-e[\da-f]{3}
-  # Group:prefix-g@30
+  # Group:prefix-g@32
   - g[013578eks]-[\da-f]{4}
   - gfz-[\da-f]{4}
   - gh-\d{4}
+  - gidc-[\da-f]{4}
   - gidc23-\d{3}
   - g-(ce|gfc|gfz|idc|ocd|xhz)\d{3}
   - g-(cy|lgyj|pglg|t|xc)\d{4}
@@ -117,6 +120,8 @@ rule:
   # Group:prefix-irg2017@1
   # Group:prefix-irg2021@1
   - irg20(15|17|21)-\d{5}
+  # Group:prefix-jgj@2
+  - jgj-\d{6}
   # Group:prefix-k@1
   - k[\da-f]-[\da-f]{4}
   - ku-[023][\da-f]{4}
@@ -128,7 +133,7 @@ rule:
   - kinhd-\d{5}
   # Group:prefix-kokuji@2
   - kokuji-[a-z]+-\d{3}
-  # Group:prefix-kp@1
+  # Group:prefix-kp@2
   - kp[01]-[\da-f]{4}
   - kpu-[023][\da-f]{4}
   # Group:prefix-kumimoji@8
@@ -194,14 +199,19 @@ rule:
   # Group:prefix-ucsur@1
   # Group:prefix-uk@5
   - uk-\d{5}
-  # Group:prefix-unstable@15
+  # Group:prefix-unstable@17
   - unstable-bsh-[\da-f]{4}
   - unstable-kreative-(f[6-8]|ff[01])[\da-f]{2}
   - unstable-mufi-(e[\da-f]|f[0-8])[\da-f]{2}
   - unstable-nishiki-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
+  - unstable-yedict-1[89abfghi]\d{4}
   # Group:prefix-v@5
   - v[0-4]-[\da-f]{4}
   - vn-[\da-f]{5}
+  # Group:prefix-wubi@1
+  - wubi-[a-z]\d{2}
+  # Group:prefix-zkyw@3
+  - zkyw-a\d{6}
   string:
   - do-not-use
   - hikanji
