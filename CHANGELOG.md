@@ -3,6 +3,9 @@
 この更新履歴には、検証の実行結果の公開ページや実行環境に関する更新情報も含まれています。
 
 
+## 2024-09-16
+- 「命名」の項目において、命名規則リストに `csur-u(X)XXXX`, `gca-A####`, `g-zhsj####`, `g-ccpp#####`, `g-cesi#####`, `g-cw#####`, `g-zk#####`, `irg2024-#####`, `unstable-kreative-ffcXX`, `unstable-td-(X)XXXX` を追加しました。
+
 ## 2024-04-30
 - 「命名」の項目において、命名規則リストに `cangjie-A##`, `gidc-XXXX`, `jgj-######`, `unstable-yedict-1X####`, `wubi-A##`, `zkyw-a######` を追加しました。
 

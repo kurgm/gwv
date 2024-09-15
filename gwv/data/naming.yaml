@@ -89,17 +89,20 @@ rule:
   - c([1-9a-f]|1[13])-[\da-f]{4}
   # Group:prefix-cangjie@1
   - cangjie-[a-z]\d{2}
+  # Group:prefix-csur@3
+  - csur-u(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-fudemame@1
   - fudemame-e[\da-f]{3}
-  # Group:prefix-g@32
+  # Group:prefix-g@35
   - g[013578eks]-[\da-f]{4}
+  - gca-[a-z]\d{4}
   - gfz-[\da-f]{4}
   - gh-\d{4}
   - gidc-[\da-f]{4}
   - gidc23-\d{3}
   - g-(ce|gfc|gfz|idc|ocd|xhz)\d{3}
-  - g-(cy|lgyj|pglg|t|xc)\d{4}
-  - g-(4k|cyy|dm|fzc|gjz|gt|hc|hyd|kj|msw|xm|za[1-7]|zfy|zjw|zys)\d{5}
+  - g-(cy|lgyj|pglg|t|xc|zhsj)\d{4}
+  - g-(4k|ccpp|cesi|cw|cyy|dm|fzc|gjz|gt|hc|hyd|kj|msw|xm|za[1-467]|zfy|zjw|zk|zys)\d{5}
   - g-(bk|ch|cy|dz|gh|hc|kx|rm|wz|xc|xh|zh)\d{6}
   - g-(h|hzr?|kx|z)\d{7}
   - gu-[023][\da-f]{4}
@@ -119,7 +122,8 @@ rule:
   # Group:prefix-irg2015@1
   # Group:prefix-irg2017@1
   # Group:prefix-irg2021@1
-  - irg20(15|17|21)-\d{5}
+  # Group:prefix-irg2024@2
+  - irg20(15|17|21|24)-\d{5}
   # Group:prefix-jgj@2
   - jgj-\d{6}
   # Group:prefix-k@1
@@ -149,15 +153,17 @@ rule:
   # Group:prefix-mathematical@2
   - mathematical-sans-serif(-italic)?-(capital|small)-[a-z]+
   - mathematical-double-struck-italic-(capital|small)-[a-z]
-  # Group:prefix-misc@20
+  # Group:prefix-misc@21
   - misc-.+
+  # # Group:prefix-ms@1
+  # - ms-uf0[\da-f]{2}
   # Group:prefix-myogisho-z@2
   - myogisho-z-\d{5}[ab]?
   # # Group:prefix-nct@3
   # - nct-\d{4}
   # Group:prefix-negative-sandbox@2
   - negative-sandbox-.+
-  # Group:prefix-nihon-no-kanji@13
+  # Group:prefix-nihon-no-kanji@14
   - nihon-no-kanji-\d{5}
   # Group:prefix-ninjal@6
   - ninjal-\d{9}
@@ -191,7 +197,7 @@ rule:
   - tenrei-[1-6]\d{3}[ab]\d{2,3}
   # # Group:prefix-tensho@2
   # - tensho-(sho|dai)-u[23]?[\da-f]{4}
-  # Group:prefix-tokinet@3
+  # Group:prefix-tokinet@4
   - tokinet-(00(e[\da-f]|f[0-8])|(0f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-ttz@3
   - ttz-\d{3}-\d{2}-[a-z]+
@@ -199,11 +205,12 @@ rule:
   # Group:prefix-ucsur@1
   # Group:prefix-uk@5
   - uk-\d{5}
-  # Group:prefix-unstable@17
+  # Group:prefix-unstable@18
   - unstable-bsh-[\da-f]{4}
-  - unstable-kreative-(f[6-8]|ff[01])[\da-f]{2}
+  - unstable-kreative-(f[6-8]|ff[01c])[\da-f]{2}
   - unstable-mufi-(e[\da-f]|f[0-8])[\da-f]{2}
   - unstable-nishiki-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
+  - unstable-td-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
   - unstable-yedict-1[89abfghi]\d{4}
   # Group:prefix-v@5
   - v[0-4]-[\da-f]{4}
