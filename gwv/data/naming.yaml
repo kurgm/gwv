@@ -2,7 +2,7 @@
 rule-novar-nohenka:
   # var/itaiji も偏化変形も許容しない
   regex:
-  - u[23]?[\da-f]{4}-(g|t|j|k|v|h|kp|u|s|uk|m|us|i|ja|js|jv|[gktvh]v)(\d{2})?
+  - u[23]?[\da-f]{4}-(g|t|j|k|v|h|kp|u|s|uk|m|us|i|ja|js|jv|jn|[gktvh]v)(\d{2})?
   string:
   - sandbox
   - tutorial

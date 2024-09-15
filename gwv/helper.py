@@ -49,7 +49,7 @@ def is_gokan_kanji_cp(cp: int):
         cp not in _togo_in_compat
 
 
-RE_REGIONS = r"(?:[gtvh]v?|[mis]|k[pv]?|u[ks]?|j[asv]?)"
+RE_REGIONS = r"(?:[gtvh]v?|[mis]|k[pv]?|u[ks]?|j[asvn]?)"
 
 _re_ucs = re.compile(r"u([\da-f]{4,6})")
 

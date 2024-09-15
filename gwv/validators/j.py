@@ -131,6 +131,9 @@ class JValidator(Validator):
         elif region in ("gv", "tv", "vv", "hv"):
             # TODO
             return False
+        elif region == "jn":
+            # TODO
+            return False
         else:  # not 仮想字形
             if region in ("j", "ja"):
                 if jsource is None:
