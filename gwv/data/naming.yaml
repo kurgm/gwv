@@ -28,7 +28,7 @@ rule:
   - u[1-3]?[\da-f]{4}(-u[1-3]?[\da-f]{4})*-sans
   - ue0[01][\da-f]{2}
 
-  # based on Group:prefix@25
+  # based on Group:prefix@26
   - koseki-\d{6}
   - a[jk]1-\d{5}
   - b-[\da-f]{4}
@@ -42,7 +42,7 @@ rule:
   - hentaigana-u[4-9][\da-f]{3}-[a-z]{1,3}-\d{3}
   - hiragana-[a-z]+
   - hitsujun-[\da-z]+(-\d{3}){1,2}
-  - j-arib-[\da-f]{4}
+  - jarib-[\da-f]{4}
   - j(78|83|90|sp|x2)-[\da-f]{4}
   - jx1-200[04]-[\da-f]{4}
   - jc3-[\da-f]{4}
@@ -76,36 +76,35 @@ rule:
   - vnpf-6[0-3][\da-f]{3}
   - waseikanji-no-jiten-\d{4}[a-z]?
   - waseikanji-no-jiten2014-\d{4}[a-z]?
-  - z-sat\d{5}
   - zihai-\d{6}
 
   # Group:prefix-ac1@2
   - ac1-\d{5}
   # Group:prefix-aj2@3
   - aj2-\d{4}
-  # Group:prefix-bouyei@1
+  # Group:prefix-bouyei@3
   - bouyei-\d{5}
   # Group:prefix-c@4
-  - c([1-9a-f]|1[13])-[\da-f]{4}
+  - c([1-9a-f]|1[0138])-[\da-f]{4}
   # Group:prefix-cangjie@1
   - cangjie-[a-z]\d{2}
   # Group:prefix-csur@3
   - csur-u(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-fudemame@1
   - fudemame-e[\da-f]{3}
-  # Group:prefix-g@35
+  # Group:prefix-g@37
   - g[013578eks]-[\da-f]{4}
   - gca-[a-z]\d{4}
-  - gfz-[\da-f]{4}
-  - gh-\d{4}
-  - gidc-[\da-f]{4}
-  - gidc23-\d{3}
-  - g-(ce|gfc|gfz|idc|ocd|xhz)\d{3}
-  - g-(cy|lgyj|pglg|t|xc|zhsj)\d{4}
-  - g-(4k|ccpp|cesi|cw|cyy|dm|fzc|gjz|gt|hc|hyd|kj|msw|xm|za[1-467]|zfy|zjw|zk|zys)\d{5}
-  - g-(bk|ch|cy|dz|gh|hc|kx|rm|wz|xc|xh|zh)\d{6}
-  - g-(h|hzr?|kx|z)\d{7}
+  - g(ce|fc|idc23|idc|ocd|xhz)-\d{3}
+  - g(h|hf|lgyj|pglg|xc|zhsj)-\d{4}
+  - g-t\d{4}
+  - g(fz|idc)-[\da-f]{4}
+  - g(4k|ccpp|cesi|cw|cyy|dm|fzc|gt|jz|hyd|kj|msw|wy|xm|zfy|zjw|zk|zys)-\d{5}
+  - g(ch|cy|hc)-[\da-f]{5}
+  - g(bk|ch|cy|dz|gfz|gh|hc|kx|rm|wz|xc|xh|zh)-\d{6}
+  - g(bk|h|hzr?|kx|lk|z)-\d{7}
   - gu-[023][\da-f]{4}
+  - gza-[1-467]\d{5}
   # Group:prefix-gsunicode@1
   - gsunicode-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-h@4
@@ -126,8 +125,9 @@ rule:
   - irg20(15|17|21|24)-\d{5}
   # Group:prefix-jgj@2
   - jgj-\d{6}
-  # Group:prefix-k@1
-  - k[\da-f]-[\da-f]{4}
+  # Group:prefix-k@2
+  - k[0-6]-[\da-f]{4}
+  - kc-\d{5}
   - ku-[023][\da-f]{4}
   # Group:prefix-kanjikai@1
   - kanjikai-\d{6}
@@ -176,6 +176,8 @@ rule:
   - proposal-(n\d{4}|l2-\d{2}-\d{3})-.+
   # Group:prefix-s17stdkanjiv@6
   - s17stdkanjiv-u[\da-f]{4,5}
+  # Group:prefix-sat@1
+  - sat-\d{5}
   # Group:prefix-sawno@6
   # Group:prefix-sdjt@1
   - sdjt-\d{5}
@@ -622,5 +624,15 @@ dont-create:
 deprecated-rule:
   # 廃止予定（グリフの白紙化待ち）
   regex:
+  # See GlyphWiki:井戸端-未解決#古琴減字譜(GEOG-QIN)の命名規則について
   - geog-qin-\d+
+  # See GlyphWiki:井戸端-保存2016年まで#康煕字典グリフの命名規則の問題
   - kx-\d{6}
+  # See GlyphWiki:井戸端#Unicodeなどのソース参照に係る一部命名の変更について
+  - g-(ce|gfc|gfz|idc|ocd|xhz)\d{3}
+  - g-(cy|hc0|lgyj|pglg|xc|zhsj)\d{4}
+  - g-(4k|ccpp|cw|cyy|dm|fzc|gjz|gt|hyd|kj|msw|wy|xm|za[1-467]|zfy|zjw|zk|zys)\d{5}
+  - g-(bk|ch|cy|dz|gh|hc|kx|rm|wz|xc|xh|zh)\d{6}
+  - g-(h|hzr?|kx|z)\d{7}
+  - j-arib-[\da-f]{4}
+  - z-sat\d{5}
