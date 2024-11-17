@@ -250,7 +250,7 @@ rule:
 dont-create:
   # 上記規則にマッチするが作成を禁止するグリフ
   regex:
-  - (.+-)?ud[89a-f][\da-f]{2}(-.+)?'  # Surrogates
+  - (.+-)?ud[89a-f][\da-f]{2}(-.+)?  # Surrogates
   string:
   # Group:備忘録@56#住基コード欠番
   - juki-ad96
