@@ -22,6 +22,7 @@ path = "gwv/__init__.py"
 [tool.hatch.build.targets.sdist]
 include = [
     "/gwv",
+    "/bdat",
 ]
 
 [tool.hatch.build.hooks.custom]
