@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 from collections import defaultdict
 from enum import Enum
