@@ -1,8 +1,7 @@
-from gwv.dump import Dump
 import unittest
 
-from gwv import validator
-from gwv import validators
+from gwv import validator, validators
+from gwv.dump import Dump
 
 
 class TestValidator(unittest.TestCase):

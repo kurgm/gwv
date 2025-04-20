@@ -7,7 +7,6 @@ from gwv.dump import Dump
 from gwv.kagedata import KageLine
 from gwv.validatorctx import ValidatorContext
 
-
 all_validator_names = [
     "corner",
     "related",

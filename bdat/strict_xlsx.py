@@ -1,8 +1,8 @@
 import functools
 import re
-from typing import Any, Callable, Dict, IO, Iterator, List, Tuple, TypeVar, Union
-from xml.etree.ElementTree import Element, iterparse
 import zipfile
+from typing import IO, Any, Callable, Dict, Iterator, List, Tuple, TypeVar, Union
+from xml.etree.ElementTree import Element, iterparse
 
 OOXML_NS = "{http://purl.oclc.org/ooxml/spreadsheetml/main}"
 

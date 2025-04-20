@@ -2,8 +2,7 @@ import re
 from typing import Dict, List, NamedTuple, Optional, Tuple, Union
 
 import gwv.filters as filters
-from gwv.helper import isTogoKanji
-from gwv.helper import load_package_data
+from gwv.helper import isTogoKanji, load_package_data
 from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator, ValidatorErrorEnum, error_code
 

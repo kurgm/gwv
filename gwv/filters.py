@@ -4,7 +4,6 @@ from typing import Any, Callable, Container
 from gwv.helper import CategoryType
 from gwv.validatorctx import ValidatorContext
 
-
 Predicate = Callable[[ValidatorContext], bool]
 
 

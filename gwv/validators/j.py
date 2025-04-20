@@ -1,12 +1,15 @@
 import re
 from typing import Dict, Literal, NamedTuple, Set
 
-from gwv.dump import Dump
 import gwv.filters as filters
-from gwv.helper import cjk_sources, is_gokan_kanji_cp
-from gwv.helper import GWGroupLazyLoader
-from gwv.helper import load_package_data
-from gwv.helper import RE_REGIONS
+from gwv.dump import Dump
+from gwv.helper import (
+    RE_REGIONS,
+    GWGroupLazyLoader,
+    cjk_sources,
+    is_gokan_kanji_cp,
+    load_package_data,
+)
 from gwv.kagedata import KageData
 from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator, ValidatorErrorEnum, error_code

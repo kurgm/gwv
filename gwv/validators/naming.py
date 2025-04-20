@@ -2,8 +2,7 @@ import re
 from typing import Dict, List, Mapping, NamedTuple
 
 import gwv.filters as filters
-from gwv.helper import GWGroupLazyLoader
-from gwv.helper import load_package_data
+from gwv.helper import GWGroupLazyLoader, load_package_data
 from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator, ValidatorErrorEnum, error_code
 

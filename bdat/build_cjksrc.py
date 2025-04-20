@@ -4,10 +4,9 @@ import codecs
 import json
 import logging
 import os
+import zipfile
 from typing import Dict, Iterable, List, Optional
 from urllib.request import urlretrieve
-import zipfile
-
 
 logging.basicConfig()
 log = logging.getLogger(__name__)

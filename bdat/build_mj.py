@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from collections import defaultdict
 import json
 import logging
 import os
+from collections import defaultdict
+from typing import IO, Any, Dict, List
 from urllib.request import urlretrieve
-from typing import Any, Dict, IO, List
 
 from .strict_xlsx import iterxlsx
 

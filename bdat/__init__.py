@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-from . import build_cjksrc
-from . import build_mj
-
+from . import build_cjksrc, build_mj
 
 BUILDFUNCS = [
     build_cjksrc.main,

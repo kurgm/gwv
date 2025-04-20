@@ -1,10 +1,9 @@
 import logging
 from typing import List, Optional, Type
 
-from gwv.dump import Dump
 from gwv import validators
+from gwv.dump import Dump
 from gwv.validatorctx import ValidatorContext
-
 
 log = logging.getLogger(__name__)
 

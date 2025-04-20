@@ -6,9 +6,9 @@ import os
 import sys
 from typing import Optional, Sequence
 
+from gwv import version
 from gwv.dump import Dump
 from gwv.validator import validate
-from gwv import version
 
 
 def main(args: Optional[Sequence[str]] = None):
