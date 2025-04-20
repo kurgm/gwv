@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import functools
-from typing import Any, Callable, Container
+from collections.abc import Container
+from typing import Any, Callable
 
 from gwv.helper import CategoryType
 from gwv.validatorctx import ValidatorContext

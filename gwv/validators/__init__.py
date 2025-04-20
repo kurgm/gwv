@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import abc
 from collections import defaultdict
+from collections.abc import Iterable
 from enum import Enum
-from typing import Any, Dict, Iterable, List, NamedTuple, Tuple, Type
+from typing import Any, NamedTuple
 
 from gwv.dump import Dump
 from gwv.kagedata import KageLine
@@ -37,15 +38,15 @@ class ValidatorErrorRecorder(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_result(self) -> Dict[str, List[Any]]:
+    def get_result(self) -> dict[str, list[Any]]:
         raise NotImplementedError()
 
 
 class ValidatorErrorTupleRecorder(ValidatorErrorRecorder):
     def __init__(self):
-        self._results: Dict[str, List[List]] = defaultdict(lambda: [])
+        self._results: dict[str, list[list]] = defaultdict(lambda: [])
 
-    def record(self, glyphname: str, error: Tuple[str, Iterable]) -> None:
+    def record(self, glyphname: str, error: tuple[str, Iterable]) -> None:
         key, param = error
         param = [self.param_to_serializable(p) for p in param]
         self._results[key].append([glyphname] + list(param))
@@ -55,12 +56,12 @@ class ValidatorErrorTupleRecorder(ValidatorErrorRecorder):
             return (p.line_number, p.strdata)
         return p
 
-    def get_result(self) -> Dict[str, List[List]]:
+    def get_result(self) -> dict[str, list[list]]:
         return dict(self._results)
 
 
 class Validator(metaclass=abc.ABCMeta):
-    recorder_cls: Type[ValidatorErrorRecorder] = ValidatorErrorTupleRecorder
+    recorder_cls: type[ValidatorErrorRecorder] = ValidatorErrorTupleRecorder
 
     def __init__(self):
         self.recorder = self.recorder_cls()
@@ -80,7 +81,7 @@ class Validator(metaclass=abc.ABCMeta):
     def record(self, glyphname: str, error: Any):
         self.recorder.record(glyphname, error)
 
-    def get_result(self) -> Dict[str, List[Any]]:
+    def get_result(self) -> dict[str, list[Any]]:
         return self.recorder.get_result()
 
 

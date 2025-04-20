@@ -7,7 +7,7 @@ import json
 import logging
 import os
 import zipfile
-from typing import Dict, Iterable, List, Optional
+from collections.abc import Iterable
 from urllib.request import urlretrieve
 
 logging.basicConfig()
@@ -38,7 +38,7 @@ def get_unihan_CJKSrc(url: str = UNIHAN_ZIP_URL):
 
 
 def parseCJKSrc(cjksrctxt: Iterable[str]):
-    result: Dict[str, List[Optional[str]]] = {}
+    result: dict[str, list[str | None]] = {}
     taglist = [
         "kIRG_GSource",
         "kIRG_TSource",

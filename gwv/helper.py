@@ -4,7 +4,7 @@ import importlib.resources
 import json
 import os.path
 import re
-from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Union
+from typing import Any, Literal
 from urllib.parse import quote
 from urllib.request import urlopen
 
@@ -109,7 +109,7 @@ CategoryType = Literal[
     "bsh",
     "other",
 ]
-CategoryParam = Tuple[CategoryType, Tuple[str, ...]]
+CategoryParam = tuple[CategoryType, tuple[str, ...]]
 
 
 def categorize(glyphname: str) -> CategoryParam:
@@ -153,7 +153,7 @@ _re_textarea = re.compile(r"</?textarea(?: [^>]*)?>")
 _re_gwlink = re.compile(r"\[\[(?:[^]]+\s)?([0-9a-z_-]+(?:@\d+)?)\]\]")
 
 
-def getGlyphsInGroup(groupname: str) -> List[str]:
+def getGlyphsInGroup(groupname: str) -> list[str]:
     url = "https://glyphwiki.org/wiki/Group:{}?action=edit".format(
         quote(groupname.encode("utf-8"))
     )
@@ -168,7 +168,7 @@ class GWGroupLazyLoader:
     def __init__(self, groupname: str, isset: bool = False):
         self.groupname = groupname
         self.isset = isset
-        self.data: Union[List[str], Set[str]]
+        self.data: list[str] | set[str]
 
     def load(self):
         glyphs = getGlyphsInGroup(self.groupname)
@@ -193,7 +193,7 @@ def load_package_data(name: str) -> Any:
         if ext == ".txt":
             return f.read()
 
-        raise ValueError("Unknown data file extension: {!r}".format(ext))
+        raise ValueError(f"Unknown data file extension: {ext!r}")
 
 
 class CJKSources:
@@ -225,12 +225,12 @@ class CJKSources:
     }
 
     def __init__(self):
-        self.data: Dict[str, List[Optional[str]]]
+        self.data: dict[str, list[str | None]]
 
     def load(self):
         self.data = load_package_data("data/3rd/cjksrc.json")
 
-    def get(self, ucs: str, column: int) -> Optional[str]:
+    def get(self, ucs: str, column: int) -> str | None:
         if not hasattr(self, "data"):
             self.load()
         record = self.data.get(ucs)

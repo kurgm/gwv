@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import re
-from typing import NamedTuple, Tuple
+from typing import NamedTuple
 
 from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator, ValidatorErrorEnum, error_code
 
 
 class NumexpError(NamedTuple):
-    line: Tuple[int, str]  # kage line number and daata
+    line: tuple[int, str]  # kage line number and daata
 
 
 class NumexpValidatorError(ValidatorErrorEnum):

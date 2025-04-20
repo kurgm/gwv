@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Dict, List, Optional, Tuple
 
 from gwv.kagedata import KageData, get_entity_name
 
@@ -28,14 +27,14 @@ class DumpEntry:
 
 
 class Dump:
-    def __init__(self, data: Dict[str, Tuple[str, str]], timestamp: float):
+    def __init__(self, data: dict[str, tuple[str, str]], timestamp: float):
         self._data = data
         self.timestamp = timestamp
 
     def __getitem__(self, glyphname: str) -> DumpEntry:
         return DumpEntry(glyphname, *self._data[glyphname])
 
-    def get(self, glyphname: str) -> Optional[DumpEntry]:
+    def get(self, glyphname: str) -> DumpEntry | None:
         value = self._data.get(glyphname)
         if value is None:
             return None
@@ -57,7 +56,7 @@ class Dump:
         _rel, data = self._data[glyphname]
         return get_entity_name(data) or glyphname
 
-    _get_alias_of_dic: Optional[Dict[str, List[str]]] = None
+    _get_alias_of_dic: dict[str, list[str]] | None = None
 
     def get_alias_of(self, name: str):
         if self._get_alias_of_dic is None:
@@ -73,7 +72,7 @@ class Dump:
 
     @classmethod
     def open(cls, filepath: str):
-        data: Dict[str, Tuple[str, str]] = {}
+        data: dict[str, tuple[str, str]] = {}
         with open(filepath) as fp:
             if filepath[-4:] == ".csv":
                 # first line contains the last modified time

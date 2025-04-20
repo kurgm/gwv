@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Dict, NamedTuple, Tuple, Union
+from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS, GWGroupLazyLoader
@@ -60,7 +60,7 @@ def getDWidth(glyphname: str):
 pinf = float("inf")
 ninf = -pinf
 
-buhinWidths: Dict[str, Tuple[float, float]] = {
+buhinWidths: dict[str, tuple[float, float]] = {
     "left-half-circle": (15.0, 100.0),  # @1
     "right-half-circle": (100.0, 185.0),  # @1
     "palatal-hook": (40.0, 64.0),  # @1
@@ -94,8 +94,8 @@ class WidthValidator(Validator):
     )
     @filters.check_only(-filters.has_transform)
     def is_invalid(self, ctx: ValidatorContext):
-        minX: Union[int, float]
-        maxX: Union[int, float]
+        minX: int | float
+        maxX: int | float
         if is_fullwidth_name(ctx.glyph.name):
             minX = 0
             maxX = 200

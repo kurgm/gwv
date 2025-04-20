@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, NamedTuple, Set
+from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
@@ -22,13 +22,13 @@ E = MustrenewValidatorError
 
 class QuoterInfo(NamedTuple):
     is_old: bool
-    quoters: Set[str]
+    quoters: set[str]
 
 
 class MustrenewValidator(Validator):
     def __init__(self, *args, **kwargs):
-        super(MustrenewValidator, self).__init__(*args, **kwargs)
-        self.mustrenew_quoters: Dict[str, QuoterInfo] = {}
+        super().__init__(*args, **kwargs)
+        self.mustrenew_quoters: dict[str, QuoterInfo] = {}
 
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
@@ -45,8 +45,8 @@ class MustrenewValidator(Validator):
         return False
 
     def get_result(self):
-        no_old: List[List[str]] = []
-        old: List[List[str]] = []
+        no_old: list[list[str]] = []
+        old: list[list[str]] = []
         for part_name in sorted(self.mustrenew_quoters.keys()):
             is_old, quoters = self.mustrenew_quoters[part_name]
             if is_old:

@@ -3,7 +3,8 @@ from __future__ import annotations
 import itertools
 import math
 import operator
-from typing import Dict, Iterable, Iterator, List, NamedTuple, Tuple, TypeVar
+from collections.abc import Iterable, Iterator
+from typing import NamedTuple, TypeVar
 
 import gwv.filters as filters
 from gwv.kagedata import KageLine
@@ -64,8 +65,8 @@ class LineSegment(NamedTuple):
 
 def addLine(
     line: KageLine,
-    tate: List[LineSegment],
-    yoko: List[LineSegment],
+    tate: list[LineSegment],
+    yoko: list[LineSegment],
     x0: int,
     y0: int,
     x1: int,
@@ -94,7 +95,7 @@ def addLine(
         tate.append(LineSegment(line, dist, angle + math.pi, y1, y0))
 
 
-def dup_line_segments(segments: List[LineSegment], thresh: float, inclusive: bool):
+def dup_line_segments(segments: list[LineSegment], thresh: float, inclusive: bool):
     comp_op = operator.le if inclusive else operator.lt
     segments.sort(key=lambda r: r.dist)
     for i, seg1 in enumerate(segments):
@@ -117,7 +118,7 @@ def dup_line_segments(segments: List[LineSegment], thresh: float, inclusive: boo
 T = TypeVar("T")
 
 
-def ineighbors(iterable: Iterable[T]) -> Iterator[Tuple[T, T]]:
+def ineighbors(iterable: Iterable[T]) -> Iterator[tuple[T, T]]:
     iterator = iter(iterable)
     try:
         p = next(iterator)
@@ -129,7 +130,7 @@ def ineighbors(iterable: Iterable[T]) -> Iterator[Tuple[T, T]]:
         return
 
 
-def dup_coords(elems: List[Tuple[KageLine, List[int]]], thresh: int):
+def dup_coords(elems: list[tuple[KageLine, list[int]]], thresh: int):
     elems.sort(key=lambda elem: elem[1][0])
     for (line1, coords1), (line2, coords2) in ineighbors(elems):
         if all(
@@ -146,12 +147,12 @@ class DupValidator(Validator):
     def is_invalid(self, ctx: ValidatorContext):
         exact_only = ctx.is_hikanji
 
-        tate: List[LineSegment] = []
-        yoko: List[LineSegment] = []
-        curve: List[Tuple[KageLine, List[int]]] = []
-        curve2: List[Tuple[KageLine, List[int]]] = []
-        buhin: Dict[str, List[Tuple[KageLine, List[int]]]] = {}
-        buhinIchi: List[Tuple[KageLine, List[int]]] = []
+        tate: list[LineSegment] = []
+        yoko: list[LineSegment] = []
+        curve: list[tuple[KageLine, list[int]]] = []
+        curve2: list[tuple[KageLine, list[int]]] = []
+        buhin: dict[str, list[tuple[KageLine, list[int]]]] = {}
+        buhinIchi: list[tuple[KageLine, list[int]]] = []
 
         for line in ctx.glyph.kage.lines:
             stype = line.stroke_type

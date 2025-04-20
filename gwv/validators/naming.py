@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import re
-from typing import Dict, List, Mapping, NamedTuple
+from collections.abc import Mapping
+from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import GWGroupLazyLoader, load_package_data
@@ -40,7 +41,7 @@ E = NamingValidatorError
 
 
 class NamingRules:
-    def __init__(self, data: Mapping[str, List[str]]):
+    def __init__(self, data: Mapping[str, list[str]]):
         patterns = data.get("regex", [])
         if patterns:
             self.regex = re.compile(r"|".join(patterns))
@@ -55,7 +56,7 @@ class NamingRules:
 
 
 def get_naming_rules():
-    naming_data: Dict[str, Dict[str, List[str]]] = load_package_data("data/naming.yaml")
+    naming_data: dict[str, dict[str, list[str]]] = load_package_data("data/naming.yaml")
     return {key: NamingRules(value) for key, value in naming_data.items()}
 
 

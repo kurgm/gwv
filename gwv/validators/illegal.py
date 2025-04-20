@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import NamedTuple, Set, Tuple
+from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import isYoko
@@ -136,7 +136,7 @@ def is_alias_like(kage: KageData):
     return has_200_quote
 
 
-keijoKumiawase: Set[Tuple[int, int, int]] = {
+keijoKumiawase: set[tuple[int, int, int]] = {
     # https://github.com/kurgm/kage-editor/blob/master/src/kageUtils/stroketype.ts
     (1, 0, 0),
     (1, 0, 2),
@@ -228,7 +228,7 @@ keijoKumiawase: Set[Tuple[int, int, int]] = {
     (9, 0, 0),
 }
 
-hikanjiKeijoKumiawase: Set[Tuple[int, int, int]] = keijoKumiawase | {
+hikanjiKeijoKumiawase: set[tuple[int, int, int]] = keijoKumiawase | {
     (2, 32, 0),  # 曲線、接続→右払い
     (6, 32, 0),  # 複曲線、接続→右払い
     (2, 32, 8),  # 曲線、接続→止め

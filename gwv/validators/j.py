@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Dict, Literal, NamedTuple, Set
+from typing import Literal, NamedTuple
 
 import gwv.filters as filters
 from gwv.dump import Dump
@@ -71,8 +71,8 @@ _re_region_opthenka = re.compile(r"-(" + RE_REGIONS + r")(\d{2})?")
 class JValidator(Validator):
     def __init__(self):
         Validator.__init__(self)
-        self.jv_no_use_part_replacement: Dict[str, str] = {}
-        self.jv_no_apply_parts: Set[str] = set()
+        self.jv_no_use_part_replacement: dict[str, str] = {}
+        self.jv_no_apply_parts: set[str] = set()
 
     def setup(self, dump: Dump):
         jv_data = load_package_data("data/jv.yaml")

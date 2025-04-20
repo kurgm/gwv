@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import isTogoKanji, load_package_data
@@ -15,21 +15,21 @@ class MjValidatorError(ValidatorErrorEnum):
         """entity_name のエイリアスになっているが entity_expected のエイリアスの間違い"""
 
         entity: str
-        entity_expected: List[str]
+        entity_expected: list[str]
 
     @error_code("1")
     class WRONG_RELATED(NamedTuple):
         """関連字に related が設定されているが ucs_expected の間違い"""
 
         related: str
-        related_expected: List[str]
+        related_expected: list[str]
 
     @error_code("2")
     class RELATED_UNSET(NamedTuple):
         """関連字未設定であるが ucs_expected である"""
 
         related: None
-        related_expected: List[str]
+        related_expected: list[str]
 
     @error_code("3")
     class UNDEFINED_MJ(NamedTuple):
@@ -41,7 +41,7 @@ E = MjValidatorError
 
 def kuten2gl(ku: int, ten: int):
     """句点コードをGL領域の番号に変換する"""
-    return "{:02x}{:02x}".format(ku + 32, ten + 32)
+    return f"{ku + 32:02x}{ten + 32:02x}"
 
 
 def gl2kuten(gl_: str):
@@ -116,7 +116,7 @@ class MJTable:
 
     def glyphname_to_field_key(
         self, glyphname: str
-    ) -> Union[Tuple[int, str], Tuple[None, None]]:
+    ) -> tuple[int, str] | tuple[None, None]:
         if _re_ivs.fullmatch(glyphname):
             return MJTable.FIELD_IVS, glyphname
 
@@ -176,7 +176,7 @@ class MJTable:
 
         return None, None
 
-    def get(self, idx: int, field: int) -> List[str]:
+    def get(self, idx: int, field: int) -> list[str]:
         keys = self._table[idx][field]
         if keys is None:
             return []
@@ -184,15 +184,15 @@ class MJTable:
             keys = [keys]
         return [self.key2gw(field, key) for key in keys]
 
-    def search(self, field: int, key: str) -> List[int]:
+    def search(self, field: int, key: str) -> list[int]:
         return self._key2indices[field].get(key.lower(), [])
 
     def __init__(self):
-        self._table: List[List[Optional[Union[str, List[str]]]]] = load_package_data(
+        self._table: list[list[str | list[str] | None]] = load_package_data(
             "data/3rd/mj.json"
         )
 
-        self._key2indices: List[Dict[str, List[int]]] = [
+        self._key2indices: list[dict[str, list[int]]] = [
             {} for _ in range(MJTable.n_fields)
         ]
         for mjIdx, row in enumerate(self._table):

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import List, Optional, Type
 
 from gwv import validators
 from gwv.dump import Dump
@@ -14,7 +13,7 @@ def get_validator_name(name: str) -> str:
     return name.title() + "Validator"
 
 
-def get_validator_class(name: str) -> Type[validators.Validator]:
+def get_validator_class(name: str) -> type[validators.Validator]:
     __import__("gwv.validators." + name)
     validator_module = getattr(validators, name)
     validator_class = getattr(validator_module, get_validator_name(name))
@@ -23,7 +22,7 @@ def get_validator_class(name: str) -> Type[validators.Validator]:
 
 def validate(
     dump: Dump,
-    validator_names: Optional[List[str]] = None,
+    validator_names: list[str] | None = None,
     *,
     ignore_error: bool = False,
 ):

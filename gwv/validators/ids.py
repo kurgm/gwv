@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import List, NamedTuple, Optional
+from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
@@ -81,7 +81,7 @@ _re_idc = re.compile(r"u2ff[\da-f]|u31ef")
 _re_vars = re.compile(r"-" + RE_REGIONS + r"?(\d{2})(?:-(?:var|itaiji)-\d{3})?(?=@|$)")
 
 
-def indexOfFirstKanjiBuhinLine(sname: List[str], kage: KageData):
+def indexOfFirstKanjiBuhinLine(sname: list[str], kage: KageData):
     """IDSの最初の漢字を部品としているKageLine（なければNone）を返す"""
     for i, sname_i in enumerate(sname):
         if _re_idc.fullmatch(sname_i):
@@ -122,7 +122,7 @@ class IdsValidator(Validator):
 
         m = _re_vars.search(f_part_name)
         if m:
-            firstBuhinType: Optional[str] = m.group(1)  # 偏化変形接尾コード
+            firstBuhinType: str | None = m.group(1)  # 偏化変形接尾コード
         else:
             firstBuhinType = None
         if sname[0] in ("u2ff0", "u2ff2"):

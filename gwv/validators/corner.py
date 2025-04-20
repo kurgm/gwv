@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import itertools
 import re
-from typing import Any, Dict, List, Literal, NamedTuple, Optional, Tuple
+from typing import Any, Literal, NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import isYoko
@@ -191,7 +191,7 @@ class Stroke:
         self.stype = line.stroke_type
 
 
-def setSegments(stroke: Stroke, tate: List["Segment"], yoko: List["Segment"]):
+def setSegments(stroke: Stroke, tate: list[Segment], yoko: list[Segment]):
     if len(stroke.line.data) <= 2:
         return
     sttType = stroke.line.head_type
@@ -261,9 +261,9 @@ class Segment:
         self.x1 = x1
         self.y1 = y1
         self.mid_connectable = is_straight_line
-        self.sttConnect: Optional[Connection] = None
-        self.midConnect: List[Connection] = []
-        self.endConnect: Optional[Connection] = None
+        self.sttConnect: Connection | None = None
+        self.midConnect: list[Connection] = []
+        self.endConnect: Connection | None = None
 
     def isVert(self):
         return self.x0 == self.x1
@@ -344,7 +344,7 @@ def connect(
         yoko.endConnect = connection
 
 
-def is_ZH_corner(conn: Connection, yoko: List[Segment], _tate: List[Segment]):
+def is_ZH_corner(conn: Connection, yoko: list[Segment], _tate: list[Segment]):
     # 縦画の終端が左下zh用カドであるべきかどうかを周辺の画の接続関係から推測する
     # 参照: https://twitter.com/kurgm/status/545573760267329537
     if conn.tate_pos != 2 or conn.yoko_pos != 0:
@@ -515,9 +515,9 @@ _NO_ERROR = object()
 
 def _get_connect_corner_type_maps(
     isGdesign: bool, isTdesign: bool
-) -> Dict[
-    Tuple[Literal[0, 2], Literal[0, 2]],
-    Dict[int, List[Tuple[Any, Tuple[int, int], Tuple[int, int]]]],
+) -> dict[
+    tuple[Literal[0, 2], Literal[0, 2]],
+    dict[int, list[tuple[Any, tuple[int, int], tuple[int, int]]]],
 ]:
     return {
         # 左上
@@ -594,8 +594,8 @@ def _try_connect_corner(
     yoko: Segment,
     tate_pos: Literal[0, 2],
     yoko_pos: Literal[0, 2],
-    type_map: Dict[int, List[Tuple[Any, Tuple[int, int], Tuple[int, int]]]],
-    yoko_open_error_limit: Optional[int] = None,
+    type_map: dict[int, list[tuple[Any, tuple[int, int], tuple[int, int]]]],
+    yoko_open_error_limit: int | None = None,
 ):
     tate_type = tate.start_type if tate_pos == 0 else tate.end_type
     if tate_type not in type_map:
@@ -632,7 +632,7 @@ def _try_connect_yoko_middle(
     tate: Segment,
     yoko: Segment,
     tate_pos: Literal[0, 2],
-    yoko_limit_offsets: Tuple[int, int],
+    yoko_limit_offsets: tuple[int, int],
 ):
     if not (yoko.mid_connectable and yoko.isHori()):
         return False
@@ -726,8 +726,8 @@ class CornerValidator(Validator):
     @filters.check_only(-filters.has_transform)
     def validate(self, ctx: ValidatorContext) -> None:
         strokes = []
-        tate: List[Segment] = []
-        yoko: List[Segment] = []
+        tate: list[Segment] = []
+        yoko: list[Segment] = []
         isGdesign = bool(_re_gdesign.fullmatch(ctx.glyph.name))
         isTdesign = bool(_re_tdesign.fullmatch(ctx.glyph.name))
 

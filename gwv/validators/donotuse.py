@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, NamedTuple, Tuple
+from typing import Any, NamedTuple
 
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
@@ -12,7 +12,7 @@ class DonotuseValidatorError(ValidatorErrorEnum):
     class DO_NOT_USE(NamedTuple):
         """do-not-use が引用されている"""
 
-        parts: List[str]
+        parts: list[str]
 
 
 E = DonotuseValidatorError
@@ -32,6 +32,6 @@ class DonotuseValidator(Validator):
             return E.DO_NOT_USE(quotings)
         return False
 
-    def record(self, glyphname: str, error: Tuple[str, Any]):
+    def record(self, glyphname: str, error: tuple[str, Any]):
         key, param = error
         super().record(glyphname, (key, param.parts))

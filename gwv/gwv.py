@@ -6,14 +6,14 @@ import argparse
 import json
 import os
 import sys
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 from gwv import version
 from gwv.dump import Dump
 from gwv.validator import validate
 
 
-def main(args: Optional[Sequence[str]] = None):
+def main(args: Sequence[str] | None = None):
     if args is None:
         args = sys.argv[1:]
 

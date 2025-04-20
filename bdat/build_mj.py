@@ -6,7 +6,7 @@ import json
 import logging
 import os
 from collections import defaultdict
-from typing import IO, Any, Dict, List
+from typing import IO, Any
 from urllib.request import urlretrieve
 
 from .strict_xlsx import iterxlsx
@@ -20,15 +20,15 @@ MJ_JSON_FILENAME = "mj.json"
 
 def kuten2gl(ku: int, ten: int):
     """句点コードをGL領域の番号に変換する"""
-    return "{:02x}{:02x}".format(ku + 32, ten + 32)
+    return f"{ku + 32:02x}{ten + 32:02x}"
 
 
 def parseMjxlsx(mjxlsx: IO[bytes]):
-    mjdat: List[List] = []
+    mjdat: list[list] = []
     mjit = iterxlsx(mjxlsx, "sheet1")
     header = next(mjit)
     for row in mjit:
-        rowdata: Dict[str, Any] = defaultdict(
+        rowdata: dict[str, Any] = defaultdict(
             lambda: None, {header[col]: value for col, value in row.items()}
         )
         # [jmj,koseki,juki,nyukan,x0213,x0212,ucs,ivs,svs,toki,dkw,shincho,sdjt]
@@ -101,10 +101,10 @@ def parseMjxlsx(mjxlsx: IO[bytes]):
                 mjrow[10] = "{:0>5}{}".format(dkwnum, "d" * chtext.count("'"))
         chtext = rowdata["日本語漢字辞典"]
         if chtext:
-            mjrow[11] = "{:0>5}".format(chtext)
+            mjrow[11] = f"{chtext:0>5}"
         chtext = rowdata["新大字典"]
         if chtext:
-            mjrow[12] = "{:0>5}".format(chtext)
+            mjrow[12] = f"{chtext:0>5}"
 
         # set to list
         mjrow[6] = list(mjrow[6])
