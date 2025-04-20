@@ -1,22 +1,24 @@
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING, Any, Callable
-
-from gwv.validatorctx import ValidatorContext
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
 if TYPE_CHECKING:
     from collections.abc import Container
 
     from gwv.helper import CategoryType
+    from gwv.validatorctx import ValidatorContext
 
-Predicate = Callable[[ValidatorContext], bool]
+    Predicate = Callable[[ValidatorContext], bool]
+    T = TypeVar("T")
 
 
 def check_only(pred: Predicate):
-    def decorator(f: Callable[[Any, ValidatorContext], Any]):
+    def decorator(
+        f: Callable[[T, ValidatorContext], Any],
+    ) -> Callable[[T, ValidatorContext], Any]:
         @functools.wraps(f)
-        def wrapper(self: Any, ctx: ValidatorContext):
+        def wrapper(self: T, ctx: ValidatorContext) -> Any:
             if not pred(ctx):
                 return False
             return f(self, ctx)

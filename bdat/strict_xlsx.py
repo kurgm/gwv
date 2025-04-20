@@ -42,8 +42,13 @@ def _tag_is(tagname: str) -> Callable[[Element], bool]:
 
 
 def _get_strings(sstf: IO[bytes]) -> list[str]:
+    def _get_string_from_sst(elem: Element) -> str:
+        text = elem.findtext(OOXML_NS + "t")
+        assert text is not None, "string element without text"
+        return text
+
     return [
-        elem.find(OOXML_NS + "t").text
+        _get_string_from_sst(elem)
         for elem in _iterchildren(sstf, _tag_is(OOXML_NS + "sst"))
     ]
 
@@ -96,7 +101,7 @@ def _itersheet(sheet: IO[bytes], strs: list[str]) -> Iterator[dict[int, Any]]:
     for rowelem in _iterchildren(sheet, _tag_is(OOXML_NS + "sheetData")):
         row: dict[int, Any] = {}
         for cellelem in rowelem:
-            columnnum, _rownum = _parse_coordinate(cellelem.get("r"))
+            columnnum, _rownum = _parse_coordinate(cellelem.attrib["r"])
             vtype = cellelem.get("t", "n")
 
             velem = cellelem.find(OOXML_NS + "v")

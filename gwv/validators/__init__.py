@@ -73,7 +73,7 @@ class Validator(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def validate(self, ctx: ValidatorContext):
+    def validate(self, ctx: ValidatorContext, /) -> Any:
         pass
 
     def record(self, glyphname: str, error: Any):
@@ -85,7 +85,7 @@ class Validator(metaclass=abc.ABCMeta):
 
 class SingleErrorValidator(Validator):
     @abc.abstractmethod
-    def is_invalid(self, ctx: ValidatorContext) -> Any:
+    def is_invalid(self, ctx: ValidatorContext, /) -> Any:
         pass
 
     def validate(self, ctx: ValidatorContext):
