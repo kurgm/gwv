@@ -21,8 +21,10 @@ def main(args: Sequence[str] | None = None):
         args = sys.argv[1:]
 
     parser = argparse.ArgumentParser(description="GlyphWiki data validator")
-    parser.add_argument("dumpfile")
-    parser.add_argument("-o", "--out", help="File to write the output JSON to")
+    parser.add_argument("dumpfile", type=Path)
+    parser.add_argument(
+        "-o", "--out", help="File to write the output JSON to", type=Path
+    )
     parser.add_argument(
         "--ignore-error",
         action="store_true",
@@ -32,12 +34,13 @@ def main(args: Sequence[str] | None = None):
     parser.add_argument("-v", "--version", action="version", version=version)
     opts = parser.parse_args(args)
 
-    outpath = opts.out or Path(opts.dumpfile).with_name("gwv_result.json")
-    dump = Dump.open(opts.dumpfile)
+    dump_path: Path = opts.dumpfile
+    outpath: Path = opts.out or dump_path.with_name("gwv_result.json")
+    dump = Dump.open(dump_path)
 
     result = validate(dump, opts.names or None, ignore_error=opts.ignore_error)
 
-    with Path(outpath).open("w") as outfile:
+    with outpath.open("w") as outfile:
         json.dump(result, outfile, separators=(",", ":"), sort_keys=True)
 
 
