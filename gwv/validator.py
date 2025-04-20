@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import logging
 from typing import TYPE_CHECKING
 
@@ -17,8 +18,7 @@ def get_validator_name(name: str) -> str:
 
 
 def get_validator_class(name: str) -> type[validators.Validator]:
-    __import__("gwv.validators." + name)
-    validator_module = getattr(validators, name)
+    validator_module = importlib.import_module(f"gwv.validators.{name}")
     validator_class = getattr(validator_module, get_validator_name(name))
     return validator_class
 
