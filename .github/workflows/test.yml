@@ -35,7 +35,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
     - name: Lint
       run: |
-        uv tool run ruff check --output-format=github
+        uv run ruff check --output-format=github
     - name: Format
       run: |
-        uv tool run ruff format --diff
+        uv run ruff format --diff
