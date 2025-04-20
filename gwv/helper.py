@@ -94,7 +94,7 @@ _re_categorize = re.compile(
     (?P<ext>    irg(20(?:15|17|21))-(\d{5}))|
     (?P<bsh>    unstable-bsh-([\da-f]{4}))|
 """,
-    re.X,
+    re.VERBOSE,
 )
 
 CategoryType = Literal[

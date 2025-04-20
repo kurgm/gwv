@@ -34,4 +34,4 @@ dev = [
 ]
 
 [tool.ruff.lint]
-extend-select = ["I", "UP"]
+extend-select = ["FURB", "I", "UP"]

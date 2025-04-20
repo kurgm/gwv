@@ -90,7 +90,7 @@ _re_kanji = re.compile(
         u[23]?[\da-f]{4}(?:-u(?:e01[\da-f]{2}|fe0[\da-f]))?|
         cdp[on]?-[\da-f]{4}
     )\b""",
-    re.X,
+    re.VERBOSE,
 )
 _re_ids_kanji = re.compile(r"１-漢|２-漢-漢|３-漢-漢-漢")
 _re_ucs = re.compile(r"\bu[23]?[\da-f]{4}\b")
@@ -123,8 +123,7 @@ class NamingValidator(Validator):
 
         if _re_ids_head.match(name):
             idsReplacedName = name
-            if idsReplacedName.startswith("kumimoji-"):
-                idsReplacedName = idsReplacedName[9:]
+            idsReplacedName = idsReplacedName.removeprefix("kumimoji-")
             idsReplacedName = _re_idc_1.sub("１", idsReplacedName)
             idsReplacedName = _re_idc_2.sub("２", idsReplacedName)
             idsReplacedName = _re_idc_3.sub("３", idsReplacedName)
