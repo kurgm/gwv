@@ -1,31 +1,37 @@
-import re
-from typing import Dict, List, NamedTuple, Optional, Tuple, Union
+from __future__ import annotations
 
-import gwv.filters as filters
-from gwv.helper import isTogoKanji
-from gwv.helper import load_package_data
-from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+import re
+from typing import TYPE_CHECKING, NamedTuple
+
+from gwv import filters
+from gwv.helper import isTogoKanji, load_package_data
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.validatorctx import ValidatorContext
 
 
 class MjValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class WRONG_ENTITY(NamedTuple):
         """entity_name のエイリアスになっているが entity_expected のエイリアスの間違い"""
+
         entity: str
-        entity_expected: List[str]
+        entity_expected: list[str]
 
     @error_code("1")
     class WRONG_RELATED(NamedTuple):
         """関連字に related が設定されているが ucs_expected の間違い"""
+
         related: str
-        related_expected: List[str]
+        related_expected: list[str]
 
     @error_code("2")
     class RELATED_UNSET(NamedTuple):
         """関連字未設定であるが ucs_expected である"""
+
         related: None
-        related_expected: List[str]
+        related_expected: list[str]
 
     @error_code("3")
     class UNDEFINED_MJ(NamedTuple):
@@ -37,7 +43,7 @@ E = MjValidatorError
 
 def kuten2gl(ku: int, ten: int):
     """句点コードをGL領域の番号に変換する"""
-    return "{:02x}{:02x}".format(ku + 32, ten + 32)
+    return f"{ku + 32:02x}{ten + 32:02x}"
 
 
 def gl2kuten(gl_: str):
@@ -64,7 +70,6 @@ _re_sdjt = re.compile(r"sdjt-(\d{5})")
 
 
 class MJTable:
-
     FIELD_JMJ = 0
     FIELD_KOSEKI = 1
     FIELD_JUKI = 2
@@ -111,8 +116,9 @@ class MJTable:
 
         raise KeyError(field)
 
-    def glyphname_to_field_key(self, glyphname: str) -> \
-            Union[Tuple[int, str], Tuple[None, None]]:
+    def glyphname_to_field_key(
+        self, glyphname: str
+    ) -> tuple[int, str] | tuple[None, None]:
         if _re_ivs.fullmatch(glyphname):
             return MJTable.FIELD_IVS, glyphname
 
@@ -172,7 +178,7 @@ class MJTable:
 
         return None, None
 
-    def get(self, idx: int, field: int) -> List[str]:
+    def get(self, idx: int, field: int) -> list[str]:
         keys = self._table[idx][field]
         if keys is None:
             return []
@@ -180,15 +186,17 @@ class MJTable:
             keys = [keys]
         return [self.key2gw(field, key) for key in keys]
 
-    def search(self, field: int, key: str) -> List[int]:
+    def search(self, field: int, key: str) -> list[int]:
         return self._key2indices[field].get(key.lower(), [])
 
     def __init__(self):
-        self._table: List[List[Optional[Union[str, List[str]]]]] = \
-            load_package_data("data/3rd/mj.json")
+        self._table: list[list[str | list[str] | None]] = load_package_data(
+            "data/3rd/mj.json"
+        )
 
-        self._key2indices: List[Dict[str, List[int]]] = \
-            [{} for _ in range(MJTable.n_fields)]
+        self._key2indices: list[dict[str, list[int]]] = [
+            {} for _ in range(MJTable.n_fields)
+        ]
         for mjIdx, row in enumerate(self._table):
             for column, keys in enumerate(row):
                 if keys is None:
@@ -196,8 +204,7 @@ class MJTable:
                 if not isinstance(keys, list):
                     keys = [keys]
                 for key in keys:
-                    self._key2indices[column].setdefault(
-                        key.lower(), []).append(mjIdx)
+                    self._key2indices[column].setdefault(key.lower(), []).append(mjIdx)
 
 
 mjtable = MJTable()
@@ -212,10 +219,10 @@ def get_base(name: str, field: int):
 _re_itaiji = re.compile(r"-itaiji-\d{3}$")
 
 
-class MjValidator(Validator):
-
-    @filters.check_only(-filters.is_of_category({
-        "user-owned", "ids", "cdp", "ext", "bsh"}))
+class MjValidator(SingleErrorValidator):
+    @filters.check_only(
+        -filters.is_of_category({"user-owned", "ids", "cdp", "ext", "bsh"})
+    )
     def is_invalid(self, ctx: ValidatorContext):
         field, key = mjtable.glyphname_to_field_key(ctx.glyph.name)
         if field is None:
@@ -228,10 +235,8 @@ class MjValidator(Validator):
                 return E.UNDEFINED_MJ()  # 欠番のMJ
             return False
 
-        if ctx.glyph.entity_name is not None and \
-                not _re_itaiji.search(ctx.glyph.name):
-            e_field, e_key = mjtable.glyphname_to_field_key(
-                ctx.glyph.entity_name)
+        if ctx.glyph.entity_name is not None and not _re_itaiji.search(ctx.glyph.name):
+            e_field, e_key = mjtable.glyphname_to_field_key(ctx.glyph.entity_name)
             if e_field is not None and e_field != field:
                 assert e_key is not None
                 entity_expected = set()
@@ -248,11 +253,11 @@ class MjValidator(Validator):
 
                     base = get_base(ctx.glyph.name, field)
 
-                    if expected_from_entity and \
-                            base not in expected_from_entity:
+                    if expected_from_entity and base not in expected_from_entity:
                         # entity_name のエイリアスになっているが entity_expected のエイリアスの間違い
                         return E.WRONG_ENTITY(
-                            ctx.glyph.entity_name, list(entity_expected))
+                            ctx.glyph.entity_name, list(entity_expected)
+                        )
 
         ucs_expected = set()
         for idx in indices:

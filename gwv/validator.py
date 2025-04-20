@@ -1,10 +1,13 @@
-import logging
-from typing import List, Optional, Type
+from __future__ import annotations
 
-from gwv.dump import Dump
+import logging
+from typing import TYPE_CHECKING
+
 from gwv import validators
 from gwv.validatorctx import ValidatorContext
 
+if TYPE_CHECKING:
+    from gwv.dump import Dump
 
 log = logging.getLogger(__name__)
 
@@ -13,7 +16,7 @@ def get_validator_name(name: str) -> str:
     return name.title() + "Validator"
 
 
-def get_validator_class(name: str) -> Type[validators.Validator]:
+def get_validator_class(name: str) -> type[validators.Validator]:
     __import__("gwv.validators." + name)
     validator_module = getattr(validators, name)
     validator_class = getattr(validator_module, get_validator_name(name))
@@ -21,14 +24,16 @@ def get_validator_class(name: str) -> Type[validators.Validator]:
 
 
 def validate(
-        dump: Dump, validator_names: Optional[List[str]] = None,
-        *, ignore_error: bool = False):
+    dump: Dump,
+    validator_names: list[str] | None = None,
+    *,
+    ignore_error: bool = False,
+):
     if validator_names is None:
         validator_names = validators.all_validator_names
 
     validator_instances = {
-        name: get_validator_class(name)()
-        for name in validator_names
+        name: get_validator_class(name)() for name in validator_names
     }
 
     for val in validator_instances.values():
@@ -43,14 +48,13 @@ def validate(
             except Exception:
                 log.exception(
                     "Exception while %s is validating %s",
-                    type(val).__name__, ctx.glyph.name)
+                    type(val).__name__,
+                    ctx.glyph.name,
+                )
                 if not ignore_error:
                     raise
 
     return {
-        val_name: {
-            "timestamp": dump.timestamp,
-            "result": val.get_result()
-        }
+        val_name: {"timestamp": dump.timestamp, "result": val.get_result()}
         for val_name, val in validator_instances.items()
     }

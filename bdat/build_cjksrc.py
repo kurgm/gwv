@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
 import codecs
 import json
 import logging
 import os
-from typing import Dict, Iterable, List, Optional
-from urllib.request import urlretrieve
 import zipfile
+from pathlib import Path
+from typing import TYPE_CHECKING
+from urllib.request import urlretrieve
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -22,7 +27,7 @@ def get_iso_CJKSrc(url: str = CJKSRC_URL):
     filename, _headers = urlretrieve(url)
     log.info("Download completed")
 
-    with open(filename) as cjksrctxt:
+    with Path(filename).open() as cjksrctxt:
         return parseCJKSrc(cjksrctxt)
 
 
@@ -37,7 +42,7 @@ def get_unihan_CJKSrc(url: str = UNIHAN_ZIP_URL):
 
 
 def parseCJKSrc(cjksrctxt: Iterable[str]):
-    result: Dict[str, List[Optional[str]]] = {}
+    result: dict[str, list[str | None]] = {}
     taglist = [
         "kIRG_GSource",
         "kIRG_TSource",
@@ -50,7 +55,7 @@ def parseCJKSrc(cjksrctxt: Iterable[str]):
         "kIRG_USource",
         "kIRG_SSource",
         "kIRG_UKSource",
-        "kCompatibilityVariant"
+        "kCompatibilityVariant",
     ]
     tag2idx = {tag: idx for idx, tag in enumerate(taglist)}
 
@@ -68,26 +73,26 @@ def parseCJKSrc(cjksrctxt: Iterable[str]):
     return result
 
 
-cjksrcjson_path = os.path.join(
-    os.path.dirname(__file__),
-    "..", "gwv", "data", "3rd", CJKSRC_JSON_FILENAME)
-cjksrcjson_path = os.path.normpath(cjksrcjson_path)
+cjksrcjson_path = os.path.normpath(
+    Path(__file__).parent / ".." / "gwv" / "data" / "3rd" / CJKSRC_JSON_FILENAME
+)
 
 
-def main(cjksrcjson_path: str = cjksrcjson_path):
-
-    if os.path.exists(cjksrcjson_path):
+def main(cjksrcjson_path: str | os.PathLike = cjksrcjson_path):
+    cjksrcjson_path = Path(cjksrcjson_path)
+    if cjksrcjson_path.exists():
         return
-    os.makedirs(os.path.dirname(cjksrcjson_path), exist_ok=True)
+    cjksrcjson_path.parent.mkdir(parents=True, exist_ok=True)
 
     cjksrc = get_unihan_CJKSrc()
 
-    with open(cjksrcjson_path, "w") as cjksrcjson_file:
+    with cjksrcjson_path.open("w") as cjksrcjson_file:
         json.dump(cjksrc, cjksrcjson_file, separators=(",", ":"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     if len(sys.argv) >= 2:
         main(sys.argv[1])
     else:

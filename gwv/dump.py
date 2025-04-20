@@ -1,9 +1,14 @@
-import os
+from __future__ import annotations
+
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from gwv.kagedata import KageData, get_entity_name
+
+if TYPE_CHECKING:
+    import os
 
 
 @dataclass(frozen=True)
@@ -26,15 +31,14 @@ class DumpEntry:
 
 
 class Dump:
-
-    def __init__(self, data: Dict[str, Tuple[str, str]], timestamp: float):
+    def __init__(self, data: dict[str, tuple[str, str]], timestamp: float):
         self._data = data
         self.timestamp = timestamp
 
     def __getitem__(self, glyphname: str) -> DumpEntry:
         return DumpEntry(glyphname, *self._data[glyphname])
 
-    def get(self, glyphname: str) -> Optional[DumpEntry]:
+    def get(self, glyphname: str) -> DumpEntry | None:
         value = self._data.get(glyphname)
         if value is None:
             return None
@@ -56,7 +60,7 @@ class Dump:
         _rel, data = self._data[glyphname]
         return get_entity_name(data) or glyphname
 
-    _get_alias_of_dic: Optional[Dict[str, List[str]]] = None
+    _get_alias_of_dic: dict[str, list[str]] | None = None
 
     def get_alias_of(self, name: str):
         if self._get_alias_of_dic is None:
@@ -71,10 +75,11 @@ class Dump:
         return self._get_alias_of_dic.get(name, [name])
 
     @classmethod
-    def open(cls, filepath: str):
-        data: Dict[str, Tuple[str, str]] = {}
-        with open(filepath) as fp:
-            if filepath[-4:] == ".csv":
+    def open(cls, filepath: str | os.PathLike):
+        filepath = Path(filepath)
+        data: dict[str, tuple[str, str]] = {}
+        with filepath.open() as fp:
+            if filepath.suffix == ".csv":
                 # first line contains the last modified time
                 timestamp = float(fp.readline()[:-1])
                 for line in fp:
@@ -84,7 +89,7 @@ class Dump:
                     data[row[0]] = (row[1], row[2])
             else:
                 # dump_newest_only.txt
-                timestamp = os.path.getmtime(filepath)
+                timestamp = filepath.stat().st_mtime
                 line = fp.readline()  # header
                 line = fp.readline()  # ------
                 for line in iter(fp.readline, ""):

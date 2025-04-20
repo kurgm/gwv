@@ -1,17 +1,22 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
 import argparse
 import json
-import os
 import sys
-from typing import Optional, Sequence
+from pathlib import Path
+from typing import TYPE_CHECKING
 
+from gwv import version
 from gwv.dump import Dump
 from gwv.validator import validate
-from gwv import version
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
-def main(args: Optional[Sequence[str]] = None):
+def main(args: Sequence[str] | None = None):
     if args is None:
         args = sys.argv[1:]
 
@@ -19,21 +24,22 @@ def main(args: Optional[Sequence[str]] = None):
     parser.add_argument("dumpfile")
     parser.add_argument("-o", "--out", help="File to write the output JSON to")
     parser.add_argument(
-        "--ignore-error", action="store_true",
-        help="Ignore runtime errors and resume validation of next glyph")
+        "--ignore-error",
+        action="store_true",
+        help="Ignore runtime errors and resume validation of next glyph",
+    )
     parser.add_argument("-n", "--names", nargs="*", help="Names of validators")
     parser.add_argument("-v", "--version", action="version", version=version)
     opts = parser.parse_args(args)
 
-    outpath = opts.out or os.path.join(
-        os.path.dirname(opts.dumpfile), "gwv_result.json")
+    outpath = opts.out or Path(opts.dumpfile).with_name("gwv_result.json")
     dump = Dump.open(opts.dumpfile)
 
     result = validate(dump, opts.names or None, ignore_error=opts.ignore_error)
 
-    with open(outpath, "w") as outfile:
+    with Path(outpath).open("w") as outfile:
         json.dump(result, outfile, separators=(",", ":"), sort_keys=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,12 +1,16 @@
+from __future__ import annotations
+
 import itertools
 import re
-from typing import Any, Dict, List, Literal, NamedTuple, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
-import gwv.filters as filters
+from gwv import filters
 from gwv.helper import isYoko
-from gwv.kagedata import KageLine
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.kagedata import KageLine
+    from gwv.validatorctx import ValidatorContext
 
 
 class CornerError(NamedTuple):
@@ -18,27 +22,35 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("00")
     class DISCONNECTED_TOPLEFT(CornerError):
         """左上近い"""
+
     @error_code("11")
     class DISCONNECTED_BOTTOMLEFT(CornerError):
         """左下近い"""
+
     @error_code("22")
     class DISCONNECTED_TOPRIGHT(CornerError):
         """右上近い"""
+
     @error_code("33")
     class DISCONNECTED_BOTTOMRIGHT(CornerError):
         """右下近い"""
+
     @error_code("44")
     class DISCONNECTED_BOTTOMLEFTZHOLD(CornerError):
         """左下zh用旧近い"""
+
     @error_code("66")
     class DISCONNECTED_BOTTOMLEFTZHNEW(CornerError):
         """左下zh用新近い"""
+
     @error_code("77")
     class DISCONNECTED_HORICONN(CornerError):
         """接続(横)近い"""
+
     @error_code("99")
     class DISCONNECTED_VERTCONN(CornerError):
         """接続(縦)近い"""
+
     @error_code("aa")
     class DISCONNECTED_BOTTOMRIGHTHT(CornerError):
         """右下H/T近い"""
@@ -46,6 +58,7 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("20")
     class TOPLEFT_ON_TOPRIGHT(CornerError):
         """右上に左上型"""
+
     @error_code("90")
     class TOPLEFT_ON_VERTCONN(CornerError):
         """接続(縦)に左上型"""
@@ -53,12 +66,15 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("31")
     class BOTTOMLEFT_ON_BOTTOMRIGHT(CornerError):
         """右下に左下型"""
+
     @error_code("41")
     class BOTTOMLEFT_ON_BOTTOMLEFTZHOLD(CornerError):
         """左下zh用旧に左下型"""
+
     @error_code("61")
     class BOTTOMLEFT_ON_BOTTOMLEFTZHNEW(CornerError):
         """左下zh用新に左下型"""
+
     @error_code("91")
     class BOTTOMLEFT_ON_VERTCONN(CornerError):
         """接続(縦)に左下型"""
@@ -66,6 +82,7 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("02")
     class TOPRIGHT_ON_TOPLEFT(CornerError):
         """左上に右上型"""
+
     @error_code("92")
     class TOPRIGHT_ON_VERTCONN(CornerError):
         """接続(縦)に右上型"""
@@ -73,6 +90,7 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("13")
     class BOTTOMRIGHT_ON_BOTTOMLEFT(CornerError):
         """左下に右下型"""
+
     @error_code("93")
     class BOTTOMRIGHT_ON_VERTCONN(CornerError):
         """接続(縦)に右下型"""
@@ -80,12 +98,15 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("14")
     class BOTTOMLEFTZHOLD_ON_BOTTOMLEFT(CornerError):
         """左下に左下zh用旧型"""
+
     @error_code("34")
     class BOTTOMLEFTZHOLD_ON_BOTTOMRIGHT(CornerError):
         """右下に左下zh用旧型"""
+
     @error_code("64")
     class BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW(CornerError):
         """左下zh用新に左下zh用旧型"""
+
     @error_code("94")
     class BOTTOMLEFTZHOLD_ON_VERTCONN(CornerError):
         """接続(縦)に左下zh用旧型"""
@@ -97,12 +118,15 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("16")
     class BOTTOMLEFTZHNEW_ON_BOTTOMLEFT(CornerError):
         """左下に左下zh用新型"""
+
     @error_code("36")
     class BOTTOMLEFTZHNEW_ON_BOTTOMRIGHT(CornerError):
         """右下に左下zh用新型"""
+
     @error_code("46")
     class BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD(CornerError):
         """左下zh用旧に左下zh用新型"""
+
     @error_code("96")
     class BOTTOMLEFTZHNEW_ON_VERTCONN(CornerError):
         """接続(縦)に左下zh用新型"""
@@ -110,21 +134,27 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("08")
     class OPEN_ON_TOPLEFT(CornerError):
         """左上に開放型"""
+
     @error_code("18")
     class OPEN_ON_BOTTOMLEFT(CornerError):
         """左下に開放型"""
+
     @error_code("28")
     class OPEN_ON_TOPRIGHT(CornerError):
         """右上に開放型"""
+
     @error_code("38")
     class OPEN_ON_BOTTOMRIGHT(CornerError):
         """右下に開放型"""
+
     @error_code("48")
     class OPEN_ON_BOTTOMLEFTZHOLD(CornerError):
         """左下zh用旧に開放型"""
+
     @error_code("78")
     class OPEN_ON_HORICONN(CornerError):
         """接続(横)に開放型"""
+
     @error_code("98")
     class OPEN_ON_VERTCONN(CornerError):
         """接続(縦)に開放型"""
@@ -132,12 +162,15 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("09")
     class VERTCONN_ON_TOPLEFT(CornerError):
         """左上に接続型"""
+
     @error_code("19")
     class VERTCONN_ON_BOTTOMLEFT(CornerError):
         """左下に接続型 | 左下zh用旧かも？"""
+
     @error_code("29")
     class VERTCONN_ON_TOPRIGHT(CornerError):
         """右上に接続型"""
+
     @error_code("39")
     class VERTCONN_ON_BOTTOMRIGHT(CornerError):
         """右下に接続型"""
@@ -145,6 +178,7 @@ class CornerValidatorError(ValidatorErrorEnum):
     @error_code("1a")
     class BOTTOMRIGHTHT_ON_BOTTOMLEFT(CornerError):
         """左下に右下H/T型"""
+
     @error_code("9a")
     class BOTTOMRIGHTHT_ON_VERTCONN(CornerError):
         """接続(縦)に右下H/T型"""
@@ -154,13 +188,12 @@ E = CornerValidatorError
 
 
 class Stroke:
-
     def __init__(self, line: KageLine):
         self.line = line
         self.stype = line.stroke_type
 
 
-def setSegments(stroke: Stroke, tate: List["Segment"], yoko: List["Segment"]):
+def setSegments(stroke: Stroke, tate: list[Segment], yoko: list[Segment]):
     if len(stroke.line.data) <= 2:
         return
     sttType = stroke.line.head_type
@@ -198,21 +231,24 @@ def setSegments(stroke: Stroke, tate: List["Segment"], yoko: List["Segment"]):
         else:
             tate.append(seg)
 
-        if stroke.stype == 7 and endType == 7 and \
-                coords[1][0] > coords[3][0]:
+        if stroke.stype == 7 and endType == 7 and coords[1][0] > coords[3][0]:
             # 左払い(「臼」の左上などを横画と同一視する)
-            seg = Segment(
-                stroke, 2, _STYLE_NO_END, *coords[3], *coords[1], False)
+            seg = Segment(stroke, 2, _STYLE_NO_END, *coords[3], *coords[1], False)
             yoko.append(seg)
 
 
 class Segment:
-
-    def __init__(self, stroke: Stroke,
-                 start_type: int, end_type: int,
-                 x0: int, y0: int, x1: int, y1: int,
-                 is_straight_line: bool = True):
-
+    def __init__(
+        self,
+        stroke: Stroke,
+        start_type: int,
+        end_type: int,
+        x0: int,
+        y0: int,
+        x1: int,
+        y1: int,
+        is_straight_line: bool = True,
+    ):
         if is_straight_line:
             if x1 < x0 if isYoko(x0, y0, x1, y1) else y1 < y0:
                 start_type, end_type = end_type, start_type
@@ -227,9 +263,9 @@ class Segment:
         self.x1 = x1
         self.y1 = y1
         self.mid_connectable = is_straight_line
-        self.sttConnect: Optional[Connection] = None
-        self.midConnect: List[Connection] = []
-        self.endConnect: Optional[Connection] = None
+        self.sttConnect: Connection | None = None
+        self.midConnect: list[Connection] = []
+        self.endConnect: Connection | None = None
 
     def isVert(self):
         return self.x0 == self.x1
@@ -249,10 +285,13 @@ class Connection(NamedTuple):
     errcls: Any
 
 
-def connect(tate: Segment, yoko: Segment,
-            tate_pos: Literal[0, 1, 2], yoko_pos: Literal[0, 1, 2],
-            errcls: Any):
-
+def connect(
+    tate: Segment,
+    yoko: Segment,
+    tate_pos: Literal[0, 1, 2],
+    yoko_pos: Literal[0, 1, 2],
+    errcls: Any,
+):
     if tate_pos == 0:
         if tate.sttConnect is not None and tate.sttConnect.errcls is _NO_ERROR:
             return
@@ -307,7 +346,7 @@ def connect(tate: Segment, yoko: Segment,
         yoko.endConnect = connection
 
 
-def is_ZH_corner(conn: Connection, yoko: List[Segment], _tate: List[Segment]):
+def is_ZH_corner(conn: Connection, yoko: list[Segment], _tate: list[Segment]):
     # 縦画の終端が左下zh用カドであるべきかどうかを周辺の画の接続関係から推測する
     # 参照: https://twitter.com/kurgm/status/545573760267329537
     if conn.tate_pos != 2 or conn.yoko_pos != 0:
@@ -320,8 +359,12 @@ def is_ZH_corner(conn: Connection, yoko: List[Segment], _tate: List[Segment]):
     # but not
     # ┐┐
     # └┘
-    if (t.isVert() and (t.sttConnect is None or t.sttConnect.yoko_pos != 2) and
-            y.endConnect is not None and y.endConnect.tate_pos == 2):
+    if (
+        t.isVert()
+        and (t.sttConnect is None or t.sttConnect.yoko_pos != 2)
+        and y.endConnect is not None
+        and y.endConnect.tate_pos == 2
+    ):
         t2 = y.endConnect.tate
         if t2.sttConnect is not None and t2.sttConnect.yoko_pos == 2:
             return False
@@ -343,8 +386,11 @@ def is_ZH_corner(conn: Connection, yoko: List[Segment], _tate: List[Segment]):
         if midys and y2.endConnect is not None and y2.endConnect.tate_pos == 0:
             if any(my.endConnect is None and my.end_type == 0 for my in midys):
                 return False  # 曰・烏・鳥
-            if any(my.endConnect.tate == y2.endConnect.tate for my in midys if
-                   my.endConnect is not None and my.endConnect.tate_pos == 1):
+            if any(
+                my.endConnect.tate == y2.endConnect.tate
+                for my in midys
+                if my.endConnect is not None and my.endConnect.tate_pos == 1
+            ):
                 return False  # 日・目
         else:
             for my in midys:
@@ -353,17 +399,25 @@ def is_ZH_corner(conn: Connection, yoko: List[Segment], _tate: List[Segment]):
                 for oy in yoko:
                     if oy == my:
                         continue
-                    if oy.sttConnect is None and \
-                       oy.end_type != _STYLE_NO_END and \
-                       oy.endConnect is not None and \
-                       oy.endConnect.tate_pos == 1 and \
-                       oy.x0 > my.x1 and -4 <= oy.y0 - my.y1 <= 4:
+                    if (
+                        oy.sttConnect is None
+                        and oy.end_type != _STYLE_NO_END
+                        and oy.endConnect is not None
+                        and oy.endConnect.tate_pos == 1
+                        and oy.x0 > my.x1
+                        and -4 <= oy.y0 - my.y1 <= 4
+                    ):
                         return False  # 臼
 
     # ├┼一
     # └┴
-    midys = [conn.yoko for conn in t.midConnect if conn.yoko_pos == 0 and
-             conn.yoko.endConnect is None and conn.yoko.end_type == 0]
+    midys = [
+        conn.yoko
+        for conn in t.midConnect
+        if conn.yoko_pos == 0
+        and conn.yoko.endConnect is None
+        and conn.yoko.end_type == 0
+    ]
     midts = [conn.tate for conn in y.midConnect if conn.tate_pos == 2]
     for my, mt in itertools.product(midys, midts):
         if my.x1 > mt.x1 and my.y0 > mt.y0:
@@ -371,12 +425,15 @@ def is_ZH_corner(conn: Connection, yoko: List[Segment], _tate: List[Segment]):
     # ┌─┐
     # └┐┘
     # 　╰
-    if t.sttConnect is not None and t.sttConnect.yoko_pos == 0 and \
-       y.endConnect is not None and y.endConnect.tate_pos == 0:
+    if (
+        t.sttConnect is not None
+        and t.sttConnect.yoko_pos == 0
+        and y.endConnect is not None
+        and y.endConnect.tate_pos == 0
+    ):
         t2Type = y.endConnect.tate.stroke.stype
         y2 = t.sttConnect.yoko
-        if t2Type == 3 and y2.endConnect is not None and \
-                y2.endConnect.tate_pos == 0:
+        if t2Type == 3 and y2.endConnect is not None and y2.endConnect.tate_pos == 0:
             t3 = y2.endConnect.tate
             if t3.endConnect is not None and t3.endConnect.yoko_pos == 2:
                 return False
@@ -386,35 +443,55 @@ def is_ZH_corner(conn: Connection, yoko: List[Segment], _tate: List[Segment]):
     # ┌┤
     # ├┤
     # └┤
-    if t.sttConnect is not None and t.sttConnect.yoko_pos == 0 and \
-       y.endConnect is not None and y.endConnect.tate_pos == 1:
+    if (
+        t.sttConnect is not None
+        and t.sttConnect.yoko_pos == 0
+        and y.endConnect is not None
+        and y.endConnect.tate_pos == 1
+    ):
         t2 = y.endConnect.tate
-        if t2.sttConnect is not None and t2.sttConnect.yoko_pos == 1 and \
-                t.sttConnect.yoko == t2.sttConnect.yoko:
+        if (
+            t2.sttConnect is not None
+            and t2.sttConnect.yoko_pos == 1
+            and t.sttConnect.yoko == t2.sttConnect.yoko
+        ):
             return False
         if t.midConnect:
             midys = [conn.yoko for conn in t.midConnect if conn.yoko_pos == 0]
             y2 = t.sttConnect.yoko
-            if midys and \
-               y2.endConnect is not None and y2.endConnect.tate_pos == 1 and \
-               y2.endConnect.tate == y.endConnect.tate:
-                if any(my.endConnect.tate == y2.endConnect.tate for my in midys
-                       if my.endConnect is not None and
-                       my.endConnect.tate_pos == 1):
+            if (
+                midys
+                and y2.endConnect is not None
+                and y2.endConnect.tate_pos == 1
+                and y2.endConnect.tate == y.endConnect.tate
+            ):
+                if any(
+                    my.endConnect.tate == y2.endConnect.tate
+                    for my in midys
+                    if my.endConnect is not None and my.endConnect.tate_pos == 1
+                ):
                     return False
 
     # 廿
-    if t.sttConnect is None and t.start_type == 0 and \
-            y.endConnect is not None and y.endConnect.tate_pos == 2:
+    if (
+        t.sttConnect is None
+        and t.start_type == 0
+        and y.endConnect is not None
+        and y.endConnect.tate_pos == 2
+    ):
         t2 = y.endConnect.tate
         if t2.sttConnect is None and t2.start_type == 0:
             ymin = max(t.y0, t2.y0)
             ymax = min(t.y1, t2.y1)
             for py in yoko:
-                if py.sttConnect is py.endConnect is None and \
-                        py.end_type == 0 and \
-                        py.x0 < y.x0 and py.x1 > y.x1 and \
-                        ymin < py.y0 < ymax and ymin < py.y1 < ymax:
+                if (
+                    py.sttConnect is py.endConnect is None
+                    and py.end_type == 0
+                    and py.x0 < y.x0
+                    and py.x1 > y.x1
+                    and ymin < py.y0 < ymax
+                    and ymin < py.y1 < ymax
+                ):
                     return False
 
     return True
@@ -438,9 +515,12 @@ _STYLE_NO_END = -1
 _NO_ERROR = object()
 
 
-def _get_connect_corner_type_maps(isGdesign: bool, isTdesign: bool) -> Dict[
-        Tuple[Literal[0, 2], Literal[0, 2]],
-        Dict[int, List[Tuple[Any, Tuple[int, int], Tuple[int, int]]]]]:
+def _get_connect_corner_type_maps(
+    isGdesign: bool, isTdesign: bool
+) -> dict[
+    tuple[Literal[0, 2], Literal[0, 2]],
+    dict[int, list[tuple[Any, tuple[int, int], tuple[int, int]]]],
+]:
     return {
         # 左上
         (0, 0): {
@@ -469,22 +549,26 @@ def _get_connect_corner_type_maps(isGdesign: bool, isTdesign: bool) -> Dict[
                 (E.DISCONNECTED_BOTTOMLEFT, (-8, 8), (-2, 4)),
             ],
             313: [
-                (E.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW if isGdesign else
-                 _NO_ERROR,
-                 (0, 0), (0, 0)),
+                (
+                    E.BOTTOMLEFTZHOLD_ON_BOTTOMLEFTZHNEW if isGdesign else _NO_ERROR,
+                    (0, 0),
+                    (0, 0),
+                ),
                 (E.DISCONNECTED_BOTTOMLEFTZHOLD, (-8, 8), (-14, 4)),
             ],
             413: [
-                (E.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD if isTdesign else
-                 _NO_ERROR,
-                 (0, 0), (0, 0)),
+                (
+                    E.BOTTOMLEFTZHNEW_ON_BOTTOMLEFTZHOLD if isTdesign else _NO_ERROR,
+                    (0, 0),
+                    (0, 0),
+                ),
                 (E.DISCONNECTED_BOTTOMLEFTZHNEW, (-8, 8), (-14, 4)),
             ],
             23: [(E.BOTTOMRIGHT_ON_BOTTOMLEFT, (-8, 8), (-6, 4))],
             24: [(E.BOTTOMRIGHTHT_ON_BOTTOMLEFT, (-8, 8), (-6, 4))],
             0: [
                 (E.OPEN_ON_BOTTOMLEFT, (-8, 8), (-19, -2)),
-                (E.OPEN_ON_BOTTOMLEFTZHOLD, (-8, 8), (-1, 4))
+                (E.OPEN_ON_BOTTOMLEFTZHOLD, (-8, 8), (-1, 4)),
             ],
             32: [(E.VERTCONN_ON_BOTTOMLEFT, (-8, 8), (0, 4))],
         },
@@ -503,17 +587,18 @@ def _get_connect_corner_type_maps(isGdesign: bool, isTdesign: bool) -> Dict[
             ],
             0: [(E.OPEN_ON_BOTTOMRIGHT, (-8, 8), (-19, -2))],
             32: [(E.VERTCONN_ON_BOTTOMRIGHT, (-8, 8), (-19, 0))],
-        }
+        },
     }
 
 
 def _try_connect_corner(
-        tate: Segment, yoko: Segment,
-        tate_pos: Literal[0, 2], yoko_pos: Literal[0, 2],
-        type_map: Dict[int, List[
-            Tuple[Any, Tuple[int, int], Tuple[int, int]]]],
-        yoko_open_error_limit: Optional[int] = None):
-
+    tate: Segment,
+    yoko: Segment,
+    tate_pos: Literal[0, 2],
+    yoko_pos: Literal[0, 2],
+    type_map: dict[int, list[tuple[Any, tuple[int, int], tuple[int, int]]]],
+    yoko_open_error_limit: int | None = None,
+):
     tate_type = tate.start_type if tate_pos == 0 else tate.end_type
     if tate_type not in type_map:
         return False
@@ -521,19 +606,29 @@ def _try_connect_corner(
     if yoko_type == _STYLE_NO_END:
         return False
 
-    x_dif = (yoko.x0 if yoko_pos == 0 else yoko.x1) - \
-        (tate.x0 if tate_pos == 0 else tate.x1)
-    y_dif = (yoko.y0 if yoko_pos == 0 else yoko.y1) - \
-        (tate.y0 if tate_pos == 0 else tate.y1)
+    x_dif = (yoko.x0 if yoko_pos == 0 else yoko.x1) - (
+        tate.x0 if tate_pos == 0 else tate.x1
+    )
+    y_dif = (yoko.y0 if yoko_pos == 0 else yoko.y1) - (
+        tate.y0 if tate_pos == 0 else tate.y1
+    )
 
-    for errcls, (x_min, x_max), (y_min, y_max) in type_map[tate_type]:
-        if x_min <= x_dif <= x_max and y_min <= y_dif <= y_max:
-            break
-    else:
+    errcls = next(
+        (
+            errcls
+            for errcls, (x_min, x_max), (y_min, y_max) in type_map[tate_type]
+            if x_min <= x_dif <= x_max and y_min <= y_dif <= y_max
+        ),
+        None,
+    )
+    if errcls is None:
         return False
 
-    if yoko_pos == 2 and yoko_type == 0 and (
-            yoko_open_error_limit is None or yoko_open_error_limit <= x_dif):
+    if (
+        yoko_pos == 2
+        and yoko_type == 0
+        and (yoko_open_error_limit is None or yoko_open_error_limit <= x_dif)
+    ):
         errcls = E.OPEN_ON_HORICONN
 
     connect(tate, yoko, tate_pos, yoko_pos, errcls)
@@ -541,8 +636,11 @@ def _try_connect_corner(
 
 
 def _try_connect_yoko_middle(
-        tate: Segment, yoko: Segment, tate_pos: Literal[0, 2],
-        yoko_limit_offsets: Tuple[int, int]):
+    tate: Segment,
+    yoko: Segment,
+    tate_pos: Literal[0, 2],
+    yoko_limit_offsets: tuple[int, int],
+):
     if not (yoko.mid_connectable and yoko.isHori()):
         return False
     yoko_y = yoko.y0
@@ -585,8 +683,7 @@ def _try_connect_yoko_middle(
     return True
 
 
-def _try_connect_tate_middle(
-        tate: Segment, yoko: Segment, yoko_pos: Literal[0, 2]):
+def _try_connect_tate_middle(tate: Segment, yoko: Segment, yoko_pos: Literal[0, 2]):
     if not (tate.mid_connectable and tate.isVert()):
         return False
     tate_x = tate.x0
@@ -630,15 +727,14 @@ def _try_connect_tate_middle(
 
 
 class CornerValidator(Validator):
-
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.is_hikanji)
     @filters.check_only(-filters.has_transform)
     def validate(self, ctx: ValidatorContext) -> None:
         strokes = []
-        tate: List[Segment] = []
-        yoko: List[Segment] = []
+        tate: list[Segment] = []
+        yoko: list[Segment] = []
         isGdesign = bool(_re_gdesign.fullmatch(ctx.glyph.name))
         isTdesign = bool(_re_tdesign.fullmatch(ctx.glyph.name))
 
@@ -654,10 +750,13 @@ class CornerValidator(Validator):
                     continue
 
                 # 左上
-                if y.stroke.stype in (2, 6, 7) and \
-                        y.start_type != _STYLE_NO_END and \
-                        t.start_type == 12 and \
-                        -7 <= y.x0 - t.x0 <= 9 and -5 <= y.y0 - t.y0 <= 3:
+                if (
+                    y.stroke.stype in (2, 6, 7)
+                    and y.start_type != _STYLE_NO_END
+                    and t.start_type == 12
+                    and -7 <= y.x0 - t.x0 <= 9
+                    and -5 <= y.y0 - t.y0 <= 3
+                ):
                     connect(t, y, 0, 0, _NO_ERROR)
                 else:
                     _try_connect_corner(t, y, 0, 0, type_maps[0, 0])
@@ -669,8 +768,12 @@ class CornerValidator(Validator):
                 _try_connect_corner(t, y, 2, 0, type_maps[2, 0])
 
                 # 右下
-                if y.end_type == 0 and t.end_type == 32 and \
-                        6 <= y.x1 - t.x1 <= 18 and 0 <= y.y1 - t.y1 <= 8:
+                if (
+                    y.end_type == 0
+                    and t.end_type == 32
+                    and 6 <= y.x1 - t.x1 <= 18
+                    and 0 <= y.y1 - t.y1 <= 8
+                ):
                     connect(t, y, 2, 2, E.PSEUDOBOTTOMRIGHTHT_ON_BOTTOMRIGHTHT)
                 else:
                     _try_connect_corner(t, y, 2, 2, type_maps[2, 2], 0)
@@ -700,8 +803,11 @@ class CornerValidator(Validator):
         if isGdesign or isTdesign:
             for t in tate:
                 conn = t.endConnect
-                if conn is None or conn.yoko_pos != 0 or \
-                        t.end_type not in (13, 313, 413):
+                if (
+                    conn is None
+                    or conn.yoko_pos != 0
+                    or t.end_type not in (13, 313, 413)
+                ):
                     continue
                 y = conn.yoko
                 isZH = is_ZH_corner(conn, yoko, tate)
@@ -713,9 +819,11 @@ class CornerValidator(Validator):
                     # 左下に左下zh用新型
                     errcls = E.BOTTOMLEFTZHNEW_ON_BOTTOMLEFT
                 if isZH and t.end_type == 13:
-                    errcls = E.BOTTOMLEFT_ON_BOTTOMLEFTZHNEW \
-                        if isGdesign else \
-                        E.BOTTOMLEFT_ON_BOTTOMLEFTZHOLD  # 左下zh用に左下型
+                    errcls = (
+                        E.BOTTOMLEFT_ON_BOTTOMLEFTZHNEW
+                        if isGdesign
+                        else E.BOTTOMLEFT_ON_BOTTOMLEFTZHOLD
+                    )  # 左下zh用に左下型
                 if errcls is not None:
                     results.append((errcls, t.stroke.line, y.stroke.line))
 

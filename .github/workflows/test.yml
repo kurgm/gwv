@@ -33,3 +33,9 @@ jobs:
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+    - name: Lint
+      run: |
+        uv tool run ruff check --output-format=github
+    - name: Format
+      run: |
+        uv tool run ruff format --diff

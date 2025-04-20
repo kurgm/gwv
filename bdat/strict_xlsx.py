@@ -1,15 +1,20 @@
+from __future__ import annotations
+
 import functools
 import re
-from typing import Any, Callable, Dict, IO, Iterator, List, Tuple, TypeVar, \
-    Union
-from xml.etree.ElementTree import Element, iterparse
 import zipfile
+from typing import IO, TYPE_CHECKING, Any, Callable, TypeVar
+from xml.etree.ElementTree import Element, iterparse
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 OOXML_NS = "{http://purl.oclc.org/ooxml/spreadsheetml/main}"
 
 
-def _iterchildren(xmlf: IO[bytes], pred: Callable[[Element], bool]) -> \
-        Iterator[Element]:
+def _iterchildren(
+    xmlf: IO[bytes], pred: Callable[[Element], bool]
+) -> Iterator[Element]:
     it = iterparse(xmlf, ("start", "end"))
     elem: Element
     for evt, elem in it:
@@ -36,7 +41,7 @@ def _tag_is(tagname: str) -> Callable[[Element], bool]:
     return lambda elem: elem.tag == tagname
 
 
-def _get_strings(sstf: IO[bytes]) -> List[str]:
+def _get_strings(sstf: IO[bytes]) -> list[str]:
     return [
         elem.find(OOXML_NS + "t").text
         for elem in _iterchildren(sstf, _tag_is(OOXML_NS + "sst"))
@@ -47,7 +52,7 @@ T = TypeVar("T")
 
 
 def _memoize(f: Callable[..., T]) -> Callable[..., T]:
-    memo: Dict[Tuple, T] = {}
+    memo: dict[tuple, T] = {}
 
     @functools.wraps(f)
     def wrapper(*args):
@@ -55,6 +60,7 @@ def _memoize(f: Callable[..., T]) -> Callable[..., T]:
         if key not in memo:
             memo[key] = f(*args)
         return memo[key]
+
     return wrapper
 
 
@@ -71,24 +77,24 @@ def column_to_int(column: str) -> int:
 RE_COORD = re.compile(r"^([A-Z]{1,3})(\d+)$")
 
 
-def _parse_coordinate(coord: str) -> Tuple[int, int]:
+def _parse_coordinate(coord: str) -> tuple[int, int]:
     m = RE_COORD.match(coord)
     if not m:
-        raise ValueError("invalid coordinate {!r}".format(coord))
+        raise ValueError(f"invalid coordinate {coord!r}")
     column, row = m.groups()
     return column_to_int(column), int(row)
 
 
-def parse_numeric(s: str) -> Union[int, float]:
+def parse_numeric(s: str) -> int | float:
     try:
         return int(s)
     except ValueError:
         return float(s)
 
 
-def _itersheet(sheet: IO[bytes], strs: List[str]) -> Iterator[Dict[int, Any]]:
+def _itersheet(sheet: IO[bytes], strs: list[str]) -> Iterator[dict[int, Any]]:
     for rowelem in _iterchildren(sheet, _tag_is(OOXML_NS + "sheetData")):
-        row: Dict[int, Any] = {}
+        row: dict[int, Any] = {}
         for cellelem in rowelem:
             columnnum, _rownum = _parse_coordinate(cellelem.get("r"))
             vtype = cellelem.get("t", "n")
@@ -104,16 +110,16 @@ def _itersheet(sheet: IO[bytes], strs: List[str]) -> Iterator[Dict[int, Any]]:
             elif vtype == "str":
                 pass
             else:
-                raise ValueError("unsupported type: {!r}".format(vtype))
+                raise ValueError(f"unsupported type: {vtype!r}")
             row[columnnum] = value
         yield row
 
 
-def iterxlsx(xlsx: Union[str, IO[bytes]], sheetname: str):
+def iterxlsx(xlsx: str | IO[bytes], sheetname: str):
     archive = zipfile.ZipFile(xlsx)
 
     sstf = archive.open("xl/sharedStrings.xml")
     strs = _get_strings(sstf)
 
-    sheet = archive.open("xl/worksheets/{}.xml".format(sheetname))
+    sheet = archive.open(f"xl/worksheets/{sheetname}.xml")
     return _itersheet(sheet, strs)

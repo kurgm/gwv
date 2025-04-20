@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
-from collections import defaultdict
+from __future__ import annotations
+
 import json
 import logging
 import os
+from collections import defaultdict
+from pathlib import Path
+from typing import IO, Any
 from urllib.request import urlretrieve
-from typing import Any, Dict, IO, List
 
 from .strict_xlsx import iterxlsx
 
@@ -18,22 +21,34 @@ MJ_JSON_FILENAME = "mj.json"
 
 def kuten2gl(ku: int, ten: int):
     """句点コードをGL領域の番号に変換する"""
-    return "{:02x}{:02x}".format(ku + 32, ten + 32)
+    return f"{ku + 32:02x}{ten + 32:02x}"
 
 
 def parseMjxlsx(mjxlsx: IO[bytes]):
-    mjdat: List[List] = []
+    mjdat: list[list] = []
     mjit = iterxlsx(mjxlsx, "sheet1")
     header = next(mjit)
     for row in mjit:
-        rowdata: Dict[str, Any] = defaultdict(lambda: None, {
-            header[col]: value
-            for col, value in row.items()
-        })
+        rowdata: dict[str, Any] = defaultdict(
+            lambda: None, {header[col]: value for col, value in row.items()}
+        )
         # [jmj,koseki,juki,nyukan,x0213,x0212,ucs,ivs,svs,toki,dkw,shincho,sdjt]
         # ucs, ivsは複数ある可能性あり
-        mjrow = [None, None, None, None, None, None,
-                 set(), set(), None, None, None, None, None]
+        mjrow = [
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            set(),
+            set(),
+            None,
+            None,
+            None,
+            None,
+            None,
+        ]
         mjrow[0] = rowdata["MJ文字図形名"][2:]  # strip "MJ"
         chtext = rowdata["戸籍統一文字番号"]
         if chtext:
@@ -82,17 +97,15 @@ def parseMjxlsx(mjxlsx: IO[bytes]):
             chtext = str(chtext)
             dkwnum = chtext.lstrip("補").rstrip("#'")
             if chtext.startswith("補"):
-                mjrow[10] = "h{:0>4}{}".format(
-                    dkwnum, "d" * chtext.count("'"))
+                mjrow[10] = "h{:0>4}{}".format(dkwnum, "d" * chtext.count("'"))
             else:
-                mjrow[10] = "{:0>5}{}".format(
-                    dkwnum, "d" * chtext.count("'"))
+                mjrow[10] = "{:0>5}{}".format(dkwnum, "d" * chtext.count("'"))
         chtext = rowdata["日本語漢字辞典"]
         if chtext:
-            mjrow[11] = "{:0>5}".format(chtext)
+            mjrow[11] = f"{chtext:0>5}"
         chtext = rowdata["新大字典"]
         if chtext:
-            mjrow[12] = "{:0>5}".format(chtext)
+            mjrow[12] = f"{chtext:0>5}"
 
         # set to list
         mjrow[6] = list(mjrow[6])
@@ -102,31 +115,31 @@ def parseMjxlsx(mjxlsx: IO[bytes]):
     return mjdat
 
 
-mjjson_path = os.path.join(
-    os.path.dirname(__file__),
-    "..", "gwv", "data", "3rd", MJ_JSON_FILENAME)
-mjjson_path = os.path.normpath(mjjson_path)
+mjjson_path = os.path.normpath(
+    Path(__file__).parent / ".." / "gwv" / "data" / "3rd" / MJ_JSON_FILENAME
+)
 
 
-def main(mjjson_path: str = mjjson_path):
-
-    if os.path.exists(mjjson_path):
+def main(mjjson_path: str | os.PathLike = mjjson_path):
+    mjjson_path = Path(mjjson_path)
+    if mjjson_path.exists():
         return
-    os.makedirs(os.path.dirname(mjjson_path), exist_ok=True)
+    mjjson_path.parent.mkdir(parents=True, exist_ok=True)
 
     log.info("Downloading %s", MJ_XLSX_URL)
     filename, _headers = urlretrieve(MJ_XLSX_URL)
     log.info("Download completed")
 
-    with open(filename, "rb") as mjxlsx:
+    with Path(filename).open("rb") as mjxlsx:
         mjdat = parseMjxlsx(mjxlsx)
 
-    with open(mjjson_path, "w") as mjjson_file:
+    with mjjson_path.open("w") as mjjson_file:
         json.dump(mjdat, mjjson_file, separators=(",", ":"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     if len(sys.argv) >= 2:
         main(sys.argv[1])
     else:

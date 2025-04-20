@@ -1,14 +1,19 @@
-from typing import Dict, List, NamedTuple, Set
+from __future__ import annotations
 
-import gwv.filters as filters
-from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from typing import TYPE_CHECKING, NamedTuple
+
+from gwv import filters
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.validatorctx import ValidatorContext
 
 
 class MustrenewValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class MUSTRENEW_NO_OLD(NamedTuple):
         """最新版が旧部品を引用していない部品の旧版を引用している"""
+
     @error_code("@")
     class MUSTRENEW_OLD(NamedTuple):
         """最新版が旧部品を引用している部品の旧版を引用している"""
@@ -19,14 +24,13 @@ E = MustrenewValidatorError
 
 class QuoterInfo(NamedTuple):
     is_old: bool
-    quoters: Set[str]
+    quoters: set[str]
 
 
-class MustrenewValidator(Validator):
-
+class MustrenewValidator(SingleErrorValidator):
     def __init__(self, *args, **kwargs):
-        super(MustrenewValidator, self).__init__(*args, **kwargs)
-        self.mustrenew_quoters: Dict[str, QuoterInfo] = {}
+        super().__init__(*args, **kwargs)
+        self.mustrenew_quoters: dict[str, QuoterInfo] = {}
 
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
@@ -43,8 +47,8 @@ class MustrenewValidator(Validator):
         return False
 
     def get_result(self):
-        no_old: List[List[str]] = []
-        old: List[List[str]] = []
+        no_old: list[list[str]] = []
+        old: list[list[str]] = []
         for part_name in sorted(self.mustrenew_quoters.keys()):
             is_old, quoters = self.mustrenew_quoters[part_name]
             if is_old:

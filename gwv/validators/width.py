@@ -1,20 +1,25 @@
-import re
-from typing import Dict, NamedTuple, Tuple, Union
+from __future__ import annotations
 
-import gwv.filters as filters
-from gwv.helper import GWGroupLazyLoader
-from gwv.helper import RE_REGIONS
-from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+import re
+from typing import TYPE_CHECKING, NamedTuple
+
+from gwv import filters
+from gwv.helper import RE_REGIONS, GWGroupLazyLoader
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.validatorctx import ValidatorContext
 
 
 class WidthValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class INCORRECT_NONSPACINGGLYPHS_HALFWIDTH(NamedTuple):
         """グループ:NonSpacingGlyphs-Halfwidthに含まれているが全角"""
+
     @error_code("1")
     class INCORRECT_HALFWIDTHGLYPHS(NamedTuple):
         """グループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれているが全角"""
+
     @error_code("2")
     class INCORRECT_FULLWIDTHGLYPHS(NamedTuple):
         """半角だがグループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれていない"""
@@ -42,8 +47,7 @@ halflists = [
     GWGroupLazyLoader("HalfwidthGlyphs-nonUCS", isset=True),
     GWGroupLazyLoader("HalfwidthGlyphs-sans", isset=True),
 ]
-nonspacinghalflist = GWGroupLazyLoader(
-    "NonSpacingGlyphs-Halfwidth", isset=True)
+nonspacinghalflist = GWGroupLazyLoader("NonSpacingGlyphs-Halfwidth", isset=True)
 
 
 def getDWidth(glyphname: str):
@@ -58,7 +62,7 @@ def getDWidth(glyphname: str):
 pinf = float("inf")
 ninf = -pinf
 
-buhinWidths: Dict[str, Tuple[float, float]] = {
+buhinWidths: dict[str, tuple[float, float]] = {
     "left-half-circle": (15.0, 100.0),  # @1
     "right-half-circle": (100.0, 185.0),  # @1
     "palatal-hook": (40.0, 64.0),  # @1
@@ -86,14 +90,14 @@ buhinWidths: Dict[str, Tuple[float, float]] = {
 }
 
 
-class WidthValidator(Validator):
-
-    @filters.check_only(-filters.is_of_category({
-        "ids", "ucs-kanji", "cdp", "koseki", "ext", "bsh"}))
+class WidthValidator(SingleErrorValidator):
+    @filters.check_only(
+        -filters.is_of_category({"ids", "ucs-kanji", "cdp", "koseki", "ext", "bsh"})
+    )
     @filters.check_only(-filters.has_transform)
     def is_invalid(self, ctx: ValidatorContext):
-        minX: Union[int, float]
-        maxX: Union[int, float]
+        minX: int | float
+        maxX: int | float
         if is_fullwidth_name(ctx.glyph.name):
             minX = 0
             maxX = 200
@@ -129,8 +133,7 @@ class WidthValidator(Validator):
                             bL = minX
                             bR = maxX
                         elif bgW == 2:
-                            if is_fullwidth_name(gn) or \
-                                    (gn + "-halfwidth") in ctx.dump:
+                            if is_fullwidth_name(gn) or (gn + "-halfwidth") in ctx.dump:
                                 bL = xL + w * 0.31
                                 bR = xL + w * 0.69
                             else:

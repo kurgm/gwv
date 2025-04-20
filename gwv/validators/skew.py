@@ -1,12 +1,20 @@
-import math
-from typing import NamedTuple
+from __future__ import annotations
 
-import gwv.filters as filters
+import math
+from typing import TYPE_CHECKING, NamedTuple
+
+from gwv import filters
 from gwv.helper import isYoko
-from gwv.kagedata import KageLine
-from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, \
-    ValidatorErrorTupleRecorder, error_code
+from gwv.validators import (
+    Validator,
+    ValidatorErrorEnum,
+    ValidatorErrorTupleRecorder,
+    error_code,
+)
+
+if TYPE_CHECKING:
+    from gwv.kagedata import KageLine
+    from gwv.validatorctx import ValidatorContext
 
 
 class SkewError(NamedTuple):
@@ -22,24 +30,31 @@ class SkewValidatorError(ValidatorErrorEnum):
     @error_code("10")
     class SKEWED_HORI_LINE(SkewErrorAngle):
         """歪んだ水平"""
+
     @error_code("11")
     class SKEWED_VERT_LINE(SkewErrorAngle):
         """歪んだ垂直"""
+
     @error_code("30")
     class SKEWED_HORI_ORE_LAST(SkewErrorAngle):
         """折れの後半が歪んだ水平"""
+
     @error_code("31")
     class SKEWED_VERT_ORE_FIRST(SkewErrorAngle):
         """折れの前半が歪んだ垂直"""
+
     @error_code("40")
     class SKEWED_HORI_OTSU_LAST(SkewErrorAngle):
         """乙の後半が歪んだ水平"""
+
     @error_code("70")
     class HORI_TATEBARAI_FIRST(SkewError):
         """縦払いの直線部分が横"""
+
     @error_code("71")
     class SNAPPED_TATEBARAI(SkewErrorAngle):
         """曲がった縦払い"""
+
     @error_code("72")
     class SKEWED_VERT_TATEBARAI_FIRST(SkewErrorAngle):
         """縦払いの直線部分が歪んだ垂直"""
@@ -58,7 +73,6 @@ class SkewValidatorErrorRecorder(ValidatorErrorTupleRecorder):
 
 
 class SkewValidator(Validator):
-
     recorder_cls = SkewValidatorErrorRecorder
 
     @filters.check_only(-filters.is_alias)
@@ -78,15 +92,15 @@ class SkewValidator(Validator):
             if xDif <= yDif and xDif != 0 and xDif <= 3:
                 # 歪んだ垂直
                 err = E.SKEWED_VERT_LINE(
-                    line,
-                    round(math.atan2(xDif, yDif) * 180 / math.pi, 1))
+                    line, round(math.atan2(xDif, yDif) * 180 / math.pi, 1)
+                )
                 self.record(ctx.glyph.name, err)
                 return
             if xDif > yDif and yDif != 0 and yDif <= 3:
                 # 歪んだ水平
                 err = E.SKEWED_HORI_LINE(
-                    line,
-                    round(math.atan2(yDif, xDif) * 180 / math.pi, 1))
+                    line, round(math.atan2(yDif, xDif) * 180 / math.pi, 1)
+                )
                 self.record(ctx.glyph.name, err)
                 return
         elif stype == 3:
@@ -95,8 +109,8 @@ class SkewValidator(Validator):
             if xDif1 != 0 and xDif1 <= 3:
                 # 折れの前半が歪んだ垂直
                 err = E.SKEWED_VERT_ORE_FIRST(
-                    line,
-                    round(math.atan2(xDif1, yDif1) * 180 / math.pi, 1))
+                    line, round(math.atan2(xDif1, yDif1) * 180 / math.pi, 1)
+                )
                 self.record(ctx.glyph.name, err)
                 return
             xDif2 = abs(coords[1][0] - coords[2][0])
@@ -104,8 +118,8 @@ class SkewValidator(Validator):
             if yDif2 != 0 and yDif2 <= 3:
                 # 折れの後半が歪んだ水平
                 err = E.SKEWED_HORI_ORE_LAST(
-                    line,
-                    round(math.atan2(yDif2, xDif2) * 180 / math.pi, 1))
+                    line, round(math.atan2(yDif2, xDif2) * 180 / math.pi, 1)
+                )
                 self.record(ctx.glyph.name, err)
                 return
         elif stype == 4:
@@ -114,8 +128,8 @@ class SkewValidator(Validator):
             if yDif != 0 and yDif <= 3:
                 # 乙の後半が歪んだ水平
                 err = E.SKEWED_HORI_OTSU_LAST(
-                    line,
-                    round(math.atan2(yDif, xDif) * 180 / math.pi, 1))
+                    line, round(math.atan2(yDif, xDif) * 180 / math.pi, 1)
+                )
                 self.record(ctx.glyph.name, err)
                 return
         elif stype == 7:
@@ -135,14 +149,14 @@ class SkewValidator(Validator):
             if (xDif1 == 0 and xDif2 != 0) or abs(theta1 - theta2) * 60 > 3:
                 # 曲がった縦払い
                 err = E.SNAPPED_TATEBARAI(
-                    line,
-                    round(abs(theta1 - theta2) * 180 / math.pi, 1))
+                    line, round(abs(theta1 - theta2) * 180 / math.pi, 1)
+                )
                 self.record(ctx.glyph.name, err)
                 return
             if xDif1 != 0 and -3 <= xDif1 <= 3:
                 # 縦払いの直線部分が歪んだ垂直
                 err = E.SKEWED_VERT_TATEBARAI_FIRST(
-                    line,
-                    round(abs(90 - theta1 * 180 / math.pi), 1))
+                    line, round(abs(90 - theta1 * 180 / math.pi), 1)
+                )
                 self.record(ctx.glyph.name, err)
                 return
