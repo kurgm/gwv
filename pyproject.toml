@@ -34,7 +34,7 @@ dev = [
 ]
 
 [tool.ruff.lint]
-extend-select = ["B", "FURB", "I", "PL", "PTH", "TC", "UP"]
+extend-select = ["B", "FURB", "I", "LOG", "PIE", "PL", "PTH", "TC", "UP"]
 
 ignore = [
     "PLR09",

@@ -47,7 +47,7 @@ class ValidatorErrorRecorder(abc.ABC):
 
 class ValidatorErrorTupleRecorder(ValidatorErrorRecorder):
     def __init__(self):
-        self._results: dict[str, list[list]] = defaultdict(lambda: [])
+        self._results: dict[str, list[list]] = defaultdict(list)
 
     def record(self, glyphname: str, error: tuple[str, Iterable]) -> None:
         key, param = error
@@ -128,8 +128,6 @@ class ValidatorErrorEnum(ValidatorErrorFactory, Enum):
 
         assert isinstance(err.param, FooValidatorError.SomeError.paramcls)
     """
-
-    pass
 
 
 def error_code(errcode: str):
