@@ -14,39 +14,46 @@ def range_inclusive(stt: int, end: int):
 
 
 _togo_ranges = [
-    range_inclusive(0x3400, 0x4dbf),    # Ext A
-    range_inclusive(0x4e00, 0x9fff),    # URO
-    range_inclusive(0x20000, 0x2a6df),  # Ext B
-    range_inclusive(0x2a700, 0x2b739),  # Ext C
-    range_inclusive(0x2b740, 0x2b81d),  # Ext D
-    range_inclusive(0x2b820, 0x2cea1),  # Ext E
-    range_inclusive(0x2ceb0, 0x2ebe0),  # Ext F
-    range_inclusive(0x2ebf0, 0x2ee5d),  # Ext I
-    range_inclusive(0x30000, 0x3134a),  # Ext G
-    range_inclusive(0x31350, 0x323af),  # Ext H
+    range_inclusive(0x3400, 0x4DBF),  # Ext A
+    range_inclusive(0x4E00, 0x9FFF),  # URO
+    range_inclusive(0x20000, 0x2A6DF),  # Ext B
+    range_inclusive(0x2A700, 0x2B739),  # Ext C
+    range_inclusive(0x2B740, 0x2B81D),  # Ext D
+    range_inclusive(0x2B820, 0x2CEA1),  # Ext E
+    range_inclusive(0x2CEB0, 0x2EBE0),  # Ext F
+    range_inclusive(0x2EBF0, 0x2EE5D),  # Ext I
+    range_inclusive(0x30000, 0x3134A),  # Ext G
+    range_inclusive(0x31350, 0x323AF),  # Ext H
 ]
 
 _togo_in_compat = {
-    0xfa0e, 0xfa0f,
-    0xfa11, 0xfa13, 0xfa14, 0xfa1f,
-    0xfa21, 0xfa23, 0xfa24, 0xfa27, 0xfa28, 0xfa29,
+    0xFA0E,
+    0xFA0F,
+    0xFA11,
+    0xFA13,
+    0xFA14,
+    0xFA1F,
+    0xFA21,
+    0xFA23,
+    0xFA24,
+    0xFA27,
+    0xFA28,
+    0xFA29,
 }
 
 _gokan_ranges = [
-    range_inclusive(0xf900, 0xfa6d),
-    range_inclusive(0xfa70, 0xfad9),
-    range_inclusive(0x2f800, 0x2fa1d),
+    range_inclusive(0xF900, 0xFA6D),
+    range_inclusive(0xFA70, 0xFAD9),
+    range_inclusive(0x2F800, 0x2FA1D),
 ]
 
 
 def is_togo_kanji_cp(cp: int):
-    return any(cp in trange for trange in _togo_ranges) or \
-        cp in _togo_in_compat
+    return any(cp in trange for trange in _togo_ranges) or cp in _togo_in_compat
 
 
 def is_gokan_kanji_cp(cp: int):
-    return any(cp in grange for grange in _gokan_ranges) and \
-        cp not in _togo_in_compat
+    return any(cp in grange for grange in _gokan_ranges) and cp not in _togo_in_compat
 
 
 RE_REGIONS = r"(?:[gtvh]v?|[mis]|k[pv]?|u[ks]?|j[asvn]?)"
@@ -75,7 +82,8 @@ def isGokanKanji(name: str):
     return is_gokan_kanji_cp(cp)
 
 
-_re_categorize = re.compile(r"""
+_re_categorize = re.compile(
+    r"""
     (?P<ids>    (?:u2ff[\da-f]|u31ef)-.+)|
     (?P<UCS>    u([\da-f]{4,6})((?:-.+)?))|
     (?P<cdp>    (cdp[on]?)-([\da-f]{4})(?:(-.+)?))|
@@ -83,12 +91,15 @@ _re_categorize = re.compile(r"""
     (?P<toki>   toki-(\d{8}))|
     (?P<ext>    irg(20(?:15|17|21))-(\d{5}))|
     (?P<bsh>    unstable-bsh-([\da-f]{4}))|
-""", re.X)
+""",
+    re.X,
+)
 
 CategoryType = Literal[
     "user-owned",
     "ids",
-    "ucs-kanji", "ucs-hikanji",
+    "ucs-kanji",
+    "ucs-hikanji",
     "cdp",
     "koseki",
     "toki",
@@ -142,7 +153,8 @@ _re_gwlink = re.compile(r"\[\[(?:[^]]+\s)?([0-9a-z_-]+(?:@\d+)?)\]\]")
 
 def getGlyphsInGroup(groupname: str) -> List[str]:
     url = "https://glyphwiki.org/wiki/Group:{}?action=edit".format(
-        quote(groupname.encode("utf-8")))
+        quote(groupname.encode("utf-8"))
+    )
     f = urlopen(url, timeout=60)
     data = f.read().decode("utf-8")
     f.close()
@@ -151,7 +163,6 @@ def getGlyphsInGroup(groupname: str) -> List[str]:
 
 
 class GWGroupLazyLoader:
-
     def __init__(self, groupname: str, isset: bool = False):
         self.groupname = groupname
         self.isset = isset
@@ -184,7 +195,6 @@ def load_package_data(name: str) -> Any:
 
 
 class CJKSources:
-
     COLUMN_G = 0
     COLUMN_T = 1
     COLUMN_J = 2

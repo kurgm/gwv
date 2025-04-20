@@ -21,14 +21,16 @@ def get_validator_class(name: str) -> Type[validators.Validator]:
 
 
 def validate(
-        dump: Dump, validator_names: Optional[List[str]] = None,
-        *, ignore_error: bool = False):
+    dump: Dump,
+    validator_names: Optional[List[str]] = None,
+    *,
+    ignore_error: bool = False,
+):
     if validator_names is None:
         validator_names = validators.all_validator_names
 
     validator_instances = {
-        name: get_validator_class(name)()
-        for name in validator_names
+        name: get_validator_class(name)() for name in validator_names
     }
 
     for val in validator_instances.values():
@@ -43,14 +45,13 @@ def validate(
             except Exception:
                 log.exception(
                     "Exception while %s is validating %s",
-                    type(val).__name__, ctx.glyph.name)
+                    type(val).__name__,
+                    ctx.glyph.name,
+                )
                 if not ignore_error:
                     raise
 
     return {
-        val_name: {
-            "timestamp": dump.timestamp,
-            "result": val.get_result()
-        }
+        val_name: {"timestamp": dump.timestamp, "result": val.get_result()}
         for val_name, val in validator_instances.items()
     }

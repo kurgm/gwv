@@ -12,9 +12,11 @@ class WidthValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class INCORRECT_NONSPACINGGLYPHS_HALFWIDTH(NamedTuple):
         """グループ:NonSpacingGlyphs-Halfwidthに含まれているが全角"""
+
     @error_code("1")
     class INCORRECT_HALFWIDTHGLYPHS(NamedTuple):
         """グループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれているが全角"""
+
     @error_code("2")
     class INCORRECT_FULLWIDTHGLYPHS(NamedTuple):
         """半角だがグループ:HalfwidthGlyphs-{BMP,SMP,nonUCS}に含まれていない"""
@@ -42,8 +44,7 @@ halflists = [
     GWGroupLazyLoader("HalfwidthGlyphs-nonUCS", isset=True),
     GWGroupLazyLoader("HalfwidthGlyphs-sans", isset=True),
 ]
-nonspacinghalflist = GWGroupLazyLoader(
-    "NonSpacingGlyphs-Halfwidth", isset=True)
+nonspacinghalflist = GWGroupLazyLoader("NonSpacingGlyphs-Halfwidth", isset=True)
 
 
 def getDWidth(glyphname: str):
@@ -87,9 +88,9 @@ buhinWidths: Dict[str, Tuple[float, float]] = {
 
 
 class WidthValidator(Validator):
-
-    @filters.check_only(-filters.is_of_category({
-        "ids", "ucs-kanji", "cdp", "koseki", "ext", "bsh"}))
+    @filters.check_only(
+        -filters.is_of_category({"ids", "ucs-kanji", "cdp", "koseki", "ext", "bsh"})
+    )
     @filters.check_only(-filters.has_transform)
     def is_invalid(self, ctx: ValidatorContext):
         minX: Union[int, float]
@@ -129,8 +130,7 @@ class WidthValidator(Validator):
                             bL = minX
                             bR = maxX
                         elif bgW == 2:
-                            if is_fullwidth_name(gn) or \
-                                    (gn + "-halfwidth") in ctx.dump:
+                            if is_fullwidth_name(gn) or (gn + "-halfwidth") in ctx.dump:
                                 bL = xL + w * 0.31
                                 bR = xL + w * 0.69
                             else:

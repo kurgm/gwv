@@ -1,15 +1,15 @@
 import functools
 import re
-from typing import Any, Callable, Dict, IO, Iterator, List, Tuple, TypeVar, \
-    Union
+from typing import Any, Callable, Dict, IO, Iterator, List, Tuple, TypeVar, Union
 from xml.etree.ElementTree import Element, iterparse
 import zipfile
 
 OOXML_NS = "{http://purl.oclc.org/ooxml/spreadsheetml/main}"
 
 
-def _iterchildren(xmlf: IO[bytes], pred: Callable[[Element], bool]) -> \
-        Iterator[Element]:
+def _iterchildren(
+    xmlf: IO[bytes], pred: Callable[[Element], bool]
+) -> Iterator[Element]:
     it = iterparse(xmlf, ("start", "end"))
     elem: Element
     for evt, elem in it:
@@ -55,6 +55,7 @@ def _memoize(f: Callable[..., T]) -> Callable[..., T]:
         if key not in memo:
             memo[key] = f(*args)
         return memo[key]
+
     return wrapper
 
 

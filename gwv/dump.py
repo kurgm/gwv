@@ -26,7 +26,6 @@ class DumpEntry:
 
 
 class Dump:
-
     def __init__(self, data: Dict[str, Tuple[str, str]], timestamp: float):
         self._data = data
         self.timestamp = timestamp

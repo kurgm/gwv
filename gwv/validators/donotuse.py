@@ -9,6 +9,7 @@ class DonotuseValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class DO_NOT_USE(NamedTuple):
         """do-not-use が引用されている"""
+
         parts: List[str]
 
 
@@ -16,7 +17,6 @@ E = DonotuseValidatorError
 
 
 class DonotuseValidator(Validator):
-
     @filters.check_only(-filters.is_alias)
     def is_invalid(self, ctx: ValidatorContext):
         quotings = []

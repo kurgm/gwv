@@ -12,17 +12,21 @@ class NamingValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class NAMING_RULE_VIOLATION(NamedTuple):
         """命名規則違反"""
+
     @error_code("1")
     class INVALID_IDS(NamedTuple):
         """不正なIDS"""
+
         replaced_representation: str
 
     @error_code("2")
     class PROHIBITED_GLYPH_NAME(NamedTuple):
         """禁止されたグリフ名"""
+
     @error_code("3")
     class ENCODED_CDP_IN_IDS(NamedTuple):
         """UCSで符号化済みのCDP外字"""
+
         cdp_char: str
         ucs_char: str
 
@@ -35,7 +39,6 @@ E = NamingValidatorError
 
 
 class NamingRules:
-
     def __init__(self, data: Mapping[str, List[str]]):
         patterns = data.get("regex", [])
         if patterns:
@@ -46,15 +49,13 @@ class NamingRules:
 
     def match(self, name: str):
         return name in self.string or (
-            self.regex is not None and bool(self.regex.fullmatch(name)))
+            self.regex is not None and bool(self.regex.fullmatch(name))
+        )
 
 
 def get_naming_rules():
-    naming_data: Dict[str, Dict[str, List[str]]] = \
-        load_package_data("data/naming.yaml")
-    return {
-        key: NamingRules(value) for key, value in naming_data.items()
-    }
+    naming_data: Dict[str, Dict[str, List[str]]] = load_package_data("data/naming.yaml")
+    return {key: NamingRules(value) for key, value in naming_data.items()}
 
 
 def get_cdp_dict():
@@ -69,12 +70,14 @@ _re_var = re.compile(r"-(var|itaiji)-\d{3}$")
 _re_henka = re.compile(r"-\d{2}$")
 
 _re_gl_glyph = re.compile(
-    r"(j78|j83|j90|jsp|jx1-200[04]|jx2|k0|g0|c[0-9a-f])-([\da-f]{4})")
+    r"(j78|j83|j90|jsp|jx1-200[04]|jx2|k0|g0|c[0-9a-f])-([\da-f]{4})"
+)
 _re_valid_gl = re.compile(r"(2[1-9a-f]|[3-6][\da-f]|7[\da-e]){2}")
 
 _re_cdp = re.compile(r"\bcdp([on]?)-([\da-f]{4})\b")
 _re_valid_cdp = re.compile(
-    r"(8[1-9a-f]|9[\da-f]|a0|c[67])(a[1-9a-f]|[4-6b-e][\da-f]|[7f][\da-e])")
+    r"(8[1-9a-f]|9[\da-f]|a0|c[67])(a[1-9a-f]|[4-6b-e][\da-f]|[7f][\da-e])"
+)
 
 _re_ids_head = re.compile(r"(kumimoji|u2ff[\da-f]|u31ef)-")
 _re_idc_1 = re.compile(r"\bu2ff[ef]\b")
@@ -85,13 +88,13 @@ _re_kanji = re.compile(
         u[23]?[\da-f]{4}(?:-u(?:e01[\da-f]{2}|fe0[\da-f]))?|
         cdp[on]?-[\da-f]{4}
     )\b""",
-    re.X)
+    re.X,
+)
 _re_ids_kanji = re.compile(r"１-漢|２-漢-漢|３-漢-漢-漢")
 _re_ucs = re.compile(r"\bu[23]?[\da-f]{4}\b")
 
 
 class NamingValidator(Validator):
-
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, ctx: ValidatorContext):
         isHenka = False
@@ -153,8 +156,7 @@ class NamingValidator(Validator):
             return False
         if not isHenka and rules["rule-nohenka"].match(name):
             return False
-        if not isVar and not isHenka and \
-                rules["rule-novar-nohenka"].match(name):
+        if not isVar and not isHenka and rules["rule-novar-nohenka"].match(name):
             return False
 
         if rules["deprecated-rule"].match(name):

@@ -6,14 +6,10 @@ from gwv import validators
 
 
 class TestValidator(unittest.TestCase):
-
     def test_validateEmpty(self):
         timestamp = 334.0
         expected_output = {
-            name: {
-                "timestamp": timestamp,
-                "result": {}
-            }
+            name: {"timestamp": timestamp, "result": {}}
             for name in validators.all_validator_names
         }
         expected_output["mustrenew"]["result"] = {
@@ -22,7 +18,4 @@ class TestValidator(unittest.TestCase):
         }
 
         dump = Dump({}, timestamp)
-        self.assertEqual(
-            validator.validate(dump),
-            expected_output
-        )
+        self.assertEqual(validator.validate(dump), expected_output)

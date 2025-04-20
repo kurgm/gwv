@@ -9,14 +9,17 @@ class KosekitokiValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class NOT_ALIAS(NamedTuple):
         """エイリアスでない（し、koseki-xxxxx0がtoki-00xxxxx0のエイリアスというわけでもない）"""
+
     @error_code("1")
     class NOT_ALIAS_OF_KOSEKI(NamedTuple):
         """koseki-xxxxx0のエイリアスでない"""
+
         entity: str
 
     @error_code("2")
     class NOT_ALIAS_OF_ENTITY_OF_KOSEKI(NamedTuple):
         """koseki-xxxxx0と異なる実体のエイリアス"""
+
         entity: str
         koseki_entity: str
 
@@ -25,10 +28,9 @@ E = KosekitokiValidatorError
 
 
 class KosekitokiValidator(Validator):
-
     @filters.check_only(+filters.is_of_category({"toki"}))
     def is_invalid(self, ctx: ValidatorContext):
-        num, = ctx.category_param[1]
+        (num,) = ctx.category_param[1]
         if not num.startswith("00"):
             return False
 
@@ -47,6 +49,5 @@ class KosekitokiValidator(Validator):
                 # koseki-xxxxx0のエイリアスでない
                 return E.NOT_ALIAS_OF_KOSEKI(entity)
             # koseki-xxxxx0と異なる実体のエイリアス
-            return E.NOT_ALIAS_OF_ENTITY_OF_KOSEKI(
-                entity, koseki_entity)
+            return E.NOT_ALIAS_OF_ENTITY_OF_KOSEKI(entity, koseki_entity)
         return False

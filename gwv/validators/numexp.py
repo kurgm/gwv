@@ -13,12 +13,15 @@ class NumexpValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class BLANK_LINE(NumexpError):
         """空行"""
+
     @error_code("1")
     class INVALID_CHAR(NumexpError):
         """不正な文字"""
+
     @error_code("2")
     class NOT_AN_INT(NumexpError):
         """整数として解釈できない"""
+
     @error_code("3")
     class NONNORMALIZED_NUMBER_EXPRESSION(NumexpError):
         """不正な数値の表現"""
@@ -31,7 +34,6 @@ _re_invalid_chars = re.compile(r"[^\da-z_\:@-]")
 
 
 class NumexpValidator(Validator):
-
     def validate(self, ctx: ValidatorContext) -> None:
         for i, line in enumerate(ctx.glyph.gdata.split("$")):
             if line == "":

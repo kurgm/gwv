@@ -4,8 +4,12 @@ import gwv.filters as filters
 from gwv.helper import isYoko
 from gwv.kagedata import KageData, KageLine
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, \
-    ValidatorErrorTupleRecorder, error_code
+from gwv.validators import (
+    Validator,
+    ValidatorErrorEnum,
+    ValidatorErrorTupleRecorder,
+    error_code,
+)
 
 
 class IllegalLineError(NamedTuple):
@@ -16,27 +20,35 @@ class IllegalValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class UNKNOWN_STROKE_TYPE(IllegalLineError):
         """未定義の筆画"""
+
     @error_code("1")
     class TOO_FEW_COLUMNS(IllegalLineError):
         """列不足"""
+
     @error_code("2")
     class TOO_MANY_NONZERO_COLUMNS(IllegalLineError):
         """列余分（非ゼロ）"""
+
     @error_code("3")
     class TOO_MANY_ZERO_COLUMNS(IllegalLineError):
         """列余分（ゼロ値）"""
+
     @error_code("4")
     class WRONG_NUMBER_OF_COLUMNS(IllegalLineError):
         """列数異常（99）"""
+
     @error_code("5")
     class INVALID_DATA_0(IllegalLineError):
         """不正なデータ（0）"""
+
     @error_code("6")
     class UNKNOWN_STROKE_FORM(IllegalLineError):
         """未定義の形状の組み合わせ"""
+
     @error_code("7")
     class ALIAS_LIKE(NamedTuple):
         """正しくエイリアスになっていない"""
+
     @error_code("8")
     class BLANK_LIKE(NamedTuple):
         """正しく空白グリフになっていない"""
@@ -44,21 +56,27 @@ class IllegalValidatorError(ValidatorErrorEnum):
     @error_code("10")
     class VERTCONN_IN_HORI_LINE(IllegalLineError):
         """横画に接続(縦)型"""
+
     @error_code("11")
     class HORICONN_IN_VERT_LINE(IllegalLineError):
         """縦画に接続(横)型"""
+
     @error_code("30")
     class HORIZONTAL_ORE_FIRST(IllegalLineError):
         """折れの前半が横"""
+
     @error_code("31")
     class VERTICAL_ORE_LAST(IllegalLineError):
         """折れの後半が縦"""
+
     @error_code("40")
     class HORIZONTAL_OTSU_FIRST(IllegalLineError):
         """乙の前半が横"""
+
     @error_code("41")
     class LEFTWARD_OTSU_LAST(IllegalLineError):
         """乙の後半が左向き"""
+
     @error_code("9")
     class BUHIN_ICHI(IllegalLineError):
         """部品位置"""
@@ -88,8 +106,7 @@ def is_alias_like(kage: KageData):
                 # transform commands
                 return False
         elif stype == 99:
-            if not (len(line.data) >= 7 and
-                    line.coords == [(0, 0), (200, 200)]):
+            if not (len(line.data) >= 7 and line.coords == [(0, 0), (200, 200)]):
                 return False
             sx, sy = line.data[1:3]
             if sx is None or sy is None:
@@ -199,7 +216,6 @@ keijoKumiawase: Set[Tuple[int, int, int]] = {
     (7, 32, 7),
     (7, 12, 7),
     (7, 22, 7),
-
     (0, 0, 0),
     (0, -1, -1),
     (0, 99, 1),
@@ -218,15 +234,7 @@ hikanjiKeijoKumiawase: Set[Tuple[int, int, int]] = keijoKumiawase | {
 }
 
 # {筆画タイプ: データ列数}
-datalens = {
-    1: 7,
-    2: 9,
-    3: 9,
-    4: 9,
-    6: 11,
-    7: 11,
-    9: 7
-}
+datalens = {1: 7, 2: 9, 3: 9, 4: 9, 6: 11, 7: 11, 9: 7}
 
 
 def validate_99_line(ctx: ValidatorContext, line: KageLine):
@@ -239,8 +247,7 @@ def validate_99_line(ctx: ValidatorContext, line: KageLine):
 def validate_0_line(ctx: ValidatorContext, line: KageLine):
     if line.data in ((0, 0, 0, 0), (0, -1, -1, -1)):
         return None
-    if line.data[:3] in (
-            (0, 99, 1), (0, 99, 2), (0, 99, 3), (0, 98, 0), (0, 97, 0)):
+    if line.data[:3] in ((0, 99, 1), (0, 99, 2), (0, 99, 3), (0, 98, 0), (0, 97, 0)):
         if len(line.data) != 7:
             return E.WRONG_NUMBER_OF_COLUMNS(line)
         return None
@@ -288,8 +295,7 @@ def validate_stroke_line(ctx: ValidatorContext, line: KageLine):
     if coords is not None:
         if stype == 1:
             if isYoko(*coords[0], *coords[1]):
-                if shape0 in (12, 22, 32) or \
-                        shape1 in (32, 13, 23, 24, 313, 413):
+                if shape0 in (12, 22, 32) or shape1 in (32, 13, 23, 24, 313, 413):
                     return E.VERTCONN_IN_HORI_LINE(line)
             elif shape0 == 2 or shape1 == 2:
                 return E.HORICONN_IN_VERT_LINE(line)
@@ -321,7 +327,6 @@ class IllegalValidatorErrorRecorder(ValidatorErrorTupleRecorder):
 
 
 class IllegalValidator(Validator):
-
     recorder_cls = IllegalValidatorErrorRecorder
 
     @filters.check_only(-filters.is_of_category({"user-owned"}))
@@ -348,9 +353,9 @@ class IllegalValidator(Validator):
     def record(self, glyphname: str, error):
         key, param = error
         if isinstance(param, IllegalLineError):
-            super().record(glyphname, (key, (
-                ":".join(param.line.strdata.split(":", 3)[:3]),
-                *param
-            )))
+            super().record(
+                glyphname,
+                (key, (":".join(param.line.strdata.split(":", 3)[:3]), *param)),
+            )
         else:
             super().record(glyphname, error)

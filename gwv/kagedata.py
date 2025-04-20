@@ -42,15 +42,15 @@ def kageIntSuppressError(s: str) -> Optional[int]:
 
 
 class KageData:
-
     def __init__(self, data: str):
-        self.lines = tuple([KageLine(i, l)
-                            for i, l in enumerate(data.split("$"))])
+        self.lines = tuple([KageLine(i, l) for i, l in enumerate(data.split("$"))])
         self.len = len(self.lines)
         self.has_transform = any(
-            len(line.data) >= 2 and
-            line.stroke_type == 0 and line.head_type in (97, 98, 99)
-            for line in self.lines)
+            len(line.data) >= 2
+            and line.stroke_type == 0
+            and line.head_type in (97, 98, 99)
+            for line in self.lines
+        )
 
 
 def _check_coords(coords: List[Tuple[Optional[int], Optional[int]]]):
@@ -60,15 +60,17 @@ def _check_coords(coords: List[Tuple[Optional[int], Optional[int]]]):
 
 
 class KageLine:
-
     def __init__(self, line_number: int, data: str):
         self.line_number = line_number
         self.strdata = data
         sdata = data.split(":")
         if kageIntSuppressError(sdata[0]) == 99:
-            self.data = tuple([
-                kageIntSuppressError(x) if i != 7 else None
-                for i, x in enumerate(sdata)])
+            self.data = tuple(
+                [
+                    kageIntSuppressError(x) if i != 7 else None
+                    for i, x in enumerate(sdata)
+                ]
+            )
             if len(sdata) >= 8:
                 self._part_name = sdata[7]
         else:
@@ -95,9 +97,11 @@ class KageLine:
     @property
     def coords(self) -> Optional[List[Tuple[int, int]]]:
         if self.stroke_type == 99:
-            return _check_coords([
-                (self.data[3], self.data[4]),
-                (self.data[5], self.data[6]),
-            ])
+            return _check_coords(
+                [
+                    (self.data[3], self.data[4]),
+                    (self.data[5], self.data[6]),
+                ]
+            )
 
         return _check_coords(list(zip(self.data[3::2], self.data[4::2])))

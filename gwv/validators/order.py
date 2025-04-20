@@ -15,18 +15,23 @@ class OrderValidatorError(ValidatorErrorEnum):
     @error_code("2")
     class RIGHT_PART_FIRST(OrderError):
         """右部品が最初"""
+
     @error_code("4")
     class BOTTOM_PART_FIRST(OrderError):
         """下部品が最初"""
+
     @error_code("6")
     class INNER_PART_FIRST(OrderError):
         """囲み内側部品が最初"""
+
     @error_code("11")
     class LEFT_PART_LAST(OrderError):
         """左部品が最後"""
+
     @error_code("13")
     class TOP_PART_LAST(OrderError):
         """上部品が最後"""
+
     @error_code("15")
     class OUTER_PART_LAST(OrderError):
         """囲み外側部品が最後"""
@@ -35,12 +40,10 @@ class OrderValidatorError(ValidatorErrorEnum):
 E = OrderValidatorError
 
 
-_re_vars = re.compile(
-    r"-" + RE_REGIONS + r"?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
+_re_vars = re.compile(r"-" + RE_REGIONS + r"?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
 
 
 class OrderValidator(Validator):
-
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.has_transform)

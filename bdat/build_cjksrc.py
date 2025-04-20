@@ -50,7 +50,7 @@ def parseCJKSrc(cjksrctxt: Iterable[str]):
         "kIRG_USource",
         "kIRG_SSource",
         "kIRG_UKSource",
-        "kCompatibilityVariant"
+        "kCompatibilityVariant",
     ]
     tag2idx = {tag: idx for idx, tag in enumerate(taglist)}
 
@@ -69,13 +69,12 @@ def parseCJKSrc(cjksrctxt: Iterable[str]):
 
 
 cjksrcjson_path = os.path.join(
-    os.path.dirname(__file__),
-    "..", "gwv", "data", "3rd", CJKSRC_JSON_FILENAME)
+    os.path.dirname(__file__), "..", "gwv", "data", "3rd", CJKSRC_JSON_FILENAME
+)
 cjksrcjson_path = os.path.normpath(cjksrcjson_path)
 
 
 def main(cjksrcjson_path: str = cjksrcjson_path):
-
     if os.path.exists(cjksrcjson_path):
         return
     os.makedirs(os.path.dirname(cjksrcjson_path), exist_ok=True)
@@ -86,8 +85,9 @@ def main(cjksrcjson_path: str = cjksrcjson_path):
         json.dump(cjksrc, cjksrcjson_file, separators=(",", ":"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     if len(sys.argv) >= 2:
         main(sys.argv[1])
     else:

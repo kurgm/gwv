@@ -9,9 +9,7 @@ Predicate = Callable[[ValidatorContext], bool]
 
 
 def check_only(pred: Predicate):
-
     def decorator(f: Callable[[Any, ValidatorContext], Any]):
-
         @functools.wraps(f)
         def wrapper(self: Any, ctx: ValidatorContext):
             if not pred(ctx):
@@ -24,7 +22,6 @@ def check_only(pred: Predicate):
 
 
 class BoolFunc:
-
     def __init__(self, func: Callable[..., bool]):
         self._func = func
         self._func_inv = lambda *args: not func(*args)

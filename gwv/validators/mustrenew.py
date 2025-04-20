@@ -9,6 +9,7 @@ class MustrenewValidatorError(ValidatorErrorEnum):
     @error_code("0")
     class MUSTRENEW_NO_OLD(NamedTuple):
         """最新版が旧部品を引用していない部品の旧版を引用している"""
+
     @error_code("@")
     class MUSTRENEW_OLD(NamedTuple):
         """最新版が旧部品を引用している部品の旧版を引用している"""
@@ -23,7 +24,6 @@ class QuoterInfo(NamedTuple):
 
 
 class MustrenewValidator(Validator):
-
     def __init__(self, *args, **kwargs):
         super(MustrenewValidator, self).__init__(*args, **kwargs)
         self.mustrenew_quoters: Dict[str, QuoterInfo] = {}

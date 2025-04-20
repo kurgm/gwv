@@ -24,18 +24,23 @@ class DupValidatorError(ValidatorErrorEnum):
     @error_code("10")
     class HORILINE(DupErrorAmount):
         """横"""
+
     @error_code("11")
     class VERTLINE(DupErrorAmount):
         """縦"""
+
     @error_code("2")
     class CURVE(DupError):
         """曲線"""
+
     @error_code("3")
     class CCURVE(DupError):
         """複曲線"""
+
     @error_code("99")
     class PART(DupError):
         """部品"""
+
     @error_code("9")
     class PARTPOS(DupError):
         """部品位置"""
@@ -55,8 +60,15 @@ class LineSegment(NamedTuple):
     t1: int
 
 
-def addLine(line: KageLine, tate: List[LineSegment], yoko: List[LineSegment],
-            x0: int, y0: int, x1: int, y1: int):
+def addLine(
+    line: KageLine,
+    tate: List[LineSegment],
+    yoko: List[LineSegment],
+    x0: int,
+    y0: int,
+    x1: int,
+    y1: int,
+):
     if y0 == y1:
         if x0 < x1:
             yoko.append(LineSegment(line, -y0, 0.0, x0, x1))
@@ -80,19 +92,22 @@ def addLine(line: KageLine, tate: List[LineSegment], yoko: List[LineSegment],
         tate.append(LineSegment(line, dist, angle + math.pi, y1, y0))
 
 
-def dup_line_segments(
-        segments: List[LineSegment], thresh: float, inclusive: bool):
+def dup_line_segments(segments: List[LineSegment], thresh: float, inclusive: bool):
     comp_op = operator.le if inclusive else operator.lt
     segments.sort(key=lambda r: r.dist)
     for i, seg1 in enumerate(segments):
-        for seg2 in segments[i + 1:]:
+        for seg2 in segments[i + 1 :]:
             if seg2.dist - seg1.dist > thresh:
                 break
             if abs(seg1.angle - seg2.angle) > 1.0 / 60.0:
                 continue
             if comp_op(seg2.t0, seg1.t1) and comp_op(seg1.t0, seg2.t1):
-                amount = min(seg1.t1 - seg2.t0, seg2.t1 - seg1.t0,
-                             seg1.t1 - seg1.t0, seg2.t1 - seg2.t0)
+                amount = min(
+                    seg1.t1 - seg2.t0,
+                    seg2.t1 - seg1.t0,
+                    seg1.t1 - seg1.t0,
+                    seg2.t1 - seg2.t0,
+                )
                 return (seg1, seg2, amount)
     return None
 
@@ -115,14 +130,14 @@ def ineighbors(iterable: Iterable[T]) -> Iterator[Tuple[T, T]]:
 def dup_coords(elems: List[Tuple[KageLine, List[int]]], thresh: int):
     elems.sort(key=lambda elem: elem[1][0])
     for (line1, coords1), (line2, coords2) in ineighbors(elems):
-        if all(abs(coord1 - coord2) <= thresh
-               for coord1, coord2 in zip(coords1, coords2)):
+        if all(
+            abs(coord1 - coord2) <= thresh for coord1, coord2 in zip(coords1, coords2)
+        ):
             return (line1, line2)
     return None
 
 
 class DupValidator(Validator):
-
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.has_transform)
@@ -159,7 +174,8 @@ class DupValidator(Validator):
                 buhinIchi.append((line, list(itertools.chain(*coords[0:2]))))
             elif stype == 99:
                 buhin.setdefault(line.part_name, []).append(
-                    (line, list(itertools.chain(*coords))))
+                    (line, list(itertools.chain(*coords)))
+                )
 
         yoko_thresh = 0.0 if exact_only else 4.0
         if param := dup_line_segments(yoko, yoko_thresh, True):

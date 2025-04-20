@@ -59,7 +59,6 @@ class ValidatorErrorTupleRecorder(ValidatorErrorRecorder):
 
 
 class Validator(metaclass=abc.ABCMeta):
-
     recorder_cls: Type[ValidatorErrorRecorder] = ValidatorErrorTupleRecorder
 
     def __init__(self):
@@ -117,10 +116,12 @@ class ValidatorErrorEnum(ValidatorErrorFactory, Enum):
 
         assert isinstance(err.param, FooValidatorError.SomeError.paramcls)
     """
+
     pass
 
 
 def error_code(errcode: str):
     def decorator(func):
         return (errcode, func)
+
     return decorator

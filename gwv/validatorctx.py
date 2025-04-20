@@ -8,6 +8,7 @@ from gwv.helper import CategoryParam, CategoryType, categorize, is_hikanji
 @dataclass(frozen=True)
 class ValidatorContext:
     """Context for per-glyph validation."""
+
     dump: Dump
     glyph: DumpEntry
 

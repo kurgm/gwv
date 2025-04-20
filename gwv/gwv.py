@@ -19,14 +19,17 @@ def main(args: Optional[Sequence[str]] = None):
     parser.add_argument("dumpfile")
     parser.add_argument("-o", "--out", help="File to write the output JSON to")
     parser.add_argument(
-        "--ignore-error", action="store_true",
-        help="Ignore runtime errors and resume validation of next glyph")
+        "--ignore-error",
+        action="store_true",
+        help="Ignore runtime errors and resume validation of next glyph",
+    )
     parser.add_argument("-n", "--names", nargs="*", help="Names of validators")
     parser.add_argument("-v", "--version", action="version", version=version)
     opts = parser.parse_args(args)
 
     outpath = opts.out or os.path.join(
-        os.path.dirname(opts.dumpfile), "gwv_result.json")
+        os.path.dirname(opts.dumpfile), "gwv_result.json"
+    )
     dump = Dump.open(opts.dumpfile)
 
     result = validate(dump, opts.names or None, ignore_error=opts.ignore_error)
@@ -35,5 +38,5 @@ def main(args: Optional[Sequence[str]] = None):
         json.dump(result, outfile, separators=(",", ":"), sort_keys=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
