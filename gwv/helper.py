@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import importlib.resources
 import json
-import os.path
 import re
+from pathlib import Path
 from typing import Any, Literal
 from urllib.parse import quote
 from urllib.request import urlopen
@@ -185,7 +185,7 @@ class GWGroupLazyLoader:
 
 def load_package_data(name: str) -> Any:
     with importlib.resources.files("gwv").joinpath(name).open("rb") as f:
-        ext = os.path.splitext(name)[1]
+        ext = Path(name).suffix
         if ext == ".json":
             return json.load(f)
         if ext in (".yaml", ".yml"):

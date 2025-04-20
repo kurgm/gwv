@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from collections.abc import Sequence
+from pathlib import Path
 
 from gwv import version
 from gwv.dump import Dump
@@ -29,14 +29,12 @@ def main(args: Sequence[str] | None = None):
     parser.add_argument("-v", "--version", action="version", version=version)
     opts = parser.parse_args(args)
 
-    outpath = opts.out or os.path.join(
-        os.path.dirname(opts.dumpfile), "gwv_result.json"
-    )
+    outpath = opts.out or Path(opts.dumpfile).with_name("gwv_result.json")
     dump = Dump.open(opts.dumpfile)
 
     result = validate(dump, opts.names or None, ignore_error=opts.ignore_error)
 
-    with open(outpath, "w") as outfile:
+    with Path(outpath).open("w") as outfile:
         json.dump(result, outfile, separators=(",", ":"), sort_keys=True)
 
 

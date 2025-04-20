@@ -8,6 +8,7 @@ import logging
 import os
 import zipfile
 from collections.abc import Iterable
+from pathlib import Path
 from urllib.request import urlretrieve
 
 logging.basicConfig()
@@ -23,7 +24,7 @@ def get_iso_CJKSrc(url: str = CJKSRC_URL):
     filename, _headers = urlretrieve(url)
     log.info("Download completed")
 
-    with open(filename) as cjksrctxt:
+    with Path(filename).open() as cjksrctxt:
         return parseCJKSrc(cjksrctxt)
 
 
@@ -69,20 +70,20 @@ def parseCJKSrc(cjksrctxt: Iterable[str]):
     return result
 
 
-cjksrcjson_path = os.path.join(
-    os.path.dirname(__file__), "..", "gwv", "data", "3rd", CJKSRC_JSON_FILENAME
+cjksrcjson_path = os.path.normpath(
+    Path(__file__).parent / ".." / "gwv" / "data" / "3rd" / CJKSRC_JSON_FILENAME
 )
-cjksrcjson_path = os.path.normpath(cjksrcjson_path)
 
 
-def main(cjksrcjson_path: str = cjksrcjson_path):
-    if os.path.exists(cjksrcjson_path):
+def main(cjksrcjson_path: str | os.PathLike = cjksrcjson_path):
+    cjksrcjson_path = Path(cjksrcjson_path)
+    if cjksrcjson_path.exists():
         return
-    os.makedirs(os.path.dirname(cjksrcjson_path), exist_ok=True)
+    cjksrcjson_path.parent.mkdir(parents=True, exist_ok=True)
 
     cjksrc = get_unihan_CJKSrc()
 
-    with open(cjksrcjson_path, "w") as cjksrcjson_file:
+    with cjksrcjson_path.open("w") as cjksrcjson_file:
         json.dump(cjksrc, cjksrcjson_file, separators=(",", ":"))
 
 

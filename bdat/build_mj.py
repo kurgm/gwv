@@ -6,6 +6,7 @@ import json
 import logging
 import os
 from collections import defaultdict
+from pathlib import Path
 from typing import IO, Any
 from urllib.request import urlretrieve
 
@@ -114,25 +115,25 @@ def parseMjxlsx(mjxlsx: IO[bytes]):
     return mjdat
 
 
-mjjson_path = os.path.join(
-    os.path.dirname(__file__), "..", "gwv", "data", "3rd", MJ_JSON_FILENAME
+mjjson_path = os.path.normpath(
+    Path(__file__).parent / ".." / "gwv" / "data" / "3rd" / MJ_JSON_FILENAME
 )
-mjjson_path = os.path.normpath(mjjson_path)
 
 
-def main(mjjson_path: str = mjjson_path):
-    if os.path.exists(mjjson_path):
+def main(mjjson_path: str | os.PathLike = mjjson_path):
+    mjjson_path = Path(mjjson_path)
+    if mjjson_path.exists():
         return
-    os.makedirs(os.path.dirname(mjjson_path), exist_ok=True)
+    mjjson_path.parent.mkdir(parents=True, exist_ok=True)
 
     log.info("Downloading %s", MJ_XLSX_URL)
     filename, _headers = urlretrieve(MJ_XLSX_URL)
     log.info("Download completed")
 
-    with open(filename, "rb") as mjxlsx:
+    with Path(filename).open("rb") as mjxlsx:
         mjdat = parseMjxlsx(mjxlsx)
 
-    with open(mjjson_path, "w") as mjjson_file:
+    with mjjson_path.open("w") as mjjson_file:
         json.dump(mjdat, mjjson_file, separators=(",", ":"))
 
 

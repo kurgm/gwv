@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from functools import cached_property
+from pathlib import Path
 
 from gwv.kagedata import KageData, get_entity_name
 
@@ -71,10 +72,11 @@ class Dump:
         return self._get_alias_of_dic.get(name, [name])
 
     @classmethod
-    def open(cls, filepath: str):
+    def open(cls, filepath: str | os.PathLike):
+        filepath = Path(filepath)
         data: dict[str, tuple[str, str]] = {}
-        with open(filepath) as fp:
-            if filepath[-4:] == ".csv":
+        with filepath.open() as fp:
+            if filepath.suffix == ".csv":
                 # first line contains the last modified time
                 timestamp = float(fp.readline()[:-1])
                 for line in fp:
@@ -84,7 +86,7 @@ class Dump:
                     data[row[0]] = (row[1], row[2])
             else:
                 # dump_newest_only.txt
-                timestamp = os.path.getmtime(filepath)
+                timestamp = filepath.stat().st_mtime
                 line = fp.readline()  # header
                 line = fp.readline()  # ------
                 for line in iter(fp.readline, ""):
