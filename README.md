@@ -11,12 +11,15 @@ GlyphWiki data validator
 
 （関連: ↑の一覧ページのソース: <https://github.com/kurgm/gwv-view>）
 
+## Requirements
+
+- Python 3.9+
+
 ## Installation
 
 ```sh
 pip install git+https://github.com/kurgm/gwv.git@master#egg=gwv
 ```
-
 
 ## Usage
 

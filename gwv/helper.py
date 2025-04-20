@@ -1,3 +1,4 @@
+import importlib.resources
 import json
 import os.path
 import re
@@ -6,7 +7,6 @@ from urllib.parse import quote
 from urllib.request import urlopen
 
 import yaml
-import pkg_resources
 
 
 def range_inclusive(stt: int, end: int):
@@ -171,7 +171,7 @@ class GWGroupLazyLoader:
 
 
 def load_package_data(name: str) -> Any:
-    with pkg_resources.resource_stream("gwv", name) as f:
+    with importlib.resources.files("gwv").joinpath(name).open("rb") as f:
         ext = os.path.splitext(name)[1]
         if ext == ".json":
             return json.load(f)
