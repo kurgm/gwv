@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 import re
 import zipfile
-from typing import IO, TYPE_CHECKING, Any, Callable, TypeVar
+from typing import IO, TYPE_CHECKING, Any, Callable
 from xml.etree.ElementTree import Element, iterparse
 
 if TYPE_CHECKING:
@@ -53,23 +53,7 @@ def _get_strings(sstf: IO[bytes]) -> list[str]:
     ]
 
 
-T = TypeVar("T")
-
-
-def _memoize(f: Callable[..., T]) -> Callable[..., T]:
-    memo: dict[tuple, T] = {}
-
-    @functools.wraps(f)
-    def wrapper(*args):
-        key = tuple(args)
-        if key not in memo:
-            memo[key] = f(*args)
-        return memo[key]
-
-    return wrapper
-
-
-@_memoize
+@functools.cache
 def column_to_int(column: str) -> int:
     result = 0
     for c in column:
