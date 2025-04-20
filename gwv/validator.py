@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 from gwv import validators
-from gwv.dump import Dump
 from gwv.validatorctx import ValidatorContext
+
+if TYPE_CHECKING:
+    from gwv.dump import Dump
 
 log = logging.getLogger(__name__)
 

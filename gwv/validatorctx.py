@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from functools import cached_property
+from typing import TYPE_CHECKING
 
-from gwv.dump import Dump, DumpEntry
 from gwv.helper import CategoryParam, CategoryType, categorize, is_hikanji
+
+if TYPE_CHECKING:
+    from gwv.dump import Dump, DumpEntry
 
 
 @dataclass(frozen=True)

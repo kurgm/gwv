@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import itertools
 import re
-from typing import Any, Literal, NamedTuple
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import isYoko
-from gwv.kagedata import KageLine
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.kagedata import KageLine
+    from gwv.validatorctx import ValidatorContext
 
 
 class CornerError(NamedTuple):

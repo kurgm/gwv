@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 import math
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import isYoko
-from gwv.kagedata import KageLine
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import (
     Validator,
     ValidatorErrorEnum,
     ValidatorErrorTupleRecorder,
     error_code,
 )
+
+if TYPE_CHECKING:
+    from gwv.kagedata import KageLine
+    from gwv.validatorctx import ValidatorContext
 
 
 class SkewError(NamedTuple):

@@ -5,12 +5,15 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from collections.abc import Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from gwv import version
 from gwv.dump import Dump
 from gwv.validator import validate
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 def main(args: Sequence[str] | None = None):

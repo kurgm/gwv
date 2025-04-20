@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import categorize, cjk_sources, is_gokan_kanji_cp, is_togo_kanji_cp
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.validatorctx import ValidatorContext
 
 
 class RelatedValidatorError(ValidatorErrorEnum):

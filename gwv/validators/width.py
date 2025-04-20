@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import re
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS, GWGroupLazyLoader
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.validatorctx import ValidatorContext
 
 
 class WidthValidatorError(ValidatorErrorEnum):

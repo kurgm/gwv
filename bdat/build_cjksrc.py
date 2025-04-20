@@ -7,9 +7,12 @@ import json
 import logging
 import os
 import zipfile
-from collections.abc import Iterable
 from pathlib import Path
+from typing import TYPE_CHECKING
 from urllib.request import urlretrieve
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 logging.basicConfig()
 log = logging.getLogger(__name__)

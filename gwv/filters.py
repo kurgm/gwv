@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import functools
-from collections.abc import Container
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
-from gwv.helper import CategoryType
 from gwv.validatorctx import ValidatorContext
+
+if TYPE_CHECKING:
+    from collections.abc import Container
+
+    from gwv.helper import CategoryType
 
 Predicate = Callable[[ValidatorContext], bool]
 

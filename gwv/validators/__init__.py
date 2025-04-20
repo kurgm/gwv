@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import abc
 from collections import defaultdict
-from collections.abc import Iterable
 from enum import Enum
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
-from gwv.dump import Dump
 from gwv.kagedata import KageLine
-from gwv.validatorctx import ValidatorContext
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from gwv.dump import Dump
+    from gwv.validatorctx import ValidatorContext
 
 all_validator_names = [
     "corner",

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from gwv.kagedata import KageData, get_entity_name
+
+if TYPE_CHECKING:
+    import os
 
 
 @dataclass(frozen=True)

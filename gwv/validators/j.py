@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import re
-from typing import Literal, NamedTuple
+from typing import TYPE_CHECKING, Literal, NamedTuple
 
 import gwv.filters as filters
-from gwv.dump import Dump
 from gwv.helper import (
     RE_REGIONS,
     GWGroupLazyLoader,
@@ -12,9 +11,12 @@ from gwv.helper import (
     is_gokan_kanji_cp,
     load_package_data,
 )
-from gwv.kagedata import KageData
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.dump import Dump
+    from gwv.kagedata import KageData
+    from gwv.validatorctx import ValidatorContext
 
 
 class JValidatorError(ValidatorErrorEnum):

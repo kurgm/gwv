@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import Validator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.validatorctx import ValidatorContext
 
 
 class DelquoteValidatorError(ValidatorErrorEnum):

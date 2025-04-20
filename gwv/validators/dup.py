@@ -3,13 +3,16 @@ from __future__ import annotations
 import itertools
 import math
 import operator
-from collections.abc import Iterable, Iterator
-from typing import NamedTuple, TypeVar
+from typing import TYPE_CHECKING, NamedTuple, TypeVar
 
 import gwv.filters as filters
-from gwv.kagedata import KageLine
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
+    from gwv.kagedata import KageLine
+    from gwv.validatorctx import ValidatorContext
 
 
 class DupError(NamedTuple):

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import gwv.filters as filters
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from gwv.validatorctx import ValidatorContext
 
 
 class DonotuseValidatorError(ValidatorErrorEnum):

@@ -3,9 +3,11 @@ from __future__ import annotations
 import functools
 import re
 import zipfile
-from collections.abc import Iterator
-from typing import IO, Any, Callable, TypeVar
+from typing import IO, TYPE_CHECKING, Any, Callable, TypeVar
 from xml.etree.ElementTree import Element, iterparse
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 OOXML_NS = "{http://purl.oclc.org/ooxml/spreadsheetml/main}"
 

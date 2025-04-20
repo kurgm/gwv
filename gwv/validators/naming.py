@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import gwv.filters as filters
 from gwv.helper import GWGroupLazyLoader, load_package_data
-from gwv.validatorctx import ValidatorContext
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from gwv.validatorctx import ValidatorContext
 
 
 class NamingValidatorError(ValidatorErrorEnum):
