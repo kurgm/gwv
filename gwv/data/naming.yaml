@@ -82,6 +82,8 @@ rule:
   - ac1-\d{5}
   # Group:prefix-aj2@3
   - aj2-\d{4}
+  # Group:prefix-akr@1
+  - akr-\d{5}
   # Group:prefix-bouyei@3
   - bouyei-\d{5}
   # Group:prefix-c@4
@@ -92,7 +94,7 @@ rule:
   - csur-u(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-fudemame@1
   - fudemame-e[\da-f]{3}
-  # Group:prefix-g@37
+  # Group:prefix-g@40
   - g[013578eks]-[\da-f]{4}
   - gca-[a-z]\d{4}
   - g(ce|fc|idc23|idc|ocd|xhz)-\d{3}
@@ -105,6 +107,8 @@ rule:
   - g(bk|h|hzr?|kx|lk|z)-\d{7}
   - gu-[023][\da-f]{4}
   - gza-[1-467]\d{5}
+  - ggt-\d{5}-irgn1366
+  - gidc-\d{3}-(extd|extf)
   # Group:prefix-gsunicode@1
   - gsunicode-(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-h@4
@@ -114,10 +118,16 @@ rule:
   - hu-[023][\da-f]{4}
   # Group:prefix-heisei@5
   - heisei-((ft|hg|ia|ib|ja|jb|jc|jd)\d{4}|(ip|jt)[\da-f]{4}|ks\d{6}|tk\d{8})s{0,2}
+  # Group:prefix-hiyuteki@1
+  - hiyuteki-\d{3}
   # Group:prefix-hka@3
   - hka-[\da-f]{4}
   # Group:prefix-hokke@4
   - hokke-\d{3}[1-6]{2}[ab]?
+  # Group:prefix-hongmen@1
+  - hongmen-misc-.+
+  - hongmen-parts-[a-z]\d{2}
+  - hongmen-ue0([0-8][\da-f]|9[01])
   # Group:prefix-irg2015@1
   # Group:prefix-irg2017@1
   # Group:prefix-irg2021@1
@@ -125,7 +135,7 @@ rule:
   - irg20(15|17|21|24)-\d{5}
   # Group:prefix-jgj@2
   - jgj-\d{6}
-  # Group:prefix-k@2
+  # Group:prefix-k@3
   - k[0-6]-[\da-f]{4}
   - kc-\d{5}
   - ku-[023][\da-f]{4}
@@ -145,17 +155,18 @@ rule:
   - kx-\d{7}
   # Group:prefix-lgccc@4
   - lgccc-\d{4}
-  # Group:prefix-m@2
+  # Group:prefix-m@3
   - mac-\d{5}
   - m(a|b[12])-[\da-f]{4}
   - mdh?-[23]?[\da-f]{4}
-  - me-[23]?[\da-f]{4}\d{3}
+  - me-[23]?[\da-f]{4}-\d{3}
   # Group:prefix-mathematical@2
   - mathematical-sans-serif(-italic)?-(capital|small)-[a-z]+
   - mathematical-double-struck-italic-(capital|small)-[a-z]
   # Group:prefix-misc@21
   - misc-.+
-  # # Group:prefix-ms@1
+  # # Group:prefix-ms@2
+  # - ms-ue8[\da-f]{2}
   # - ms-uf0[\da-f]{2}
   # Group:prefix-myogisho-z@2
   - myogisho-z-\d{5}[ab]?
@@ -174,6 +185,8 @@ rule:
   - pinyin-[0-2][a-z]{1,7}[0-5]
   # Group:prefix-proposal@5
   - proposal-(n\d{4}|l2-\d{2}-\d{3})-.+
+  # Group:prefix-rkxx@1
+  - rkxx-(e[\da-f]|f[0-8])[\da-f]{2}
   # Group:prefix-s17stdkanjiv@6
   - s17stdkanjiv-u[\da-f]{4,5}
   # Group:prefix-sat@1
