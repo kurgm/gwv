@@ -6,7 +6,7 @@ from typing import NamedTuple
 import gwv.filters as filters
 from gwv.helper import isTogoKanji, load_package_data
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class MjValidatorError(ValidatorErrorEnum):
@@ -217,7 +217,7 @@ def get_base(name: str, field: int):
 _re_itaiji = re.compile(r"-itaiji-\d{3}$")
 
 
-class MjValidator(Validator):
+class MjValidator(SingleErrorValidator):
     @filters.check_only(
         -filters.is_of_category({"user-owned", "ids", "cdp", "ext", "bsh"})
     )

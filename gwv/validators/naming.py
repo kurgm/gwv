@@ -7,7 +7,7 @@ from typing import NamedTuple
 import gwv.filters as filters
 from gwv.helper import GWGroupLazyLoader, load_package_data
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class NamingValidatorError(ValidatorErrorEnum):
@@ -96,7 +96,7 @@ _re_ids_kanji = re.compile(r"１-漢|２-漢-漢|３-漢-漢-漢")
 _re_ucs = re.compile(r"\bu[23]?[\da-f]{4}\b")
 
 
-class NamingValidator(Validator):
+class NamingValidator(SingleErrorValidator):
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     def is_invalid(self, ctx: ValidatorContext):
         isHenka = False

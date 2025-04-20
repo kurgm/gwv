@@ -4,7 +4,7 @@ from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class MustrenewValidatorError(ValidatorErrorEnum):
@@ -25,7 +25,7 @@ class QuoterInfo(NamedTuple):
     quoters: set[str]
 
 
-class MustrenewValidator(Validator):
+class MustrenewValidator(SingleErrorValidator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mustrenew_quoters: dict[str, QuoterInfo] = {}

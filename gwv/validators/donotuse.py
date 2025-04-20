@@ -4,7 +4,7 @@ from typing import Any, NamedTuple
 
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class DonotuseValidatorError(ValidatorErrorEnum):
@@ -18,7 +18,7 @@ class DonotuseValidatorError(ValidatorErrorEnum):
 E = DonotuseValidatorError
 
 
-class DonotuseValidator(Validator):
+class DonotuseValidator(SingleErrorValidator):
     @filters.check_only(-filters.is_alias)
     def is_invalid(self, ctx: ValidatorContext):
         quotings = []

@@ -7,7 +7,7 @@ import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.kagedata import KageData, KageLine
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class IdsErrorBeginningWrongTypePart(NamedTuple):
@@ -96,7 +96,7 @@ def indexOfFirstKanjiBuhinLine(sname: list[str], kage: KageData):
     return None
 
 
-class IdsValidator(Validator):
+class IdsValidator(SingleErrorValidator):
     @filters.check_only(+filters.is_of_category({"ids"}))
     def is_invalid(self, ctx: ValidatorContext):
         kage = ctx.entity.kage

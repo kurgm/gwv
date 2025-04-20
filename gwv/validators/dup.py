@@ -9,7 +9,7 @@ from typing import NamedTuple, TypeVar
 import gwv.filters as filters
 from gwv.kagedata import KageLine
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class DupError(NamedTuple):
@@ -140,7 +140,7 @@ def dup_coords(elems: list[tuple[KageLine, list[int]]], thresh: int):
     return None
 
 
-class DupValidator(Validator):
+class DupValidator(SingleErrorValidator):
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.has_transform)

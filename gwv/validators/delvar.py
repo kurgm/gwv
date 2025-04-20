@@ -6,7 +6,7 @@ from typing import NamedTuple
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class DelvarValidatorError(ValidatorErrorEnum):
@@ -25,7 +25,7 @@ _re_var_src_henka = re.compile(r"(u[0-9a-f]{4,5}-" + RE_REGIONS + r")\d{2}")
 _re_var_other = re.compile(r"(u[0-9a-f]{4,5}|cdp[on]?-[0-9a-f]{4})-.+")
 
 
-class DelvarValidator(Validator):
+class DelvarValidator(SingleErrorValidator):
     @filters.check_only(
         -filters.is_of_category({"user-owned", "koseki", "toki", "ext", "bsh"})
     )

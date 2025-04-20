@@ -6,7 +6,7 @@ from typing import NamedTuple
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class UcsaliasError(NamedTuple):
@@ -48,7 +48,7 @@ _re_ucs_ = re.compile(r"u[\da-f]+(-|$)")
 _re_ids = re.compile(r"(u2ff[\da-f]|u31ef)-")
 
 
-class UcsaliasValidator(Validator):
+class UcsaliasValidator(SingleErrorValidator):
     @filters.check_only(+filters.is_alias)
     @filters.check_only(+filters.is_of_category({"ucs-kanji", "ucs-hikanji"}))
     def is_invalid(self, ctx: ValidatorContext):

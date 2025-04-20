@@ -14,7 +14,7 @@ from gwv.helper import (
 )
 from gwv.kagedata import KageData
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class JValidatorError(ValidatorErrorEnum):
@@ -68,9 +68,9 @@ source_separation = GWGroupLazyLoader("原規格分離", isset=True)
 _re_region_opthenka = re.compile(r"-(" + RE_REGIONS + r")(\d{2})?")
 
 
-class JValidator(Validator):
+class JValidator(SingleErrorValidator):
     def __init__(self):
-        Validator.__init__(self)
+        SingleErrorValidator.__init__(self)
         self.jv_no_use_part_replacement: dict[str, str] = {}
         self.jv_no_apply_parts: set[str] = set()
 

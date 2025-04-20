@@ -6,7 +6,7 @@ from typing import NamedTuple
 import gwv.filters as filters
 from gwv.helper import RE_REGIONS
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class OrderError(NamedTuple):
@@ -45,7 +45,7 @@ E = OrderValidatorError
 _re_vars = re.compile(r"-" + RE_REGIONS + r"?(\d{2})(-(var|itaiji)-\d{3})?(@|$)")
 
 
-class OrderValidator(Validator):
+class OrderValidator(SingleErrorValidator):
     @filters.check_only(-filters.is_alias)
     @filters.check_only(-filters.is_of_category({"user-owned"}))
     @filters.check_only(-filters.has_transform)

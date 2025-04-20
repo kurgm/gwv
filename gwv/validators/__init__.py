@@ -66,23 +66,30 @@ class Validator(metaclass=abc.ABCMeta):
     def __init__(self):
         self.recorder = self.recorder_cls()
 
-    def setup(self, dump: Dump):
+    def setup(self, dump: Dump):  # noqa: B027
         pass
 
-    def is_invalid(self, ctx: ValidatorContext) -> Any:
-        raise NotImplementedError
-
+    @abc.abstractmethod
     def validate(self, ctx: ValidatorContext):
-        is_invalid = self.is_invalid(ctx)
-
-        if is_invalid:
-            self.record(ctx.glyph.name, is_invalid)
+        pass
 
     def record(self, glyphname: str, error: Any):
         self.recorder.record(glyphname, error)
 
     def get_result(self) -> dict[str, list[Any]]:
         return self.recorder.get_result()
+
+
+class SingleErrorValidator(Validator):
+    @abc.abstractmethod
+    def is_invalid(self, ctx: ValidatorContext) -> Any:
+        pass
+
+    def validate(self, ctx: ValidatorContext):
+        is_invalid = self.is_invalid(ctx)
+
+        if is_invalid:
+            self.record(ctx.glyph.name, is_invalid)
 
 
 class ErrorCodeAndParams(NamedTuple):

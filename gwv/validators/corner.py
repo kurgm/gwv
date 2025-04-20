@@ -611,10 +611,15 @@ def _try_connect_corner(
         tate.y0 if tate_pos == 0 else tate.y1
     )
 
-    for errcls, (x_min, x_max), (y_min, y_max) in type_map[tate_type]:
-        if x_min <= x_dif <= x_max and y_min <= y_dif <= y_max:
-            break
-    else:
+    errcls = next(
+        (
+            errcls
+            for errcls, (x_min, x_max), (y_min, y_max) in type_map[tate_type]
+            if x_min <= x_dif <= x_max and y_min <= y_dif <= y_max
+        ),
+        None,
+    )
+    if errcls is None:
         return False
 
     if (

@@ -4,7 +4,7 @@ from typing import NamedTuple
 
 import gwv.filters as filters
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class KosekitokiValidatorError(ValidatorErrorEnum):
@@ -29,7 +29,7 @@ class KosekitokiValidatorError(ValidatorErrorEnum):
 E = KosekitokiValidatorError
 
 
-class KosekitokiValidator(Validator):
+class KosekitokiValidator(SingleErrorValidator):
     @filters.check_only(+filters.is_of_category({"toki"}))
     def is_invalid(self, ctx: ValidatorContext):
         (num,) = ctx.category_param[1]

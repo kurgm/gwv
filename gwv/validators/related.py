@@ -5,7 +5,7 @@ from typing import NamedTuple
 import gwv.filters as filters
 from gwv.helper import categorize, cjk_sources, is_gokan_kanji_cp, is_togo_kanji_cp
 from gwv.validatorctx import ValidatorContext
-from gwv.validators import Validator, ValidatorErrorEnum, error_code
+from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 
 class RelatedValidatorError(ValidatorErrorEnum):
@@ -47,7 +47,7 @@ class RelatedValidatorError(ValidatorErrorEnum):
 E = RelatedValidatorError
 
 
-class RelatedValidator(Validator):
+class RelatedValidator(SingleErrorValidator):
     @filters.check_only(+filters.is_of_category({"ucs-kanji"}))
     def is_invalid(self, ctx: ValidatorContext):
         expected_related = "u" + ctx.category_param[1][0]
