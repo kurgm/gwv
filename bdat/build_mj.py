@@ -96,10 +96,11 @@ def parseMjxlsx(mjxlsx: IO[bytes]):
         if chtext:
             chtext = str(chtext)
             dkwnum = chtext.lstrip("補").rstrip("#'")
+            dashes = "d" * chtext.count("'")
             if chtext.startswith("補"):
-                mjrow[10] = "h{:0>4}{}".format(dkwnum, "d" * chtext.count("'"))
+                mjrow[10] = f"h{dkwnum:0>4}{dashes}"
             else:
-                mjrow[10] = "{:0>5}{}".format(dkwnum, "d" * chtext.count("'"))
+                mjrow[10] = f"{dkwnum:0>5}{dashes}"
         chtext = rowdata["日本語漢字辞典"]
         if chtext:
             mjrow[11] = f"{chtext:0>5}"
