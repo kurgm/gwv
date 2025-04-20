@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, NamedTuple
 
-import gwv.filters as filters
+from gwv import filters
 from gwv.helper import RE_REGIONS, GWGroupLazyLoader
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 

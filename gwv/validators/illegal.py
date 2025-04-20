@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, NamedTuple
 
-import gwv.filters as filters
+from gwv import filters
 from gwv.helper import isYoko
 from gwv.validators import (
     Validator,

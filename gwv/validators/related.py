@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, NamedTuple
 
-import gwv.filters as filters
+from gwv import filters
 from gwv.helper import categorize, cjk_sources, is_gokan_kanji_cp, is_togo_kanji_cp
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
@@ -61,7 +61,7 @@ class RelatedValidator(SingleErrorValidator):
                 return False
             expected_related = "u" + u[2:].lower()
 
-        if ctx.glyph.related != "u3013" and expected_related != ctx.glyph.related:
+        if ctx.glyph.related not in ("u3013", expected_related):
             # 間違った関連字
             return E.WRONG_RELATED(ctx.glyph.related, expected_related)
 

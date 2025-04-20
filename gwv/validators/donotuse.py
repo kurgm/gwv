@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, NamedTuple
 
-import gwv.filters as filters
+from gwv import filters
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 if TYPE_CHECKING:

@@ -4,7 +4,7 @@ import itertools
 import re
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 
-import gwv.filters as filters
+from gwv import filters
 from gwv.helper import isYoko
 from gwv.validators import Validator, ValidatorErrorEnum, error_code
 

@@ -5,7 +5,7 @@ import math
 import operator
 from typing import TYPE_CHECKING, NamedTuple, TypeVar
 
-import gwv.filters as filters
+from gwv import filters
 from gwv.validators import SingleErrorValidator, ValidatorErrorEnum, error_code
 
 if TYPE_CHECKING:
