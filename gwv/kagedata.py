@@ -43,7 +43,9 @@ def kageIntSuppressError(s: str) -> Optional[int]:
 
 class KageData:
     def __init__(self, data: str):
-        self.lines = tuple([KageLine(i, l) for i, l in enumerate(data.split("$"))])
+        self.lines = tuple(
+            [KageLine(i, line_str) for i, line_str in enumerate(data.split("$"))]
+        )
         self.len = len(self.lines)
         self.has_transform = any(
             len(line.data) >= 2
