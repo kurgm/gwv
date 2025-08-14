@@ -28,7 +28,7 @@ class WidthValidatorError(ValidatorErrorEnum):
 E = WidthValidatorError
 
 
-_re_halfWidth = re.compile(r"uff(6[1-9a-f]|[7-9a-d][0-9a-f]|e[8-e])")
+_re_halfWidth = re.compile(r"uff(6[1-9a-f]|[7-9a-d][0-9a-f]|e[89a-e])")
 _re_fullWidth = re.compile(r"uff([0-5][0-9a-f]|60|e[0-6])")
 _re_hen = re.compile(r"-" + RE_REGIONS + r"?01(-(var|itaiji)-|$)")
 
