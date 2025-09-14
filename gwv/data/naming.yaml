@@ -50,7 +50,6 @@ rule:
   - jmj-\d{6}
   - juchen-\d{4}[\da-f]{2}
   - juki-[\da-f]{4}
-  - ka-kc\d{5}
   - katakana-[a-z]+
   - katakana(-letter)?-small-[a-z]+
   - katakana-twtone\d{2}
@@ -87,25 +86,24 @@ rule:
   # Group:prefix-bouyei@3
   - bouyei-\d{5}
   # Group:prefix-c@4
-  - c([1-9a-f]|1[0138])-[\da-f]{4}
+  - c([1-9a-f]|1[0-38])-[\da-f]{4}
   # Group:prefix-cangjie@1
   - cangjie-[a-z]\d{2}
   # Group:prefix-csur@3
   - csur-u(e[\da-f]|f[0-8]|(f|10)[\da-f]{2})[\da-f]{2}
   # Group:prefix-fudemame@1
   - fudemame-e[\da-f]{3}
-  # Group:prefix-g@40
+  # Group:prefix-g@43
   - g[013578eks]-[\da-f]{4}
   - gca-[a-z]\d{4}
   - g(ce|fc|idc23|idc|ocd|xhz)-\d{3}
   - g(h|hf|lgyj|pglg|xc|zhsj)-\d{4}
   - g-t\d{4}
   - g(fz|idc)-[\da-f]{4}
-  - g(4k|ccpp|cesi|cw|cyy|dm|fzc|gt|jz|hyd|kj|msw|wy|xm|zfy|zjw|zk|zys)-\d{5}
-  - g(ch|cy|hc)-[\da-f]{5}
+  - g(4k|ccpp|cesi|cw|cyy|dm|fzc|gt|hyd|jz|kj|msw|wy|xm|zfy|zjw|zk|zys)-\d{5}
   - g(bk|ch|cy|dz|gfz|gh|hc|kx|rm|wz|xc|xh|zh)-\d{6}
-  - g(bk|h|hzr?|kx|lk|z)-\d{7}
-  - gu-[023][\da-f]{4}
+  - g(bk|h|hc|hzr?|kx|lk|z)-\d{7}
+  - g(ch|cy|hc|u)-[023][\da-f]{4}
   - gza-[1-467]\d{5}
   - ggt-\d{5}-irgn1366
   - gidc-\d{3}-(extd|extf)
@@ -135,10 +133,16 @@ rule:
   - irg20(15|17|21|24)-\d{5}
   # Group:prefix-jgj@2
   - jgj-\d{6}
+  # Group:prefix-jpseudo@4
+  - jpseudo-u[1-3]?[\da-f]{4}(-(g|h|j|k|kp|m|s|t|u|uk|v|ue0[\da-f]{3}))?
   # Group:prefix-k@3
   - k[0-6]-[\da-f]{4}
   - kc-\d{5}
   - ku-[023][\da-f]{4}
+  # Group:prefix-ka@1
+  - ka-kc\d{5}
+  - ka-oh\d{5}
+  - ka-ks\d{5}
   # Group:prefix-kanjikai@1
   - kanjikai-\d{6}
   # Group:prefix-kikkou@1
@@ -150,6 +154,8 @@ rule:
   # Group:prefix-kp@2
   - kp[01]-[\da-f]{4}
   - kpu-[023][\da-f]{4}
+  # Group:prefix-krcourt@3
+  - krcourt-[12af]?[\da-f]{4}
   # Group:prefix-kumimoji@8
   # Group:prefix-kx@4
   - kx-\d{7}
@@ -165,9 +171,9 @@ rule:
   - mathematical-double-struck-italic-(capital|small)-[a-z]
   # Group:prefix-misc@21
   - misc-.+
-  # # Group:prefix-ms@2
-  # - ms-ue8[\da-f]{2}
-  # - ms-uf0[\da-f]{2}
+  # Group:prefix-ms@3
+  - ms-ue8[\da-f]{2}
+  - ms-uf[07][\da-f]{2}
   # Group:prefix-myogisho-z@2
   - myogisho-z-\d{5}[ab]?
   # # Group:prefix-nct@3
@@ -196,9 +202,11 @@ rule:
   - sdjt-\d{5}
   # Group:prefix-shincho@1
   - shincho-\d{5}
+  # # Group:prefix-shuju@1
+  # - shuju-f\d{4}
   # Group:prefix-t@3
   # Group:prefix-tf@1
-  # Group:prefix-t12@1
+  # Group:prefix-t12@2
   - t[1-79a-f]-[\da-f]{4}
   - t1[1-3]-[\da-f]{4}
   - tu-[023][\da-f]{4}
@@ -230,6 +238,8 @@ rule:
   # Group:prefix-v@5
   - v[0-4]-[\da-f]{4}
   - vn-[\da-f]{5}
+  # Group:prefix-vnkhpa@12
+  - vnkhpa-[01]?[a-z][0-4]\d
   # Group:prefix-wubi@1
   - wubi-[a-z]\d{2}
   # Group:prefix-zkyw@3

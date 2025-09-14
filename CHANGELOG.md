@@ -5,6 +5,7 @@
 ## 2025-09-14
 - Unicode 17.0.0 での CJK 統合漢字の追加に対応しました。
 - 「地域字形」などの項目において使用している地域ソースのデータを Unicode 17.0.0 のものに更新しました。
+- 「命名」の項目において、命名規則リストに `c12-XXXX`, `ghc-#######`, `jpseudo-u(X)XXXX-*`, `ka-oh#####`, `ka-ks#####`, `krcourt-(X)XXXX`, `ms-uXXXX`, `vnkhpa-?##` を追加しました。
 
 ## 2025-04-21
 - 「命名」の項目において、命名規則リストに `akr-#####`, `ggt-#####-irgn1366`, `gidc-###-(extd|extf)`, `hiyuteki-###`, `hongmen-misc-...`, `hongmen-parts-X##`, `hongmen-ue0XX`, `rkxx-XXXX` を追加し、 `me-(X)XXXX###` を `me-(X)XXXX-###` に変更しました。
