@@ -19,13 +19,14 @@ _togo_ranges = [
     range_inclusive(0x3400, 0x4DBF),  # Ext A
     range_inclusive(0x4E00, 0x9FFF),  # URO
     range_inclusive(0x20000, 0x2A6DF),  # Ext B
-    range_inclusive(0x2A700, 0x2B739),  # Ext C
+    range_inclusive(0x2A700, 0x2B73F),  # Ext C
     range_inclusive(0x2B740, 0x2B81D),  # Ext D
-    range_inclusive(0x2B820, 0x2CEA1),  # Ext E
+    range_inclusive(0x2B820, 0x2CEAD),  # Ext E
     range_inclusive(0x2CEB0, 0x2EBE0),  # Ext F
     range_inclusive(0x2EBF0, 0x2EE5D),  # Ext I
     range_inclusive(0x30000, 0x3134A),  # Ext G
     range_inclusive(0x31350, 0x323AF),  # Ext H
+    range_inclusive(0x323B0, 0x33479),  # Ext J
 ]
 
 _togo_in_compat = {
